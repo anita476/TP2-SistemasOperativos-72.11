@@ -10,6 +10,5 @@
 #Object files
 *.o
 *.elf
-run.sh
 .vscode
 .DS_Store

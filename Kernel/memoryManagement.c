@@ -1,3 +1,4 @@
+/* 
 #define BLOCK_SIZE 10
 #define BLOCK_COUNT 10
 void * start, current;
@@ -19,10 +20,10 @@ void * my_malloc(){
 	if(current <  size + start){
 		return free_ptrs[current++];
 	}
-	return NULL
+	return null;
 }
 
 void my_free(void * p){
 	free_ptrs[--current] = p;
 
-}
+} */

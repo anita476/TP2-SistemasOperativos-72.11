@@ -9,8 +9,10 @@
 #include <time.h>
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
-
+#include <test_util.h>
+#include <syscall.h>
 #include <memoryManagement.h>
+#include <test_mm.h>
 
 extern void printtest();
 
@@ -71,14 +73,14 @@ int main() {
 	load_IDT();
 	memoryInit(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
 	wait(2000);
-	char * test = malloc(20);
-	test[0] = 'a';
-	test[1] = 'p';
-	print(test);
-	free(test);
-	wait(1000);
-	welcomeSequence();
-	// memory init goes here
+	char *juan[] = {"1000"}; 
+	uint64_t result = test_mm(1, juan);
+	if (result == -1) {
+		print("Memory test failed\n");
+	} else {
+		print("Memory test passed\n");
+	}
+	// welcomeSequence();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

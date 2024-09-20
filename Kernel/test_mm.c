@@ -1,12 +1,10 @@
 #include <stdio.h>
+#include <lib.h>
+#include <videoDriver.h>
 #include <stdlib.h>
 #include <string.h>
-
-uint32_t GetUniform(uint32_t max) {
-  uint32_t u = GetUint();
-  return (u + 1.0) * 2.328306435454494e-10 * max;
-}
-
+#include "syscall.h"
+#include "test_util.h"
 
 #define MAX_BLOCKS 128
 
@@ -16,19 +14,27 @@ typedef struct MM_rq {
 } mm_rq;
 
 uint64_t test_mm(uint64_t argc, char *argv[]) {
+  print("Beginning test...\n");
 
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
   uint64_t max_memory;
 
-  if (argc != 1)
+  if (argc != 1) {
+    print("wrong arg\n");
     return -1;
+  }
 
-  if ((max_memory = satoi(argv[0])) <= 0)
+  if ((max_memory = satoi(argv[0])) <= 0) {
+    print("wrong argv[0]\n");
     return -1;
+  }
 
-  while (1) {
+  int i = 0;
+
+  while (i != 3) {
+    print("while\n");
     rq = 0;
     total = 0;
 
@@ -38,8 +44,12 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
       mm_rqs[rq].address = malloc(mm_rqs[rq].size);
 
       if (mm_rqs[rq].address) {
+        print("Succesful malloc\n");
         total += mm_rqs[rq].size;
         rq++;
+      }
+      else{
+        print("malloc not succesful?");
       }
     }
 
@@ -53,7 +63,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
-          printf("test_mm ERROR\n");
+          print("test_mm ERROR\n");
           return -1;
         }
 
@@ -61,5 +71,10 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     for (i = 0; i < rq; i++)
       if (mm_rqs[i].address)
         free(mm_rqs[i].address);
+    // wait(500);
+    print("Finished iteration\n");
+    i++;
   }
+  return 0;
+
 }

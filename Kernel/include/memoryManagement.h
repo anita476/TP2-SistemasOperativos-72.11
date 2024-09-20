@@ -15,6 +15,8 @@ union header {
 
 typedef union header Header;
 
+#define BLOCKSIZE sizeof(Header)
+
 /*
     @brief Initializes s bytes, starting in p
     @param p Pointer to the start of the asigned memory

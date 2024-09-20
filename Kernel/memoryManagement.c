@@ -1,29 +1,30 @@
-/* 
-#define BLOCK_SIZE 10
-#define BLOCK_COUNT 10
-void * start, current;
-int size;
-void * free_ptrs[BLOCK_COUNT];
-int current = 0;
-void my_mm_init(void *p, int s){
-	start = p;
-	size = s;
+#include <memoryManagement.h>
+#include <unistd.h>
+
+static Header base; 			// Base of memory list
+static Header * freep = NULL; 	// Empty list start
+int memorySize;
+int totalMemory;
+int usedMemory;
+int numberOfBlocks;
+
+void memoryInit(void * p, int s) {
+	void * memoryStart = p;
+
+	base.s.ptr = p;
+	s -= (memoryStart -  p);
+	totalMemory = s;
+	usedMemory = sizeof(Header);
+	numberOfBlocks = 1;
+
 	
-	free_ptrs[0] = start;
-	free_ptrs[1] = start + BLOCK_SIZE ; //y etc.. meter en un for
-	free_ptrs[2] = start + BLOCK_SIZE + BLOCK_SIZE;
-	current = 0;
 
 }
 
-void * my_malloc(){
-	if(current <  size + start){
-		return free_ptrs[current++];
-	}
-	return null;
+void * malloc(uint64_t bytes) {
+	Header * p, * prevp;
+	
 }
 
-void my_free(void * p){
-	free_ptrs[--current] = p;
-
-} */
+void free(void * p) {
+}

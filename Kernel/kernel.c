@@ -10,6 +10,8 @@
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
 
+#include <memoryManagement.h>
+
 extern void printtest();
 
 extern uint64_t resetMain();
@@ -24,8 +26,11 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
+// If there is a problem, change the address
 static void * const sampleCodeModuleAddress = (void*)0x400000;
-static void * const sampleDataModuleAddress = (void*)0x500000;
+//static void * const sampleDataModuleAddress = (void*)0x500000; /* not used */
+static void *const startHeapAddres = (void *) 0xF00000;
+static void *const endHeapAddres = (void *) 0x2000000;
 
 typedef int (*EntryPoint)();
 
@@ -42,14 +47,13 @@ void * getStackBase() {
 }
 
 void * initializeKernelBinary() {
-	void * moduleAddresses[] = {sampleCodeModuleAddress, sampleDataModuleAddress };
+	void * moduleAddresses[] = {sampleCodeModuleAddress };
 	loadModules(&endOfKernelBinary, moduleAddresses);
 	clearBSS(&bss, &endOfKernel - &bss);
 	return getStackBase();
 }
 
-int main() {
-	load_IDT();
+void welcomeSequence() {
 	for (int i = 0; i < 4; i++) scale_down();
 	scale_up();
 	setCursorLine(8);
@@ -61,6 +65,12 @@ int main() {
 	wait(1000);
 	scale_down();
 	clear_screen();
+}
+
+int main() {
+	load_IDT();
+	//welcomeSequence();
+	// memory init goes here
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

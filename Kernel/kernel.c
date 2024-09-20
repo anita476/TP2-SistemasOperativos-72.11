@@ -69,7 +69,15 @@ void welcomeSequence() {
 
 int main() {
 	load_IDT();
-	//welcomeSequence();
+	memoryInit(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
+	wait(2000);
+	char * test = malloc(20);
+	test[0] = 'a';
+	test[1] = 'p';
+	print(test);
+	free(test);
+	wait(1000);
+	welcomeSequence();
 	// memory init goes here
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;

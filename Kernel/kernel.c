@@ -71,17 +71,15 @@ void welcomeSequence() {
 
 int main() {
 	load_IDT();
-	//memoryInit(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
-	init_memory_manager((size_t) (endHeapAddres - startHeapAddres));
-	wait(2000);
-	char *juan[] = {"1000"}; 
-	uint64_t result = test_mm(1, juan);
+	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
+	char buffer[200];
+	intToStr((size_t) (endHeapAddres - startHeapAddres), buffer, 16);
+	char * argv[1] = {buffer};
+	uint64_t result = test_mm(1, argv);
 	if (result == -1) {
 		print("Memory test failed\n");
-	} else {
-		print("Memory test passed\n");
 	}
-	// welcomeSequence();
+	welcomeSequence();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

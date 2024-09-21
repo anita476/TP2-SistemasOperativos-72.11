@@ -71,7 +71,8 @@ void welcomeSequence() {
 
 int main() {
 	load_IDT();
-	memoryInit(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
+	//memoryInit(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
+	init_memory_manager((size_t) (endHeapAddres - startHeapAddres));
 	wait(2000);
 	char *juan[] = {"1000"}; 
 	uint64_t result = test_mm(1, juan);

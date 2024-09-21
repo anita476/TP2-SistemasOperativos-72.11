@@ -1,10 +1,11 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <lib.h>
 #include <videoDriver.h>
 #include <stdlib.h>
 #include <string.h>
 #include "syscall.h"
 #include "test_util.h"
+#include "syscallHandler.h"
 
 #define MAX_BLOCKS 128
 
@@ -31,9 +32,9 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  int i = 0;
+  //int i = 0;
 
-  while (i != 3) {
+  while (1) {
     print("while\n");
     rq = 0;
     total = 0;
@@ -49,31 +50,43 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
         rq++;
       }
       else{
-        print("malloc not succesful?");
+        print("malloc not succesful?\n");
+        return -1;
       }
     }
 
     // Set
     uint32_t i;
-    for (i = 0; i < rq; i++)
-      if (mm_rqs[i].address)
+    for (i = 0; i < rq; i++){
+      if (mm_rqs[i].address){
+        print("Setting memory\n");
         memset(mm_rqs[i].address, i, mm_rqs[i].size);
+      }
+    }
 
     // Check
-    for (i = 0; i < rq; i++)
-      if (mm_rqs[i].address)
+    for (i = 0; i < rq; i++){
+      if (mm_rqs[i].address){
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
           print("test_mm ERROR\n");
           return -1;
         }
+        else{
+          print("memcheck passed\n");
+        }
+      }
+  }
 
     // Free
-    for (i = 0; i < rq; i++)
-      if (mm_rqs[i].address)
+    for (i = 0; i < rq; i++){
+      if (mm_rqs[i].address){
         free(mm_rqs[i].address);
-    // wait(500);
+        print("Freeing memory\n");
+      }
+    }
+    wait(1000);
     print("Finished iteration\n");
-    i++;
+    //i++;
   }
   return 0;
 

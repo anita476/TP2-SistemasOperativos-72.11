@@ -1,6 +1,7 @@
 /* We'll be using Kernighans implementation of a memory manager using a simple linked list -> put in report */
 
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef long ALIGN;
 
@@ -22,7 +23,8 @@ typedef union header Header;
     @param p Pointer to the start of the asigned memory
     @param s Size of the asigned memory
 */
-void memoryInit(void * p, int s);
+//void memoryInit(void * p, size_t s);
+void init_memory_manager(size_t totalSize);
 
 /*
     @brief Allocates the specified number of bytes in heap memory
@@ -30,10 +32,12 @@ void memoryInit(void * p, int s);
     @returns Pointer to the assigned bytes, or NULL if memory could not
     be allocated
 */
-void * malloc(uint64_t bytes);
+//void * malloc(uint64_t bytes);
+void *malloc(size_t size);
     
 /*
     @brief Frees the specified memory block
     @param p Pointer to block to be freed
 */
-void free(void * p);
+//void free(void * p);
+void free(void *ptr);

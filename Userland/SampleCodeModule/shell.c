@@ -1,12 +1,17 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "shell.h"
 #include "libSysCalls.h"
 #include "commands.h"
 #include "eliminator.h"
 #include "music.h"
+#include "test_mm.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 9
+#define COMMANDS_SIZE 10
+#define MAXMEMORY  (0x2000000 - 0xF00000) 
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -41,7 +46,12 @@ void executeCommand(char * str) {
             break;
       case 7: divzero(); break;
       case 8: invalidOpCode(); break;
-      
+      case 9: 
+            char * argv[1] = {"500000"};
+            if(test_mm(1,argv)==(-1)){
+                  print("Memory test failed\n");
+            } 
+            break;
       default: print("Unrecognized command\n");
                errorSound();
             break;
@@ -82,6 +92,7 @@ void shell() {
       print("\n * scaledown: Reduce the text size (min: 1, default: 1)");
       print("\n * scaleup: Increment the text size (max: 4, default: 1)");
       print("\n * time: Display the current time");
+      print("\n * testmm: Run a memory management test in an endless loop");
       print("\n");
       insertCommand();
 }

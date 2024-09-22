@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <keyboardDriver.h>
 #include <videoDriver.h>
 #include <interrupts.h>
@@ -62,19 +65,15 @@ void keyboardHandler() {
       case 5: 
         shiftFlag = 1;
         break;
-      // Key is 'enter'
+      // Key is 'enter' ot 'backspace'
       case '\n':
-        addToBuffer(ASCIIkey);
-        // cleanBuffer();
-        break;
-      // Key is 'backspace'
-      case '\b': 
+      case '\b':
         addToBuffer(ASCIIkey);
         break;
       // Key is valid
       default:
         // Caps
-        if (isAlpha(ASCIIkey) && ((capsLockFlag && !shiftFlag) || (!capsLockFlag && shiftFlag))) addToBuffer(ASCIIkey - 'a' + 'A');
+        if (isAlpha(ASCIIkey) && ((capsLockFlag != shiftFlag))) addToBuffer(ASCIIkey - 'a' + 'A');
         // Not caps
         else addToBuffer(ASCIIkey);
         break;

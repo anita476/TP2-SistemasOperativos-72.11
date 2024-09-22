@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <commands.h>
 #include <eliminator.h>
 
@@ -13,6 +16,7 @@ void help() {
     print("\n * scaledown: Reduce the text size (min: 1, default: 1)");
     print("\n * scaleup: Increment the text size (max: 4, default: 1)");
     print("\n * time: Display the current time");
+    print("\n * testmm: Run a memory management test in an endless loop");
     print("\n");
 }
 

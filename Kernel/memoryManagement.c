@@ -1,15 +1,15 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <memoryManagement.h>
 #include <unistd.h>
 
-
 #define BLOCK_SIZE sizeof(struct block)
-
 
 struct block {
     size_t size;          // Size of the block
     struct block *next;   // Pointer to the next free block
 };
-
 
 static struct block *freeList; 
 
@@ -36,7 +36,6 @@ void *malloc(size_t bytes) {
                 current->size = bytes;
                 current->next = newBlock;
             }
-
             // Remove from free list
             if (previous == NULL) {
                 freeList = current->next;

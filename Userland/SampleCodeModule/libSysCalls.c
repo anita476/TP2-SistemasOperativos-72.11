@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <libSysCalls.h>
 
 extern uint64_t syscall(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6);
 
@@ -6,8 +6,8 @@ uint64_t readBuffer(char* buffer, uint64_t length) {
     return syscall(0, 0, (uint64_t) buffer, length, 0, 0); 
 }
 
-void print(char* buffer) {
-    syscall(1, 1, (uint64_t) buffer, 0, 0, 0); 
+uint64_t print(char* buffer) {
+    return syscall(1, 1, (uint64_t) buffer, 0, 0, 0); 
 }
 
 void putChar(char c) {
@@ -70,4 +70,11 @@ char getChar() {
 
 void setCursor(uint64_t posx, uint64_t line) {
     syscall(36, posx, line, 0, 0, 0);
+}
+
+void * malloc(size_t bytes){
+    return (void *) syscall(20,bytes,0,0,0,0);
+}
+void free(void * ptr){
+    syscall(21, (uint64_t)ptr, 0,0,0,0);
 }

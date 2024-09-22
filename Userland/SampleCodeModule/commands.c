@@ -13,6 +13,7 @@ void help() {
     print("\n * scaledown: Reduce the text size (min: 1, default: 1)");
     print("\n * scaleup: Increment the text size (max: 4, default: 1)");
     print("\n * time: Display the current time");
+    print("\n * testmm: Run a memory management test in an endless loop");
     print("\n");
 }
 

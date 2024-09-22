@@ -10,11 +10,12 @@
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
 #include <test_util.h>
-#include <syscall.h>
 #include <memoryManagement.h>
 #include <test_mm.h>
 
 extern void printtest();
+extern void _cli();
+extern void _sti();
 
 extern uint64_t resetMain();
 extern uint64_t show_registers[17];
@@ -28,9 +29,8 @@ extern uint8_t endOfKernel;
 
 static const uint64_t PageSize = 0x1000;
 
-// If there is a problem, change the address
 static void * const sampleCodeModuleAddress = (void*)0x400000;
-//static void * const sampleDataModuleAddress = (void*)0x500000; /* not used */
+//static void * const sampleDataModuleAddress = (void*)0x500000; /* goodbye */
 static void *const startHeapAddres = (void *) 0xF00000;
 static void *const endHeapAddres = (void *) 0x2000000;
 
@@ -70,16 +70,23 @@ void welcomeSequence() {
 }
 
 int main() {
+	_cli();
 	load_IDT();
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
+	_sti();
+	welcomeSequence();
+	/* 
+	To run the memory test in kernel uncomment the following section:
+	*/
+	/*
 	char buffer[200];
 	intToStr((size_t) (endHeapAddres - startHeapAddres), buffer, 16);
 	char * argv[1] = {buffer};
 	uint64_t result = test_mm(1, argv);
 	if (result == -1) {
 		print("Memory test failed\n");
-	}
-	welcomeSequence();
+	} 
+	*/
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

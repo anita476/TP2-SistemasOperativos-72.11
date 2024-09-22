@@ -1,5 +1,5 @@
-
-#include<stdint.h>
+#include <stdint.h>
+#include <unistd.h>
 
 uint64_t readBuffer(char* buffer, uint64_t length);
 
@@ -30,3 +30,6 @@ char getRegisters(uint64_t * buffer);
 
 void setCursor(uint64_t posx, uint64_t line);
 
+void * malloc(size_t bytes);
+
+void free(void * ptr);

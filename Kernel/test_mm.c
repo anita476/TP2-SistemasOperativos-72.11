@@ -1,8 +1,10 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <lib.h> //to use barebones memset 
 #include <videoDriver.h> // to replace printfs and be able to print on screen
 #include <stdlib.h>
 #include <test_util.h>
-
 
 #define MAX_BLOCKS 128
 

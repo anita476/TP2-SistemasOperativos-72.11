@@ -12,3 +12,6 @@
 *.elf
 .vscode
 .DS_Store
+strace_out
+report.tasks
+PVS-Studio.log

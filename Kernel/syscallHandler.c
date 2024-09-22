@@ -225,7 +225,7 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi , uint64_t rdx 
         case 19:
             return get_char(rdi);
         case 20:
-            return malloc(rdi);
+            return (uint64_t)malloc(rdi);
         case 21:
             free((void *)rdi);
             break;

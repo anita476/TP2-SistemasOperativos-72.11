@@ -65,7 +65,7 @@ void keyboardHandler() {
       case 5: 
         shiftFlag = 1;
         break;
-      // Key is 'enter' or 'backspace'
+      // Key is 'enter' ot 'backspace'
       case '\n':
       case '\b':
         addToBuffer(ASCIIkey);
@@ -73,7 +73,7 @@ void keyboardHandler() {
       // Key is valid
       default:
         // Caps
-        if (isAlpha(ASCIIkey) && ((capsLockFlag && !shiftFlag) || (!capsLockFlag && shiftFlag))) addToBuffer(ASCIIkey - 'a' + 'A');
+        if (isAlpha(ASCIIkey) && ((capsLockFlag != shiftFlag))) addToBuffer(ASCIIkey - 'a' + 'A');
         // Not caps
         else addToBuffer(ASCIIkey);
         break;

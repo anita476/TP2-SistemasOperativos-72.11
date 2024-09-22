@@ -65,13 +65,9 @@ void keyboardHandler() {
       case 5: 
         shiftFlag = 1;
         break;
-      // Key is 'enter'
+      // Key is 'enter' or 'backspace'
       case '\n':
-        addToBuffer(ASCIIkey);
-        // cleanBuffer();
-        break;
-      // Key is 'backspace'
-      case '\b': 
+      case '\b':
         addToBuffer(ASCIIkey);
         break;
       // Key is valid

@@ -78,18 +78,6 @@ int main() {
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	_sti();
 	welcomeSequence();
-	/* 
-	To run the memory test in kernel uncomment the following section:
-	*/
-	/*
-	char buffer[200];
-	intToStr((size_t) (endHeapAddres - startHeapAddres), buffer, 16);
-	char * argv[1] = {buffer};
-	uint64_t result = test_mm(1, argv);
-	if (result == -1) {
-		print("Memory test failed\n");
-	} 
-	*/
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

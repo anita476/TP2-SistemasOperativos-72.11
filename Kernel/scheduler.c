@@ -1,3 +1,4 @@
+#include <scheduler.h>
 /*
 process control block 
 process queue 

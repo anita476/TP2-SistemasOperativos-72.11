@@ -1,7 +1,6 @@
 #include <processes.h>
 #include <videoDriver.h>
 
-extern void haltcpu();
 static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS **pr);
 /* MISSING MEMORY STATE COUUNTERSSS */

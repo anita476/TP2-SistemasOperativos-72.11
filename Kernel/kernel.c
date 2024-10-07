@@ -71,9 +71,8 @@ void welcomeSequence() {
 	clear_screen();
 }
 void endlessLoop(int argc, char *argv[]) {
-	int i = 0;
-    while (i!= 2000)
-        i++;
+    while (1)
+        ;
 }
 
 int main() {

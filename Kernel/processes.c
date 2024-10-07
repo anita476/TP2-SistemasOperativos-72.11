@@ -138,18 +138,28 @@ int kill(pid pid){
 }
 
 int sendToBackground(pid pid){
-
+    ProcessS * p;
+    if(!findPID(pid, &p)){
+        return -1;
+    }
+    return !(p->fg_flag = BACKGROUND);
 }
 
 int bringToForeground(pid pid){
-
+    ProcessS * p;
+    if(!findPID(pid, &p)){
+        return -1;
+    }
+    return (p->fg_flag = FOREGROUND);
 }
 
-int isBackground(pid pid){
 
-}
 int isForeground(pid pid){
-
+    ProcessS * p;
+    if(!findPID(pid, &p)){
+        return -1;
+    }
+    return p->fg_flag;
 }
 
 int listProcessesInfo(ProcessInfo * processes, int max_processes){

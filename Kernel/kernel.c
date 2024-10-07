@@ -86,7 +86,7 @@ int main() {
 	createProcessInfo pci = {.name = "process",
                              .start = (ProcessStart) endlessLoop,
                              .fg_flag = 1,
-                             .priority = 1,
+                             .priority = FOREGROUND,
                              .argc = 1,
                              .argv = argv};
 	pid pid = createProcess(&pci);
@@ -97,6 +97,19 @@ int main() {
 	else{
 		print("Unsuccesful process creation\n");
 	}
+	if(sendToBackground(pid)){
+		print("Process sent to background\n");
+		if(isForeground(pid)){
+			print("Process didnt remain in background\n");
+		}
+	}
+	if(bringToForeground(pid)){
+		print("Process brought to foregorund\n");
+		if(!isForeground(pid)){
+			print("Process is not in foreground\n");
+		}
+	}
+	
 	int k = kill(pid);
 
 	if(k!=0){

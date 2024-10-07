@@ -6,6 +6,9 @@
 #include <lib.h>
 #include <memoryManagement.h>
 
+#define FOREGROUND 1
+#define BACKGROUND 0
+
 
 #define MAX_PROCESSES 10
 #define MAX_NAME_LENGTH 20
@@ -59,7 +62,6 @@ int sendToBackground(pid pid);
 
 int bringToForeground(pid pid);
 
-int isBackground(pid pid);
 int isForeground(pid pid);
 
 int listProcessesInfo(ProcessInfo * processes, int max_processes);

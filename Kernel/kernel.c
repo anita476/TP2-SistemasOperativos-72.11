@@ -12,10 +12,9 @@
 #include <time.h>
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
-#include <test_util.h>
-#include <memoryManagement.h>
-#include <test_mm.h>
+#include <processes.h>
 
+extern void haltcpu();
 extern void printtest();
 extern void _cli();
 extern void _sti();
@@ -71,13 +70,41 @@ void welcomeSequence() {
 	scale_down();
 	clear_screen();
 }
+void endlessLoop(int argc, char *argv[]) {
+	int i = 0;
+    while (i!= 2000)
+        i++;
+}
 
 int main() {
 	_cli();
 	load_IDT();
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	_sti();
-	welcomeSequence();
+	//welcomeSequence();
+	const char * const argv[1] = {"Hello"};
+	createProcessInfo pci = {.name = "process",
+                             .start = (ProcessStart) endlessLoop,
+                             .fg_flag = 1,
+                             .priority = 1,
+                             .argc = 1,
+                             .argv = argv};
+	pid pid = createProcess(&pci);
+
+	if(pid >= 0){
+		print("Succesful process creation\n");
+	}
+	else{
+		print("Unsuccesful process creation\n");
+	}
+	int k = kill(pid);
+
+	if(k!=0){
+		print("Unsuccesful process kill\n");
+	}
+	else {
+		print("Succesfull process kill\n");
+	}
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

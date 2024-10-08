@@ -11,6 +11,12 @@
 #define NO_PROC -2 
 #define PID_KERNEL -1
 
+
+#define MAX_PRIORITY 5
+#define DEFAULT_PRIORITY 1
+#define MIN_PRIORITY 0
+
+
 typedef struct {
     priority priority;
     status processStatus;
@@ -21,7 +27,7 @@ extern void * createProcessStack(int argc, const char *const argv[], void *rsp, 
 
 void init_scheduler();
 int processWasKilled(pid pid); //scheduler actions when process is terminated
-int processWasCreated(pid pid); // scheduler actions when process is created
+int processWasCreated(pid pid, int argc, const char * const argv[], priority priority, ProcessStart entryPoint, void * currentRSP ); // scheduler actions when process is created
 void yield(); //relinquish cpu usage to next process
 int block(pid pid);
 int unblock(pid pid);

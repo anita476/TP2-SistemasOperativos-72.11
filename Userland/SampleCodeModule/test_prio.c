@@ -1,14 +1,17 @@
-/* #include <stdint.h>
-#include <stdio.h>
+#include <test_prio.h>
+#include <defs.h>
+#include <stdint.h>
 #include "test_util.h"
+#include <libSysCalls.h>
+
 
 #define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
 #define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
-#define LOWEST 0  // TODO: Change as required
-#define MEDIUM 1  // TODO: Change as required
-#define HIGHEST 2 // TODO: Change as required
+#define LOWEST 1  // TODO: Change as required
+#define MEDIUM 5  // TODO: Change as required
+#define HIGHEST 10 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
@@ -16,36 +19,41 @@ void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
   char *argv[] = {0};
   uint64_t i;
+  createProcessInfo endlessInfo = {.name = "endless",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) endless_loop_print,
+                                     .argc = 0,
+                                     .argv = (const char *const *) argv};
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    pids[i] = my_create_process("endless_loop_print", 0, argv);
+    pids[i] = createProcess(&endlessInfo);
 
   bussy_wait(WAIT);
-  printf("\nCHANGING PRIORITIES...\n");
+  print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_nice(pids[i], prio[i]);
+    setPriority(pids[i], prio[i]);
 
   bussy_wait(WAIT);
-  printf("\nBLOCKING...\n");
+  print("\nBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_block(pids[i]);
+    block(pids[i]);
 
-  printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
-
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_nice(pids[i], MEDIUM);
-
-  printf("UNBLOCKING...\n");
+  print("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_unblock(pids[i]);
+    setPriority(pids[i], MEDIUM);
+
+  print("UNBLOCKING...\n");
+
+  for (i = 0; i < TOTAL_PROCESSES; i++)
+    unblock(pids[i]);
 
   bussy_wait(WAIT);
-  printf("\nKILLING...\n");
+  print("\nKILLING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_kill(pids[i]);
+    kill(pids[i]);
 }
- */

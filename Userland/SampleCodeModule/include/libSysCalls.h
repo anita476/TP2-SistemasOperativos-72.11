@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <unistd.h>
+#include <defs.h>
 
 uint64_t readBuffer(char* buffer, uint64_t length);
 
@@ -33,3 +34,13 @@ void setCursor(uint64_t posx, uint64_t line);
 void * malloc(size_t bytes);
 
 void free(void * ptr);
+
+pid createProcess(createProcessInfo * info);
+pid getpid();
+int kill(pid pid);
+int block(pid pid);
+int unblock(pid pid);
+void yield();
+int setPriority(pid pid, priority priority);
+int listProcessesInfo(ProcessInfo * processes, int max_proc);
+void exit_process();

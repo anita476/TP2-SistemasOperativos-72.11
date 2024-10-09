@@ -16,6 +16,7 @@
 #include <scheduler.h>
 #include <test_util.h>
 #include <test_processes.h>
+#include <test_prio.h>
 
 extern void haltcpu();
 extern void printtest();
@@ -118,8 +119,11 @@ int main() {
 			print("Process is not in foreground\n");
 		}
 	} 
-	char * argv2[1] = {{"5"}};
-	int n = test_processes(1, argv2);
+	//char * argv2[1] = {{"5"}};
+	//int n = test_processes(1, argv2);
+	int n = 0;
+	test_prio();
+
 	if(n != 0 ){
 		print("Problem with test\n");
 	}

@@ -1,3 +1,4 @@
+#include <test_prio.h>
 #include <stdint.h>
 #include <videoDriver.h>
 #include "test_util.h"
@@ -8,9 +9,9 @@
 #define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
-#define LOWEST 0  // TODO: Change as required
-#define MEDIUM 1  // TODO: Change as required
-#define HIGHEST 2 // TODO: Change as required
+#define LOWEST 1  // TODO: Change as required
+#define MEDIUM 5  // TODO: Change as required
+#define HIGHEST 10 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
@@ -23,16 +24,16 @@ void test_prio() {
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
-                                     .argv = (const char *const *) argvAux};
+                                     .argv = (const char *const *) argv};
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    pids[i] = my_create_process("endless_loop_print", 0, argv);
+    pids[i] = createProcess(&endlessInfo);
 
   bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    my_nice(pids[i], prio[i]);
+    setPriority(pids[i], prio[i]);
 
   bussy_wait(WAIT);
   print("\nBLOCKING...\n");
@@ -43,7 +44,7 @@ void test_prio() {
   print("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    block(pids[i], MEDIUM);
+    setPriority(pids[i], MEDIUM);
 
   print("UNBLOCKING...\n");
 

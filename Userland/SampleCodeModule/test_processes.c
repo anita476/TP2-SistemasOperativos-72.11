@@ -32,6 +32,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   p_rq p_rqs[max_processes];
 
   while (1) {
+    print("Starting loop\n");
     createProcessInfo loopInfo = {.name = "endless_loop",
                                   .fg_flag = 0,
                                   .priority = DEFAULT_PRIORITY,
@@ -43,11 +44,6 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
     // Create max_processes processes
     for (rq = 0; rq < max_processes; rq++) {
       p_rqs[rq].pid = createProcess(&loopInfo);
-      char buffer[10];
-      itoa(p_rqs[rq].pid,buffer,10);
-      print("PID IS: ");
-      print(buffer);
-      print("\n");
       if (p_rqs[rq].pid == -1) {
         print("test_processes: ERROR creating process\n");
         return -1;
@@ -57,10 +53,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
       }
     }
     
-    itoa(alive,buffer2,10);
-    print("Amount of alive: ");
-    print(buffer2);
-    print("\n");
+
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0) {
 
@@ -76,10 +69,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
               }
               p_rqs[rq].state = KILLED;
               alive--;
-              itoa(alive,buffer2,10);
-              print("Alive now:");
-              print(buffer2);
-              print("\n");
+
             }
             break;
 
@@ -87,10 +77,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
             if (p_rqs[rq].state == RUNNING) {
               if (block(p_rqs[rq].pid) != 0) {
                 print("test_processes: ERROR blocking process\n");
-                itoa(p_rqs[rq].pid,buffer2,10);
-                print("Process block: ");
-                print(buffer2);
-                print("\n");
+
                 return -1;
               }
               p_rqs[rq].state = BLOCKED;
@@ -110,8 +97,10 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
        
       }
     }
+    print("Loop done\n");
     
   }
+
   
 }
  

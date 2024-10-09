@@ -14,11 +14,7 @@
 #include <betterCallcaOS.h>
 #include <processes.h>
 #include <scheduler.h>
-#include <test_util.h>
-#include <test_processes.h>
-#include <test_prio.h>
 
-extern void haltcpu();
 extern void printtest();
 extern void _cli();
 extern void _sti();
@@ -84,60 +80,7 @@ int main() {
 	load_IDT();
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	_sti();
-	//welcomeSequence();
-	const char * const argv[1] = {"Hello"};
-	createProcessInfo pci = {.name = "process",
-                             .start = (ProcessStart) endlessLoop,
-                             .fg_flag = 1,
-                             .priority = FOREGROUND,
-                             .argc = 1,
-                             .argv = argv};
-	pid pid = createProcess(&pci);
-
-	if(pid >= 0){
-		print("Succesful process creation\n");
-		int i = setPriority(pid,7);
-		if(i !=0){
-			print("Set priority\n");
-		}
-
-
-
-	}
-	else{
-		print("Unsuccesful process creation\n");
-	}
-	if(sendToBackground(pid)){
-		print("Process sent to background\n");
-		if(isForeground(pid)){
-			print("Process didnt remain in background\n");
-		}
-	}
-	if(bringToForeground(pid)){
-		print("Process brought to foregorund\n");
-		if(!isForeground(pid)){
-			print("Process is not in foreground\n");
-		}
-	} 
-	//char * argv2[1] = {{"5"}};
-	//int n = test_processes(1, argv2);
-	int n = 0;
-	test_prio();
-
-	if(n != 0 ){
-		print("Problem with test\n");
-	}
-	 int k = kill(pid);
-
-	if(k!=0){
-		print("Unsuccesful process kill\n");
-	}
-	else {
-		print("Succesfull process kill\n");
-	}
- 
-
-
+	welcomeSequence();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

@@ -165,7 +165,8 @@ int isForeground(pid pid){
 }
 
 int listProcessesInfo(ProcessInfo * processes, int max_processes){
-    
+    // not implemented yet
+    return 0;
 }
 
 

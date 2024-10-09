@@ -32,29 +32,11 @@ extern uint16_t getSeconds();
 // syscallHandler:	RDI RSI RDX R10 R8  RAX
 // params in C are:	RDI RSI RDX RCX R8  R9
 
-/* Lets use the linux syscall codes for read and write
-0 - read (whole buffer)
-1 - write (whole buffer) ¿? esto estará bien ?
-2 - time
-3 - elapsed millis
-4 - get height char
-5 - get width char
-6 - clear line
-7 - clear screen
-8 - put pixel
-9 - draw rect
-10 - scale up 
-11 - scale down 
-12 - make sound 
-13 - get height pixels
-14 - get width pixels
-15 - get pixel at 
-16 - get max lines
-17 - set cursor line
-18 - get registers
-35 - wait (copying linux system call nanosleep)
-36 - set cursor
-*/ 
+
+void exit_process(){
+    kill( getpid() );
+    yield();
+}
 
 uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
     if (fileDescriptor != STDIN) return 0;
@@ -233,6 +215,35 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi , uint64_t rdx 
             return (uint64_t)malloc(rdi);
         case 21:
             free((void *)rdi);
+            break;
+        case 22: 
+        /* createprocess */
+            return (uint64_t) createProcess((void*)rdi);
+        case 23:
+        /*getpid*/
+            return (uint64_t) getpid();
+        case 24:
+        /*kill*/
+            return (uint64_t) kill(rdi);
+        case 25:
+        /* block */
+            return (uint64_t) block(rdi);
+        case 26:
+        /* unblock */
+            return (uint64_t) unblock(rdi);
+        case 27:
+        /* yield */
+            yield();
+            break;
+        case 28:
+        /* change priority */
+            return setPriority(rdi, rsi);
+        case 29:
+        /* get all proceses  */
+            return listProcessesInfo((void *)rdi, rsi);
+        case 30: 
+        /* exit_process */
+            exit_process();
             break;
         case 35:
             wait(rdi);

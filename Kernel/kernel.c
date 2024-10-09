@@ -13,6 +13,9 @@
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
 #include <processes.h>
+#include <scheduler.h>
+#include <test_util.h>
+#include <test_processes.h>
 
 extern void haltcpu();
 extern void printtest();
@@ -92,6 +95,13 @@ int main() {
 
 	if(pid >= 0){
 		print("Succesful process creation\n");
+		int i = setPriority(pid,7);
+		if(i !=0){
+			print("Set priority\n");
+		}
+
+
+
 	}
 	else{
 		print("Unsuccesful process creation\n");
@@ -107,9 +117,13 @@ int main() {
 		if(!isForeground(pid)){
 			print("Process is not in foreground\n");
 		}
+	} 
+	char * argv2[1] = {{"5"}};
+	int n = test_processes(1, argv2);
+	if(n != 0 ){
+		print("Problem with test\n");
 	}
-	
-	int k = kill(pid);
+	 int k = kill(pid);
 
 	if(k!=0){
 		print("Unsuccesful process kill\n");
@@ -117,6 +131,9 @@ int main() {
 	else {
 		print("Succesfull process kill\n");
 	}
+ 
+
+
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

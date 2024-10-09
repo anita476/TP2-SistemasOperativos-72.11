@@ -9,7 +9,7 @@ typedef long ALIGN;
 /* Kernighan section 8.7*/
 
 
-#define BLOCKSIZE sizeof(UHeader) */
+#define BLOCKSIZE sizeof(UHeader) 
 
 /*
     @brief Initializes totalSize bytes, starting in startHeapAdress

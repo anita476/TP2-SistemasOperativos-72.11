@@ -10,6 +10,8 @@
 #include <font.h>
 #include <memoryManagement.h>
 #include <lib.h>
+#include <processes.h>
+#include <scheduler.h>
 
 #include <syscallHandler.h>
 

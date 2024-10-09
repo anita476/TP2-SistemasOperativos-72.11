@@ -1,5 +1,6 @@
 #include <processes.h>
 #include <videoDriver.h>
+#include <scheduler.h>
 
 static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS **pr);
@@ -32,9 +33,6 @@ pid createProcess(createProcessInfo * info){
     if( stackEnd == NULL){
         print("Could not allocate stackEnd\n");
         return -1;
-    }
-    else{
-        
     }
 
     if( (nameCopy = malloc(strlen(info->name)+1)) == NULL){
@@ -84,7 +82,7 @@ pid createProcess(createProcessInfo * info){
     process->argc = info->argc;
 
     // call scheduler so that it adds the process to its queue
-
+    processWasCreated(pid,info->argc,info->argv,info->priority, info->start,process->stackStart);
     if(process->name == NULL){
         print("NAME POINTER IS NULL\n");
     }
@@ -117,18 +115,23 @@ int kill(pid pid){
     }
     
      // free all process memory -
-     for (int i = 0; i < process->memoryCount; i++){
+    for (int i = 0; i < process->memoryCount; i++){
         // this prints "pointer is null" -> its correct , process hasnt assigned memory lel
         free(process->memory[i]);
     } 
     free(process->memory); 
+    //print("Something went wrong\n");
 
     //call scheduler to take it out of queue
+    processWasKilled(pid);
 
     for (int i = 0; i < process->argc; i++) {
         free(process->argv[i]);
+        
     }
-    free(process->argv); 
+    //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
+    //free(process->argv); 
+
     free(process->stackEnd);
     free(process->name);
     memset(process, 0, sizeof(ProcessS));

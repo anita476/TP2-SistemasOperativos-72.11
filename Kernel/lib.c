@@ -1,7 +1,9 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <stdint.h>
+#include <lib.h>
+
+
 
 void * memset(void * destination, int32_t c, uint64_t length) {
 	uint8_t chr = (uint8_t)c;
@@ -76,3 +78,19 @@ void intToStr(int num, char* str, int base) {
         end--;
     }
 }
+
+size_t strlen(const char *str) {
+    size_t l;
+    for (l = 0; *str != 0; str++, l++)
+        ;
+    return l;
+}
+
+char * strcpy(char *dst, const char *src) {
+    char *w;
+    for (w = dst; *src != '\0'; *(w++) = *(src++))
+        ;
+    *w = '\0';
+    return dst;
+}
+

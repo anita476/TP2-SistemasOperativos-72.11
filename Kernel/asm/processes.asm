@@ -1,4 +1,5 @@
-GLOBAL processStackInit
+GLOBAL createProcessStack
+GLOBAL start
 
 start:
     call rdx

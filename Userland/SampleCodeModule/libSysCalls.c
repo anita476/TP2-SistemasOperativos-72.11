@@ -81,3 +81,39 @@ void * malloc(size_t bytes){
 void free(void * ptr){
     syscall(21, (uint64_t)ptr, 0,0,0,0);
 }
+
+pid createProcess(createProcessInfo * info){
+    return (pid) syscall(22,(uint64_t)info,0,0,0,0);
+}
+
+
+pid getpid(){
+    return (pid) syscall(23,0,0,0,0,0);
+}
+
+int kill(pid pid){
+    return syscall(24,(uint64_t)pid,0,0,0,0);
+}
+
+int block(pid pid){
+    return syscall(25,(uint64_t)pid,0,0,0,0);
+}
+
+int unblock(pid pid){
+    return syscall(26,(uint64_t) pid, 0,0,0,0);
+}
+
+void yield(){
+    syscall(27,0,0,0,0,0);
+}
+int setPriority(pid pid, priority priority){
+    return syscall(28,(uint64_t)pid, (uint64_t)priority,0,0,0);
+}
+
+int listProcessesInfo(ProcessInfo * processes, int max_proc){
+    return syscall(29,(uint64_t)processes, (uint64_t) max_proc,0,0,0);
+}
+
+void exit_process(){
+    syscall(30,0,0,0,0,0);
+}

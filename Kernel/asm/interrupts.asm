@@ -2,6 +2,7 @@ GLOBAL _cli
 GLOBAL _sti
 GLOBAL _hlt
 GLOBAL haltcpu
+GLOBAL int81
 
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
@@ -228,6 +229,10 @@ _int80Handler:
 haltcpu:
 	cli
 	hlt
+	ret
+
+int81:
+	int 81h
 	ret
 
 SECTION .bss

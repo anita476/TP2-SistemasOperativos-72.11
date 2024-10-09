@@ -12,9 +12,8 @@
 #include <time.h>
 #include <syscallHandler.h>
 #include <betterCallcaOS.h>
-#include <test_util.h>
-#include <memoryManagement.h>
-#include <test_mm.h>
+#include <processes.h>
+#include <scheduler.h>
 
 extern void printtest();
 extern void _cli();
@@ -70,6 +69,10 @@ void welcomeSequence() {
 	wait(1000);
 	scale_down();
 	clear_screen();
+}
+void endlessLoop(int argc, char *argv[]) {
+    while (1)
+        ;
 }
 
 int main() {

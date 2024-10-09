@@ -5,18 +5,11 @@
 
 typedef long ALIGN;
 
+
 /* Kernighan section 8.7*/
-union header {
-    struct {
-        union header * ptr;
-        uint64_t size;
-    } s;
-    ALIGN x;
-};
 
-typedef union header Header;
 
-#define BLOCKSIZE sizeof(Header)
+#define BLOCKSIZE sizeof(UHeader) 
 
 /*
     @brief Initializes totalSize bytes, starting in startHeapAdress

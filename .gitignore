@@ -15,3 +15,4 @@
 strace_out
 report.tasks
 PVS-Studio.log
+log.txt

@@ -7,11 +7,13 @@
 #include "eliminator.h"
 #include "music.h"
 #include "test_mm.h"
+#include "test_prio.h"
+#include "test_processes.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 10
+#define COMMANDS_SIZE 12
 #define MAXMEMORY  (0x2000000 - 0xF00000) 
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -51,6 +53,15 @@ void executeCommand(char * str) {
             if(test_mm(1,argv)==(-1)){
                   print("Memory test failed\n");
             } 
+            break;
+      case 10:
+            char * argv2[1] = {"8"};
+            if(test_processes(1,argv2)==(-1)){
+                  print("Process test failed\n");
+            }
+            break;
+      case 11:
+            test_prio();
             break;
       default: print("Unrecognized command\n");
                errorSound();
@@ -93,6 +104,8 @@ void shell() {
       print("\n * scaleup: Increment the text size (max: 4, default: 1)");
       print("\n * time: Display the current time");
       print("\n * testmm: Run a memory management test in an endless loop");
+      print("\n * testprio : Run a priority test");
+      print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
       insertCommand();
 }

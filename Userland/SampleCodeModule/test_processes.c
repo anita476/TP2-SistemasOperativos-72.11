@@ -23,7 +23,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   if ((max_processes = satoi(argv[0])) <= 0){
     return -1;
   }
-  char * buffer2[10];
+  char buffer2[10];
   itoa(max_processes,buffer2,10);
   print("Max processes: ");
   print(buffer2);

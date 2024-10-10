@@ -8,7 +8,7 @@
 
 struct block {
     size_t size;          // Size of the block
-    struct block *next;   // Pointer to the next free block
+    struct block * next;  // Pointer to the next free block
 };
 
 static struct block *freeList; 
@@ -21,7 +21,7 @@ void init_memory_manager(void * startHeapAddress,size_t totalSize) {
 }
 
 void *malloc(size_t bytes) {
-    struct block *current, *previous;
+    struct block * current, * previous;
     bytes += BLOCK_SIZE; // Account for block header
 
     // Search for block
@@ -30,7 +30,7 @@ void *malloc(size_t bytes) {
         if (current->size >= bytes) { // Found a big enough block
             if (current->size > bytes + BLOCK_SIZE) {
                 // Split the block
-                struct block *newBlock = (struct block *)((char *)current + bytes);
+                struct block *newBlock = (struct block *)((char *) current + bytes);
                 newBlock->size = current->size - bytes;
                 newBlock->next = current->next;
                 current->size = bytes;
@@ -42,21 +42,20 @@ void *malloc(size_t bytes) {
             } else {
                 previous->next = current->next;
             }
-            return (void *)((char *)current + BLOCK_SIZE); // Return memory address
+            return (void *) ((char *) current + BLOCK_SIZE); // Return memory address
         }
         previous = current;
     }
-
     return NULL; // No suitable block found
 }
 
 // Free memory
-void free(void *ptr) {
-    if(ptr == NULL){
+void free(void * ptr) {
+    if(ptr == NULL) {
         //print("Pointer is null\n");
         return;
     }
-    struct block *blockToFree = (struct block *)((char *)ptr - BLOCK_SIZE);
+    struct block * blockToFree = (struct block *)((char *) ptr - BLOCK_SIZE);
     blockToFree->next = freeList;
     freeList = blockToFree; // Add to the front of the free list
 }

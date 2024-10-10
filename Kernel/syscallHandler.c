@@ -32,9 +32,8 @@ extern uint16_t getSeconds();
 // syscallHandler:	RDI RSI RDX R10 R8  RAX
 // params in C are:	RDI RSI RDX RCX R8  R9
 
-
 void exit_process(){
-    kill( getpid() );
+    kill(getpid());
     yield();
 }
 
@@ -166,7 +165,7 @@ void set_cursor(uint64_t posx, uint64_t line) {
     setCursor(posx, lineToHeight(line));
 }
 
-uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi , uint64_t rdx , uint64_t r10, uint64_t r8) {
+uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
     switch (rax) {
         case 0:
             return read(rdi, rsi , rdx);
@@ -218,7 +217,7 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi , uint64_t rdx 
             break;
         case 22: 
         /* createprocess */
-            return (uint64_t) createProcess((void*)rdi);
+            return (uint64_t) createProcess((void *) rdi);
         case 23:
         /*getpid*/
             return (uint64_t) getpid();
@@ -240,7 +239,7 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi , uint64_t rdx 
             return setPriority(rdi, rsi);
         case 29:
         /* get all proceses  */
-            return listProcessesInfo((void *)rdi, rsi);
+            return listProcessesInfo((void *) rdi, rsi);
         case 30: 
         /* exit_process */
             exit_process();

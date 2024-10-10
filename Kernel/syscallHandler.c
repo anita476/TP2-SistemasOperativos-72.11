@@ -170,7 +170,7 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
         case 0:
             return read(rdi, rsi , rdx);
         case 1:
-            return write(rdi,rsi,rdx);
+            return write(rdi, rsi, rdx);
         case 2:
             return get_current_time();
         case 3:
@@ -186,21 +186,21 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
             clear_screen();
             break;
         case 8:
-            return put_pixel(rdi,rdi,rdx);
+            return put_pixel(rdi, rdi, rdx);
         case 9:
-            return draw_rect(rdi,rsi,rdx,r10,r8);
+            return draw_rect(rdi, rsi, rdx, r10, r8);
         case 10:
             return scale_up();
         case 11:
             return scale_down();
         case 12:
-            return make_sound(rdi,rsi,rdx);
+            return make_sound(rdi, rsi, rdx);
         case 13:
             return get_height_pix();
         case 14:
             return get_width_pix();
         case 15:
-            return get_pix(rdi,rsi);
+            return get_pix(rdi, rsi);
         case 16:
             return get_max_lines();
         case 17: 

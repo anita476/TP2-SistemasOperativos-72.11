@@ -62,7 +62,7 @@ void welcomeSequence() {
 	scale_up();
 	setCursorLine(8);
 	print("                        Welcome to caOS!\n");
-	putSaul(450,300,125,125);
+	putSaul(450, 300, 125, 125);
 	playBetterCallSaul();
 	setCursorLine(23);
 	print(" Starting...");
@@ -71,8 +71,7 @@ void welcomeSequence() {
 	clear_screen();
 }
 void endlessLoop(int argc, char *argv[]) {
-    while (1)
-        ;
+    while (1);
 }
 
 int main() {

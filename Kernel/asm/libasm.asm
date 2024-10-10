@@ -48,7 +48,7 @@ getSeconds:
     mov al, 0x0B 
  	out 70h, al
     in al, 71h
-    or al,4 
+    or al, 4 
     out 71h, al 
 
     ;lectura de los segundos
@@ -66,7 +66,7 @@ getMinutes:
     mov al, 0x0B 
     out 70h, al
     in al, 71h
-    or al,4 
+    or al, 4 
     out 71h, al 
 
     ;lectura de los minutos 
@@ -84,7 +84,7 @@ getHours:
     mov al, 0x0B 
     out 70h, al
     in al, 71h
-	or al,4 
+	or al, 4 
     out 71h, al 
 
     ;lectura de los minutos

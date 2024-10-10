@@ -24,8 +24,8 @@ uint64_t height;
 uint32_t p1Color = 0xFF0000;
 uint32_t p2Color = 0x00FF00;
 
-int64_t p1Coord[2] = {0,0};    // pxCoord is a coordinate to center
-int64_t p2Coord[2] = {0,0};
+int64_t p1Coord[2] = {0, 0};    // pxCoord is a coordinate to center
+int64_t p2Coord[2] = {0, 0};
 
 void changeDir(char c) {
     switch (c) {

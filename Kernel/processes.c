@@ -3,10 +3,10 @@
 #include <scheduler.h>
 
 static int nameValidation(const char * name);
-static int findPID(pid pid, ProcessS **pr);
+static int findPID(pid pid, ProcessS ** pr);
 /* MISSING MEMORY STATE COUUNTERSSS */
 
-static ProcessS processArr[MAX_PROCESSES]; //we store all of our proccesses info here
+static ProcessS processArr[MAX_PROCESSES]; // We store all of our proccesses info here
 int lastPID = 0;
 
 pid createProcess(createProcessInfo * info) {
@@ -21,9 +21,9 @@ pid createProcess(createProcessInfo * info) {
         return -1;
     }
 
-    void *stackEnd = NULL;
-    char *nameCopy = NULL;
-    char **argvCopy = NULL;
+    void * stackEnd = NULL;
+    char * nameCopy = NULL;
+    char ** argvCopy = NULL;
 
     // Allocate space for each field 
     // Maybe later design specific error messages for each case 
@@ -86,7 +86,7 @@ pid createProcess(createProcessInfo * info) {
         print("NAME POINTER IS NULL\n");
     }
 
-    lastPID ++;
+    lastPID++;
     return pid;
 }
 
@@ -114,7 +114,7 @@ int kill(pid pid) {
     
     // Free all process memory
     for (int i = 0; i < process->memoryCount; i++) {
-        // This prints "pointer is null" -> its correct , process hasnt assigned memory lel
+        // This prints "pointer is null" -> its correct, process hasnt assigned memory lel
         free(process->memory[i]);
     } 
     free(process->memory); 
@@ -160,7 +160,7 @@ int isForeground(pid pid) {
 }
 
 int listProcessesInfo(ProcessInfo * processes, int max_processes) {
-    // not implemented yet
+    // Not implemented yet
     return 0;
 }
 

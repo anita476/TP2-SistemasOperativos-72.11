@@ -82,7 +82,7 @@ void free(void * ptr) {
     syscall(21, (uint64_t)ptr, 0, 0, 0, 0);
 }
 
-pid createProcess(createProcessInfo * info){
+pid createProcess(createProcessInfo * info) {
     return (pid) syscall(22, (uint64_t) info, 0, 0, 0, 0);
 }
 

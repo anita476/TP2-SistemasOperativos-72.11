@@ -32,7 +32,7 @@ extern uint16_t getSeconds();
 // syscallHandler:	RDI RSI RDX R10 R8  RAX
 // params in C are:	RDI RSI RDX RCX R8  R9
 
-void exit_process(){
+void exit_process() {
     kill(getpid());
     yield();
 }

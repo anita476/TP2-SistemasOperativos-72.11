@@ -135,7 +135,7 @@ const uint64_t saul [] = {
 };
 
 
-void putSaul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage){
+void putSaul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage) {
     if (xStart + widthImage > getWidthPixels() || yStart + heightImage > getHeightPixels()) return;
 
     for (uint64_t i = 0; i < widthImage; i++) {

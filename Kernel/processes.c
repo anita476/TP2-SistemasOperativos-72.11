@@ -1,5 +1,5 @@
-#include <processes.h>
 #include <videoDriver.h>
+#include <processes.h>
 #include <scheduler.h>
 
 static int nameValidation(const char * name);
@@ -9,43 +9,43 @@ static int findPID(pid pid, ProcessS **pr);
 static ProcessS processArr[MAX_PROCESSES]; //we store all of our proccesses info here
 int lastPID = 0;
 
-pid createProcess(createProcessInfo * info){
+pid createProcess(createProcessInfo * info) {
     pid pid = 0;
-    //find first empty slot
-    for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++)
-        ;
-    if(pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)){
-        if(pid>= MAX_PROCESSES){
-        }
-        if(info->argc<0){
-        }
-        if(!nameValidation(info->name)){
-        }
+    // Find first empty slot
+    for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++);
+    
+    if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
+        if (pid >= MAX_PROCESSES) { }
+        if (info->argc < 0) { }
+        if (!nameValidation(info->name)) { }
         return -1;
     }
+
     void *stackEnd = NULL;
     char *nameCopy = NULL;
     char **argvCopy = NULL;
 
-    //i allocate space for each field 
-    //maybe later design specific error messages for each case 
+    // Allocate space for each field 
+    // Maybe later design specific error messages for each case 
     stackEnd = malloc(STACK_SIZE);
-    if( stackEnd == NULL){
+    if (stackEnd == NULL) {
         print("Could not allocate stackEnd\n");
         return -1;
     }
 
-    if( (nameCopy = malloc(strlen(info->name)+1)) == NULL){
+    if ((nameCopy = malloc(strlen(info->name) + 1)) == NULL) {
         print("Could not allocate for name\n");
         return -1;
     }
-    if(info->argc != 0 && ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL)){
+
+    if (info->argc != 0 && ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL)) {
         print("Could not malloc for argv\n");
         free(stackEnd);
         free(nameCopy);
         return -1;
     }
-    // copy arguments 
+
+    // Copy arguments 
     for (int i = 0; i < info->argc; ++i) {
         size_t length = strlen(info->argv[i]) + 1;
 
@@ -64,8 +64,8 @@ pid createProcess(createProcessInfo * info){
         memcpy(argvCopy[i], info->argv[i], length);
     }
 
-    strcpy(nameCopy,info->name);
-    if(nameCopy == NULL){
+    strcpy(nameCopy, info->name);
+    if (nameCopy == NULL) {
         print("NAME COPY IS NULL\n");
     }
 
@@ -74,16 +74,15 @@ pid createProcess(createProcessInfo * info){
     memset(process, 0, sizeof(ProcessS));
 
     process->stackEnd = stackEnd;
-
     process->stackStart = stackEnd + STACK_SIZE;
     process->fg_flag = info->fg_flag;
     process->name = nameCopy;
     process->argv = argvCopy;
     process->argc = info->argc;
 
-    // call scheduler so that it adds the process to its queue
-    processWasCreated(pid,info->argc,info->argv,info->priority, info->start,process->stackStart);
-    if(process->name == NULL){
+    // Call scheduler so that it adds the process to its queue
+    processWasCreated(pid, info->argc, info->argv, info->priority, info->start, process->stackStart);
+    if (process->name == NULL) {
         print("NAME POINTER IS NULL\n");
     }
 
@@ -91,43 +90,41 @@ pid createProcess(createProcessInfo * info){
     return pid;
 }
 
-static int nameValidation(const char * name){
-    if(name == NULL){
+static int nameValidation(const char * name) {
+    if (name == NULL) {
         print("Name is null\n");
         return 0;
     }
     int i = 0;
-    for(; i<= MAX_NAME_LENGTH ; i++){
+    for (; i<= MAX_NAME_LENGTH; i++) {
         char c = name[i];
-        if(c == '\0'){
+        if (c == '\0') {
             return 1;
         }
     }
     return 0;
 }
 
-
-int kill(pid pid){
+int kill(pid pid) {
     ProcessS * process;
-    if(!findPID(pid, &process)){
+    if (!findPID(pid, &process)) {
         print("Validation error\n");
         return 1;
     }
     
-     // free all process memory -
-    for (int i = 0; i < process->memoryCount; i++){
-        // this prints "pointer is null" -> its correct , process hasnt assigned memory lel
+    // Free all process memory
+    for (int i = 0; i < process->memoryCount; i++) {
+        // This prints "pointer is null" -> its correct , process hasnt assigned memory lel
         free(process->memory[i]);
     } 
     free(process->memory); 
     //print("Something went wrong\n");
 
-    //call scheduler to take it out of queue
+    // Call scheduler to take it out of queue
     processWasKilled(pid);
 
     for (int i = 0; i < process->argc; i++) {
         free(process->argv[i]);
-        
     }
     //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
     //free(process->argv); 
@@ -136,44 +133,41 @@ int kill(pid pid){
     free(process->name);
     memset(process, 0, sizeof(ProcessS));
     return 0;
-
 }
 
-int sendToBackground(pid pid){
+int sendToBackground(pid pid) {
     ProcessS * p;
-    if(!findPID(pid, &p)){
+    if (!findPID(pid, &p)) {
         return -1;
     }
     return !(p->fg_flag = BACKGROUND);
 }
 
-int bringToForeground(pid pid){
+int bringToForeground(pid pid) {
     ProcessS * p;
-    if(!findPID(pid, &p)){
+    if (!findPID(pid, &p)) {
         return -1;
     }
     return (p->fg_flag = FOREGROUND);
 }
 
-
-int isForeground(pid pid){
+int isForeground(pid pid) {
     ProcessS * p;
-    if(!findPID(pid, &p)){
+    if (!findPID(pid, &p)) {
         return -1;
     }
     return p->fg_flag;
 }
 
-int listProcessesInfo(ProcessInfo * processes, int max_processes){
+int listProcessesInfo(ProcessInfo * processes, int max_processes) {
     // not implemented yet
     return 0;
 }
 
-
 static int findPID(pid pid, ProcessS **pr) {
-    if (pid < 0 || pid >= MAX_PROCESSES || processArr[pid].stackEnd == NULL)
+    if (pid < 0 || pid >= MAX_PROCESSES || processArr[pid].stackEnd == NULL) {
         return 0;
-
+    }
     *pr = &processArr[pid];
     return 1;
 }

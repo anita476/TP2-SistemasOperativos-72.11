@@ -87,13 +87,9 @@ pid createProcess(createProcessInfo * info){
         print("NAME POINTER IS NULL\n");
     }
 
-<<<<<<< Updated upstream
-    lastPID ++;
-=======
     lastPID++;
         
 
->>>>>>> Stashed changes
     return pid;
 }
 

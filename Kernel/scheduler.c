@@ -15,7 +15,7 @@ static pid currentPID;
 static pid nextPID;
 static uint8_t currentQuantum;
 
-
+extern void haltcpu();
 
 static void * mainRSP;
 
@@ -73,6 +73,8 @@ void * switchP(void *cRSP) {
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
+                        //haltcpu();
+
         }
     }
     if(processTable[nextPID].processStatus == READY && (processTable[nextPID].currentRSP != NULL)){

@@ -80,9 +80,9 @@ int main() {
 	load_IDT();
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
-	welcomeSequence();
-	_sti();
 	
+	_sti();
+	welcomeSequence();
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

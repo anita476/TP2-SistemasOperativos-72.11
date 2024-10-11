@@ -10,6 +10,7 @@ static ProcessS processArr[MAX_PROCESSES]; //we store all of our proccesses info
 int lastPID = 0;
 
 pid createProcess(createProcessInfo * info){
+    print("Helllo i creaated\n");
     pid pid = 0;
     //find first empty slot
     for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++)

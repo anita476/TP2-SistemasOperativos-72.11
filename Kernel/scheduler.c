@@ -32,6 +32,7 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     processTable[pid].processStatus = READY;
     processTable[pid].priority = priority;
     processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
+    print("hello processWasCreated\n");
     return 0;
 }
 
@@ -60,7 +61,6 @@ void yield(){
 }
 
 void * switchP(void *cRSP) {
-    
     // If im in kernel:
     if (currentPID == PID_KERNEL) {
         mainRSP = cRSP;
@@ -80,6 +80,7 @@ void * switchP(void *cRSP) {
     if(processTable[nextPID].processStatus == READY && (processTable[nextPID].currentRSP != NULL)){
         currentPID = nextPID;
         nextPID = NO_PROC;
+        print("More time?\n");
         //assign how much more time based on process priority
         currentQuantum = getQuantum(currentPID);
     }
@@ -93,9 +94,11 @@ void * switchP(void *cRSP) {
     }
     else{
         //keep running the same procs
+        print("Keep running\n");
         currentQuantum -= 1;
     }
     processTable[currentPID].processStatus = RUNNING;
+    print("Current pid: ");
     char buf[10];
     intToStr(currentPID, buf,10);
     print(buf);

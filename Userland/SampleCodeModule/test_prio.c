@@ -6,7 +6,7 @@
 
 
 #define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
+#define WAIT 1000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
 #define LOWEST 1  // TODO: Change as required
@@ -31,8 +31,17 @@ void test_prio() {
   bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    setPriority(pids[i], prio[i]);
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+    int n = setPriority(pids[i], prio[i]);
+    if(n == 0){
+      print("Changed priority\n");
+    }
+    else{
+      print("Couldnt change prio\n");
+    }
+  }
+
+
 
   bussy_wait(WAIT);
   print("\nBLOCKING...\n");

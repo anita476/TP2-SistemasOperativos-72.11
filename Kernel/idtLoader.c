@@ -33,6 +33,8 @@ void load_IDT() {
   setup_IDT_entry (0x21, (uint64_t)&_irq01Handler);
   //Syscalls interruption
   setup_IDT_entry (0x80, (uint64_t)&_int80Handler);
+  // scheduler
+  setup_IDT_entry(0x81, (uint64_t) &_schedule);
 	// Keyboard and timer interruptions enabled
 	picMasterMask(0xFC); 
 	picSlaveMask(0xFF);

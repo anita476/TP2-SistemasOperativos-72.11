@@ -28,7 +28,6 @@ void test_prio() {
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     pids[i] = createProcess(&endlessInfo);
-
   bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
 

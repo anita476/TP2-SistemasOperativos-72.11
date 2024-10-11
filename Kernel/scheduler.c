@@ -1,6 +1,10 @@
 #include <scheduler.h>
+<<<<<<< Updated upstream
 #include <videoDriver.h>
 
+=======
+#include <lib.h>
+>>>>>>> Stashed changes
 
 int getState(pid, PCB ** pcb);
 int getQuantum(pid pid);
@@ -60,12 +64,25 @@ void yield(){
 }
 
 void * switchP(void *cRSP) {
+<<<<<<< Updated upstream
     //if im in kernel:
     if( currentPID == PID_KERNEL ){
         mainRSP = cRSP;
     }
     //if im in a "normal process"
     if(currentPID >= 0){
+=======
+    
+    // If im in kernel:
+    if (currentPID == PID_KERNEL) {
+        mainRSP = cRSP;
+    }
+
+    // If im in a "normal process"
+    else if (currentPID >= 0) {
+        print("HELLOOOOO\n");
+        //print("Hello\n");
+>>>>>>> Stashed changes
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
@@ -90,6 +107,9 @@ void * switchP(void *cRSP) {
         currentQuantum -= 1;
     }
     processTable[currentPID].processStatus = RUNNING;
+    char buf[10];
+    intToStr(currentPID, buf,10);
+    print(buf);
     return processTable[currentPID].currentRSP;
 }
 

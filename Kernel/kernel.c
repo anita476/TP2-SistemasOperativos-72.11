@@ -15,7 +15,6 @@
 #include <processes.h>
 #include <scheduler.h>
 
-extern void printtest();
 extern void _cli();
 extern void _sti();
 
@@ -57,6 +56,7 @@ void * initializeKernelBinary() {
 	return getStackBase();
 }
 
+
 void welcomeSequence() {
 	for (int i = 0; i < 4; i++) scale_down();
 	scale_up();
@@ -79,8 +79,10 @@ int main() {
 	_cli();
 	load_IDT();
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
-	_sti();
+	init_scheduler();
 	welcomeSequence();
+	_sti();
+	
 	((EntryPoint)sampleCodeModuleAddress)();
 	return 0;
 }

@@ -3,6 +3,7 @@ GLOBAL _sti
 GLOBAL _hlt
 GLOBAL haltcpu
 GLOBAL int81
+GLOBAL _schedule
 
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
@@ -22,6 +23,7 @@ EXTERN syscallHandler
 EXTERN irqDispatcher
 
 EXTERN print
+EXTERN switchP
 
 SECTION .text
 
@@ -142,7 +144,20 @@ picSlaveMask:
 
 ; 8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	pushState
+
+	mov rdi, 0
+	call irqDispatcher
+	
+	mov rdi, rsp
+	call switchP
+	mov rsp, rax
+
+	mov al, 20h
+	out 20h, al
+	
+	popState
+	iretq
 
 ; Keyboard
 _irq01Handler:
@@ -234,6 +249,16 @@ haltcpu:
 int81:
 	int 81h
 	ret
+;no pushing rax
+_schedule: 
+	pushState
+	
+	mov rdi, rsp
+	call switchP
+	mov rsp, rax
+
+	popState
+	iretq
 
 SECTION .bss
     has_regs resb 1; to check whether we have saved or not!

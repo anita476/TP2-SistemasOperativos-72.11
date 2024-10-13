@@ -9,6 +9,7 @@
 #include "test_mm.h"
 #include "test_prio.h"
 #include "test_processes.h"
+#include "test_util.h"
 #define BUFFER_SIZE 1024
 #define COMMANDS_SIZE 12
 #define MAXMEMORY  (0x2000000 - 0xF00000) 
@@ -65,6 +66,13 @@ void executeCommand(char * str) {
             break;
       default: print("Unrecognized command\n");
                errorSound();
+               createProcessInfo info = 	  {.name = "pro",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) endless_loop_print,
+                                     .argc = 0,
+                                     .argv = (const char *const *) NULL};
+	createProcess(&info);
             break;
       }
 }
@@ -88,7 +96,7 @@ void insertCommand() {
       }
       print("\n");
       executeCommand(buffer);
-      insertCommand();
+      //insertCommand();
 }
 
 void shell() {
@@ -107,6 +115,8 @@ void shell() {
       print("\n * testprio : Run a priority test");
       print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
+      while(1){
       insertCommand();
+      }
 }
 

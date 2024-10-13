@@ -17,6 +17,7 @@
 
 extern void _cli();
 extern void _sti();
+extern void _hlt();
 
 extern uint64_t resetMain();
 extern uint64_t show_registers[17];
@@ -55,7 +56,15 @@ void * initializeKernelBinary() {
 	clearBSS(&bss, &endOfKernel - &bss);
 	return getStackBase();
 }
-
+void init_shell(){
+	  createProcessInfo shellInfo = {.name = "shell",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) sampleCodeModuleAddress,
+                                     .argc = 0,
+                                     .argv = (const char *const *) NULL};
+	createProcess(&shellInfo);
+}
 
 void welcomeSequence() {
 	for (int i = 0; i < 4; i++) scale_down();
@@ -71,18 +80,45 @@ void welcomeSequence() {
 	clear_screen();
 }
 void endlessLoop(int argc, char *argv[]) {
-    while (1)
-        ;
+    while (1){
+		print("In endless loop\n");
+		wait(1000);
+	}
+}
+void endlessLoop2(int argc, char *argv[]){
+	while (1){
+		print("In endless loop 2\n");
+		wait(1000);
+	}
 }
 
 int main() {
 	_cli();
 	load_IDT();
+	welcomeSequence();
+	
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
-	
+	//init_shell();
 	_sti();
-	welcomeSequence();
-	((EntryPoint)sampleCodeModuleAddress)();
+	createProcessInfo ifnoLoop = {.name = "loop",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) endlessLoop,
+                                     .argc = 0,
+                                     .argv = (const char *const *) NULL};
+
+	pid n = createProcess(&ifnoLoop);
+	createProcessInfo ifnoLoop2 = {.name = "loop",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) endlessLoop2,
+                                     .argc = 0,
+                                     .argv = (const char *const *) NULL};
+	pid nn = createProcess(&ifnoLoop2);
+ 	while(1){
+		yield();
+		_hlt();
+	} 
 	return 0;
 }

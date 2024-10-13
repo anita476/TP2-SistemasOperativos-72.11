@@ -69,12 +69,13 @@ void endless_loop() {
 }
 
 void endless_loop_print(uint64_t wait) {
-  int64_t pid = getpid();
   print("Hello in loop\n");
+/*   int64_t pid = getpid();
+  
   while (1) {
     char buffer[5];
     itoa(pid,buffer,10);
     print(buffer);
-    //bussy_wait(wait);
-  }
+    bussy_wait(wait);
+  } */
 } 

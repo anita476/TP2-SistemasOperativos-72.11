@@ -5,7 +5,7 @@
 #include <libSysCalls.h>
 
 
-#define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
+#define MINOR_WAIT 10 // TODO: Change this value to prevent a process from flooding the screen
 #define WAIT 1000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
@@ -24,11 +24,11 @@ void test_prio() {
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
-                                     .argv = (const char *const *) argv};
+                                     .argv = NULL};
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     pids[i] = createProcess(&endlessInfo);
-  bussy_wait(WAIT);
+/*  bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
@@ -60,8 +60,8 @@ void test_prio() {
     unblock(pids[i]);
 
   bussy_wait(WAIT);
-  print("\nKILLING...\n");
+  print("\nKILLING...\n"); 
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    kill(pids[i]);
+    kill(pids[i]); */
 }

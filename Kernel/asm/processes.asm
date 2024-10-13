@@ -3,7 +3,7 @@ GLOBAL start
 
 start:
     call rdx
-    mov rax, 0x42
+    mov rax, 30 ; code designated as exit function
     int 80h
 
 createProcessStack:
@@ -33,8 +33,7 @@ createProcessStack:
 	push 0x0F   
 	push 0x10
 
-    mov rax, rsp
-
+    mov rax, rsp ; rsp that a process structure saves
     mov rsp, rbp
     pop rbp
     ret 

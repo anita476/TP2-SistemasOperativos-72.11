@@ -32,6 +32,9 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     processTable[pid].processStatus = READY;
     processTable[pid].priority = priority;
     processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
+    if(processTable[pid].currentRSP == NULL){
+        return 1;
+    }
     print("hello processWasCreated\n");
     return 0;
 }
@@ -63,13 +66,13 @@ void yield(){
 void * switchP(void *cRSP) {
     // If im in kernel:
     if (currentPID == PID_KERNEL) {
+        //print("KERNEL\n");
         mainRSP = cRSP;
     }
 
     // If im in a "normal process"
     else if (currentPID >= 0) {
-        print("HELLOOOOO\n");
-        //print("Hello\n");
+        //print("PID is not kernel\n");
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
@@ -77,10 +80,10 @@ void * switchP(void *cRSP) {
 
         }
     }
-    if(processTable[nextPID].processStatus == READY && (processTable[nextPID].currentRSP != NULL)){
+    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){
         currentPID = nextPID;
         nextPID = NO_PROC;
-        print("More time?\n");
+        //print("More time?\n");
         //assign how much more time based on process priority
         currentQuantum = getQuantum(currentPID);
     }
@@ -94,14 +97,18 @@ void * switchP(void *cRSP) {
     }
     else{
         //keep running the same procs
-        print("Keep running\n");
+        //print("Keep running\n");
         currentQuantum -= 1;
     }
-    processTable[currentPID].processStatus = RUNNING;
-    print("Current pid: ");
+     processTable[currentPID].processStatus = RUNNING;
+/*     print("Current pid: ");
     char buf[10];
     intToStr(currentPID, buf,10);
     print(buf);
+    intToStr(currentQuantum,buf,10);
+    print("Quantum:");
+    print(buf);
+    print("\n");  */
     return processTable[currentPID].currentRSP;
 }
 

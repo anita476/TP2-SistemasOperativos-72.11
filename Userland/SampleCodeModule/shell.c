@@ -12,7 +12,42 @@
 #include "test_util.h"
 #define BUFFER_SIZE 1024
 #define COMMANDS_SIZE 12
-#define MAXMEMORY  (0x2000000 - 0xF00000) 
+#define MAXMEMORY  (0x2000000 - 0xF00000)
+
+extern void haltcpu();
+void * memcpy(void * destination, const void * source, uint64_t length) {
+	/*
+	* memcpy does not support overlapping buffers, so always do it
+	* forwards. (Don't change this without adjusting memmove.)
+	*
+	* For speedy copying, optimize the common case where both pointers
+	* and the length are word-aligned, and copy word-at-a-time instead
+	* of byte-at-a-time. Otherwise, copy by bytes.
+	*
+	* The alignment logic below should be portable. We rely on
+	* the compiler to be reasonably intelligent about optimizing
+	* the divides and modulos out. Fortunately, it is.
+	*/
+	uint64_t i;
+	if ((uint64_t)destination % sizeof(uint32_t) == 0 && (uint64_t)source % sizeof(uint32_t) == 0 && length % sizeof(uint32_t) == 0) {
+		uint32_t *d = (uint32_t *) destination;
+		const uint32_t *s = (const uint32_t *)source;
+		for (i = 0; i < length / sizeof(uint32_t); i++) d[i] = s[i];
+	}
+	else {
+		uint8_t * d = (uint8_t*)destination;
+		const uint8_t * s = (const uint8_t*)source;
+		for (i = 0; i < length; i++) d[i] = s[i];
+	}
+	return destination;
+}
+
+size_t strlen(const char *str) {
+    size_t l;
+    for (l = 0; *str != 0; str++, l++)
+        ;
+    return l;
+}
 
 static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio"};
 
@@ -64,21 +99,54 @@ void executeCommand(char * str) {
       case 11:
             test_prio();
             break;
-      default: print("Unrecognized command\n");
-               errorSound();
-               createProcessInfo info = 	  {.name = "pro",
+      default: //print("Unrecognized command\n");
+               //errorSound();
+                   createProcessInfo endlessInfo = {
+                                                      .name = "endless",
+                                                      .fg_flag = 1,
+                                                      .priority = DEFAULT_PRIORITY,
+                                                      .start = endless_loop_print,
+                                                      .argc = 0,
+                                                      .argv = NULL
+                                                      };
+
+                createProcessInfo *newProcessInfo = malloc(sizeof(createProcessInfo));
+                  if (newProcessInfo == NULL) {
+                  print("Failed to allocate memory");
+                  return 1;
+                  }
+                  size_t nameLength = strlen(endlessInfo.name) + 1; // +1 for the null terminator
+                  newProcessInfo->name = malloc(nameLength);
+                  if (newProcessInfo->name == NULL) {
+                  print("Failed to allocate memory for name");
+                  free(newProcessInfo); // Free previously allocated memory
+                  }
+
+                  // Copy the name using memcpy
+                  memcpy(newProcessInfo->name, endlessInfo.name, nameLength);
+
+                  // Copy the other fields
+                  newProcessInfo->fg_flag = endlessInfo.fg_flag;
+                  newProcessInfo->priority = endlessInfo.priority;
+                  newProcessInfo->start = endlessInfo.start;
+                  newProcessInfo->argc = endlessInfo.argc;
+
+                   // If argv is not NULL, you would need to copy it as well, but it's NULL in this case
+                  newProcessInfo->argv = NULL;
+                  createProcessInfo info = 	  {.name = "pro",
                                      .fg_flag = 1,
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
                                      .argv = (const char *const *) NULL};
-	createProcess(&info);
+	            createProcess(newProcessInfo);
             break;
       }
 }
 
 void insertCommand() {
       print("caOS>");
+     // haltcpu();
       char buffer[BUFFER_SIZE] = {'\0'};
       int bufferIndex = 0;
       char c = 0;
@@ -115,8 +183,11 @@ void shell() {
       print("\n * testprio : Run a priority test");
       print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
-      while(1){
+      test_prio();
+      int i = 0;
+      while(i!= 10){
       insertCommand();
+      i++;
       }
 }
 

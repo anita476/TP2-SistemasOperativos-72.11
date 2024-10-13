@@ -95,13 +95,13 @@ void endlessLoop2(int argc, char *argv[]){
 int main() {
 	_cli();
 	load_IDT();
-	welcomeSequence();
+	//welcomeSequence();
 	
 	init_memory_manager(startHeapAddres,(size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
-	//init_shell();
+	init_shell();
 	_sti();
-	createProcessInfo ifnoLoop = {.name = "loop",
+	/* createProcessInfo ifnoLoop = {.name = "loop",
                                      .fg_flag = 1,
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endlessLoop,
@@ -115,7 +115,7 @@ int main() {
                                      .start = (ProcessStart) endlessLoop2,
                                      .argc = 0,
                                      .argv = (const char *const *) NULL};
-	pid nn = createProcess(&ifnoLoop2);
+	pid nn = createProcess(&ifnoLoop2); */
  	while(1){
 		yield();
 		_hlt();

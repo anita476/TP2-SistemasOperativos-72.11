@@ -2,6 +2,7 @@ GLOBAL syscall
 GLOBAL divzero
 GLOBAL invalidOpCode
 section .text
+GLOBAL haltcpu
 
 divzero:
 	mov rax, 5
@@ -21,3 +22,8 @@ syscall:
 	mov rsp, rbp;
 	pop rbp;
 	ret	
+
+haltcpu:
+	cli
+	hlt
+	ret

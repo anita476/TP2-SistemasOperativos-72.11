@@ -60,6 +60,7 @@ int processWasKilled(pid pid){
 
 void yield(){
     currentQuantum = 0;
+    print("Yield");
     int81();
 }
 
@@ -72,12 +73,17 @@ void * switchP(void *cRSP) {
 
     // If im in a "normal process"
     else if (currentPID >= 0) {
+        if(currentPID>0){
+            print("contextSWITCH WHILE RUNNING DIF FROM SHELL\n");
+        }
         //print("PID is not kernel\n");
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
-                        //haltcpu();
+            if(currentPID>0){
+                haltcpu();
 
+            }
         }
     }
     if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){

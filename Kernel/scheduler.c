@@ -1,4 +1,5 @@
 #include <videoDriver.h>
+#include <lib.h>
 #include <scheduler.h>
 
 int getState(pid, PCB ** pcb);
@@ -29,12 +30,15 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     processTable[pid].processStatus = READY;
     processTable[pid].priority = priority;
     processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
+    if(processTable[pid].currentRSP == NULL){
+        return 1;
+    }
     return 0;
 }
 
 int processWasKilled(pid pid) {
     PCB * pcb;
-    if (!getState(pid, &pcb)) {
+    if(getState(pid, &pcb)){
         return 1;
     }
     if (pcb->processStatus == KILLED) {
@@ -62,17 +66,20 @@ void * switchP(void *cRSP) {
     }
 
     // If im in a "normal process"
-    if (currentPID >= 0) {
+    else if (currentPID >= 0) {
         processTable[currentPID].currentRSP = cRSP;
         if (processTable[currentPID].processStatus == RUNNING) {
             processTable[currentPID].processStatus = READY;
+
         }
     }
-
-    if (processTable[nextPID].processStatus == READY && (processTable[nextPID].currentRSP != NULL)) {
+    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){ //it never gets here!!
+    //next never changes, its always NO_PROC -> FIX ASAP
+        print("Next pid RSP is dif from null\n");
         currentPID = nextPID;
         nextPID = NO_PROC;
-        // Assign how much more time based on process priority
+        //print("More time?\n");
+        //assign how much more time based on process priority
         currentQuantum = getQuantum(currentPID);
     }
 
@@ -89,7 +96,15 @@ void * switchP(void *cRSP) {
         // Keep running the same procs
         currentQuantum -= 1;
     }
-    processTable[currentPID].processStatus = RUNNING;
+     processTable[currentPID].processStatus = RUNNING;
+/*   print("Current pid: ");
+    char buf[10];
+    intToStr(currentPID, buf,10);
+    print(buf);
+    intToStr(currentQuantum,buf,10);
+    print("Quantum:");
+    print(buf);
+    print("\n");  */
     return processTable[currentPID].currentRSP;
 }
 
@@ -122,11 +137,11 @@ int unblock(pid pid) {
     return 0;
 }
 
-int getQuantum(pid currentPID) {
-    return (MAX_PRIORITY - processTable[currentPID].priority);
+int getQuantum(pid currentPID){ //asigns time based on priority -> lower prio means less time 
+    return (QUANTUM + processTable[currentPID].priority);
 }
 
-pid getNextReady() {
+pid getNextReady(){ //order remains the same, what changes is the amount of time a process will be allowed to run
     pid first = currentPID < 0 ? 0 : currentPID;
     pid next = first;
     do {
@@ -175,7 +190,9 @@ int setPriority(pid pid, priority newPrio) {
         return 1;
     }
     PCB *pcb;
-    if (!getState(pid, &pcb)) {
+    if (getState(pid, &pcb)){
+        print("Hello\n");
+
         return 1;
     }
     pcb->priority = newPrio;

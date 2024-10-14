@@ -6,18 +6,18 @@
 
 
 #define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT 10000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
+#define WAIT 100000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
-#define LOWEST 1  // TODO: Change as required
-#define MEDIUM 5  // TODO: Change as required
-#define HIGHEST 10 // TODO: Change as required
+#define LOWEST 0  // TODO: Change as required
+#define MEDIUM 2  // TODO: Change as required
+#define HIGHEST 5 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
-  char *argv[] = {0};
+  char *argv[] = {"9000000"};
   uint64_t i;
   createProcessInfo endlessInfo = {.name = "endless",
                                      .fg_flag = 1,
@@ -25,15 +25,26 @@ void test_prio() {
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
                                      .argv = (const char *const *) argv};
-
-  for (i = 0; i < TOTAL_PROCESSES; i++)
+  print("CREATING PROCESSES...\n");
+  for (i = 0; i < TOTAL_PROCESSES; i++){
     pids[i] = createProcess(&endlessInfo);
+  }
 
+  
   bussy_wait(WAIT);
   print("\nCHANGING PRIORITIES...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    setPriority(pids[i], prio[i]);
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+    int n = setPriority(pids[i], prio[i]);
+    if(n == 0){
+      print("Changed priority\n");
+    }
+    else{
+      print("Couldnt change prio\n");
+    }
+  }
+
+
 
   bussy_wait(WAIT);
   print("\nBLOCKING...\n");
@@ -43,17 +54,25 @@ void test_prio() {
 
   print("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    setPriority(pids[i], MEDIUM);
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+    int j = setPriority(pids[i], MEDIUM);
+    if(j == 0){
+      print("Priority changed\n");
+    }
+    else{
+      print("Couldnt change prio\n");
+    }
+  }
+
 
   print("UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    unblock(pids[i]);
+    unblock(pids[i]); 
 
   bussy_wait(WAIT);
-  print("\nKILLING...\n");
+  print("\nKILLING...\n"); 
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    kill(pids[i]);
+    kill(pids[i]); 
 }

@@ -168,7 +168,7 @@ clearcs64_ap:
 align 16
 
 ap_sleep:
-	hlt				; Suspend CPU until an interrupt is received. opcode for hlt is 0xF4
+	hlt				; Suspend CPU until an interrupt is received. opcode for  is 0xF4
 	jmp ap_sleep			; just-in-case of an NMI
 
 

@@ -16,7 +16,7 @@ typedef long ALIGN;
     @param startHeapAddress Pointer to the start of the asigned memory
     @param totalSize Size of the asigned memory
 */
-void init_memory_manager(void * startHeapAddress,size_t totalSize);
+void init_memory_manager(void * startHeapAddress, size_t totalSize);
 
 /*
     @brief Allocates the specified number of bytes in heap memory

@@ -131,7 +131,7 @@ picMasterMask:
 	push rbp
     mov rbp, rsp
     mov ax, di
-    out	21h,al
+    out	21h, al
     pop rbp
     retn
 

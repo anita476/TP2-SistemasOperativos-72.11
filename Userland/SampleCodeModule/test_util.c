@@ -75,7 +75,7 @@ void endless_loop_print(uint64_t wait) {
   
   while (1) {
     char buffer[5];
-    itoa(pid,buffer,10);
+    itoa(pid, buffer, 10);
     print(buffer);
     bussy_wait(9000000);
   } 

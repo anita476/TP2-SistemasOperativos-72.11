@@ -86,13 +86,13 @@ void executeCommand(char * str) {
       case 8: invalidOpCode(); break;
       case 9: 
             char * argv[1] = {"500000"};
-            if(test_mm(1,argv)==(-1)){
+            if (test_mm(1, argv) == (-1)) {
                   print("Memory test failed\n");
             } 
             break;
       case 10:
             char * argv2[1] = {"8"};
-            if(test_processes(1,argv2)==(-1)){
+            if (test_processes(1, argv2) == (-1)) {
                   print("Process test failed\n");
             }
             break;

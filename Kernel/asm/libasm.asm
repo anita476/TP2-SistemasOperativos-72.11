@@ -44,14 +44,14 @@ getKey:
 getSeconds:   
     cli
 
-    ;config del número n binario
+    ; config del número n binario
     mov al, 0x0B 
  	out 70h, al
     in al, 71h
     or al, 4 
     out 71h, al 
 
-    ;lectura de los segundos
+    ; lectura de los segundos
     mov al, 0x00
     out 70h, al
     in al, 71h
@@ -62,14 +62,14 @@ getSeconds:
 getMinutes:
     cli
 
-    ;config del numero n binario
+    ; config del numero n binario
     mov al, 0x0B 
     out 70h, al
     in al, 71h
     or al, 4 
     out 71h, al 
 
-    ;lectura de los minutos 
+    ; lectura de los minutos 
     mov al, 0x02
     out 70h, al
     in al, 71h
@@ -80,14 +80,14 @@ getMinutes:
 getHours:
     cli
 
-    ;config del número n binario
+    ; config del número n binario
     mov al, 0x0B 
     out 70h, al
     in al, 71h
 	or al, 4 
     out 71h, al 
 
-    ;lectura de los minutos
+    ; lectura de los minutos
     mov al, 0x04
     out 70h, al
     in al, 71h

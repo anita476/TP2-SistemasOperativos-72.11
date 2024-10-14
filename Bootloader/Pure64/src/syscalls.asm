@@ -254,7 +254,7 @@ os_dump_reg_stage: db 0x00
 ; -----------------------------------------------------------------------------
 ; os_dump_mem -- Dump some memory content to the screen (For debug purposes)
 ; IN: RSI = memory to dump (512bytes)
-;OUT:
+; OUT:
 os_dump_mem:
 	push rdx
 	push rcx

@@ -56,7 +56,7 @@ void * initializeKernelBinary() {
 	return getStackBase();
 }
 
-void init_shell(){
+void init_shell() {
 	  createProcessInfo shellInfo = {.name = "shell",
                                      .fg_flag = 1,
                                      .priority = DEFAULT_PRIORITY,
@@ -88,7 +88,7 @@ int main() {
 	init_scheduler();
 	init_shell();
 	_sti();
- 	while(1) {
+ 	while (1) {
 		yield();
 		_hlt();
 	} 

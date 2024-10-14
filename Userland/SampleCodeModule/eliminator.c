@@ -96,9 +96,9 @@ void lose(int whoLost, int pts) {
     clearScreen();
     setCursor(0, 15);
     switch (whoLost) {                
-        case 1: print("\n                                      Player 1 LOST! Do you want to play again? YES / NO?\n                                                  (change decision with a or d)\n\n");break;
-        case 2: print("\n                                      Player 2 LOST! Do you want to play again? YES / NO?\n                                                  (change decision with a or d)\n\n");break;
-        case 3: print("\n                                           Player 1 and 2 TIED! Want a rematch? YES / NO?\n                                                  (change decision with a or d)\n\n");break;
+        case 1: print("\n                                      Player 1 LOST! Do you want to play again? YES / NO?\n                                                  (change decision with a or d)\n\n"); break;
+        case 2: print("\n                                      Player 2 LOST! Do you want to play again? YES / NO?\n                                                  (change decision with a or d)\n\n"); break;
+        case 3: print("\n                                           Player 1 and 2 TIED! Want a rematch? YES / NO?\n                                                  (change decision with a or d)\n\n"); break;
         default:
             break;
     }

@@ -83,7 +83,7 @@ SECTION .text
 	; Order: RIP RAX RBX RCX RDX RSI RDI RBP RSP R8 R9 R10 R11 R12 R13 R14 R15 
     mov [show_registers + (1*8)] , rax
     mov rax, [rsp]
-    mov [show_registers], rax ;rip
+    mov [show_registers], rax ; rip
     mov [show_registers + (2*8)], rbx
     mov [show_registers + (3*8)], rcx
     mov [show_registers + (4*8)], rdx
@@ -166,7 +166,7 @@ _irq01Handler:
     in al, 0x60 ; readKey
     cmp al, 0x1D ; check if left CTRL is pressed (used to save registers)
     jne .continue
-        ;mov [show_registers_dump],         rax -> dont do this, it only gets 1D from ctrl key
+        ; mov [show_registers_dump],         rax -> dont do this, it only gets 1D from ctrl key
         mov [show_registers_dump + (1*8)], rbx 
         mov [show_registers_dump + (2*8)], rcx
         mov [show_registers_dump + (3*8)], rdx 
@@ -182,7 +182,7 @@ _irq01Handler:
         mov [show_registers_dump + (14*8)], r14
         mov [show_registers_dump + (15*8)], r15 
 
-        ;RSP && RIP && RAX
+        ; RSP && RIP && RAX
         mov rax , [rsp + 18*8] 
         mov [show_registers_dump + (7*8)], rax
         mov rax, [rsp + 15*8]
@@ -195,7 +195,7 @@ _irq01Handler:
     mov rdi, 1 ; param for dispatcher
     call irqDispatcher
         
-    ;EOI
+    ; EOI
     mov al, 20h
     out 20h, al
 
@@ -226,7 +226,7 @@ _int80Handler:
 	push r14
 	push r15
 
-	;mov rdi,rax
+	; mov rdi, rax
     call syscallHandler
 	pop r15
 	pop r14
@@ -263,6 +263,6 @@ _schedule:
 	iretq
 
 SECTION .bss
-    has_regs resb 1; to check whether we have saved or not!
+    has_regs resb 1 ; to check whether we have saved or not!
     show_registers resq 18 ; reserve a qword for each register 
-    show_registers_dump resq 17 ;aditionally for dumping (isnt passed as a param but is accessed directly)
+    show_registers_dump resq 17 ; aditionally for dumping (isnt passed as a param but is accessed directly)

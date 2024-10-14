@@ -25,9 +25,7 @@ void test_prio() {
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
                                      .argv = (const char *const *) argv};
-  print("First argument is:\n");
-  print(endlessInfo.argv[0]);
-
+  print("CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++){
     pids[i] = createProcess(&endlessInfo);
   }
@@ -56,8 +54,16 @@ void test_prio() {
 
   print("CHANGING PRIORITIES WHILE BLOCKED...\n");
 
-  for (i = 0; i < TOTAL_PROCESSES; i++)
-    setPriority(pids[i], MEDIUM);
+  for (i = 0; i < TOTAL_PROCESSES; i++){
+    int j = setPriority(pids[i], MEDIUM);
+    if(j == 0){
+      print("Priority changed\n");
+    }
+    else{
+      print("Couldnt change prio\n");
+    }
+  }
+
 
   print("UNBLOCKING...\n");
 

@@ -139,11 +139,11 @@ int unblock(pid pid){
     return 0;
 }
 
-int getQuantum(pid currentPID){ //asigns time based on priority
-    return (MAX_PRIORITY - processTable[currentPID].priority);
+int getQuantum(pid currentPID){ //asigns time based on priority -> lower prio means less time 
+    return (QUANTUM + processTable[currentPID].priority);
 }
 
-pid getNextReady(){ //todo fix -> ASAP
+pid getNextReady(){ //order remains the same, what changes is the amount of time a process will be allowed to run
     pid first = currentPID < 0 ? 0 : currentPID;
     pid next = first;
     do {

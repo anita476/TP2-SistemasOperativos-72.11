@@ -73,9 +73,7 @@ void * switchP(void *cRSP) {
 
         }
     }
-    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){ //it never gets here!!
-    //next never changes, its always NO_PROC -> FIX ASAP
-        print("Next pid RSP is dif from null\n");
+    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){ 
         currentPID = nextPID;
         nextPID = NO_PROC;
         //print("More time?\n");

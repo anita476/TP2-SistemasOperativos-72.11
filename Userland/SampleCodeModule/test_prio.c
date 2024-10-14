@@ -17,7 +17,7 @@ int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
-  char *argv[] = {"9000000"};
+  char *argv[] = {0};
   uint64_t i;
   createProcessInfo endlessInfo = {.name = "endless",
                                      .fg_flag = 1,
@@ -35,16 +35,8 @@ void test_prio() {
   print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
-    int n = setPriority(pids[i], prio[i]);
-    if(n == 0){
-      print("Changed priority\n");
-    }
-    else{
-      print("Couldnt change prio\n");
-    }
+    setPriority(pids[i], prio[i]);
   }
-
-
 
   bussy_wait(WAIT);
   print("\nBLOCKING...\n");

@@ -90,10 +90,14 @@ void executeCommand(char * str) {
             } 
             break;
       case 10:
-            char * argv2[1] = {"8"};
-            if (test_processes(1, argv2) == (-1)) {
-                  print("Process test failed\n");
-            }
+            char * argv2[1] = {0};
+            createProcessInfo testproc = {.name = "processes",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) test_processes,
+                                     .argc = 0,
+                                     .argv = (const char *const *) argv2};
+	      createProcess(&testproc);
             break;
       case 11:
       	createProcessInfo testprio = {.name = "priority",

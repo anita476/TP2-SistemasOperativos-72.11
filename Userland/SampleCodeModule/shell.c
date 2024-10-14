@@ -84,12 +84,14 @@ void executeCommand(char * str) {
       case 7: divzero(); break;
       case 8: invalidOpCode(); break;
       case 9: 
+            {
             char * argv[1] = {"500000"};
             if (test_mm(1, argv) == (-1)) {
                   print("Memory test failed\n");
-            } 
+            }}
             break;
       case 10:
+            {
             char * argv2[1] = {0};
             createProcessInfo testproc = {.name = "processes",
                                      .fg_flag = 1,
@@ -98,8 +100,10 @@ void executeCommand(char * str) {
                                      .argc = 0,
                                      .argv = (const char *const *) argv2};
 	      createProcess(&testproc);
+            }
             break;
       case 11:
+            {
       	createProcessInfo testprio = {.name = "priority",
                                      .fg_flag = 1,
                                      .priority = DEFAULT_PRIORITY,
@@ -107,6 +111,7 @@ void executeCommand(char * str) {
                                      .argc = 0,
                                      .argv = (const char *const *) NULL};
 	      createProcess(&testprio);
+            }
             break;
       default: 
             print("Unrecognized command\n");

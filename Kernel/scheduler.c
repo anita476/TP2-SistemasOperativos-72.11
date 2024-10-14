@@ -191,7 +191,8 @@ int setPriority(pid pid, priority newPrio) {
         return 1;
     }
     PCB *pcb;
-    if (!getState(pid, &pcb)){
+    if (getState(pid, &pcb)){
+        print("Hello\n");
         return 1;
     }
     pcb->priority = newPrio;

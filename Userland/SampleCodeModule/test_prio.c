@@ -9,9 +9,9 @@
 #define WAIT 100000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
-#define LOWEST 1  // TODO: Change as required
-#define MEDIUM 5  // TODO: Change as required
-#define HIGHEST 10 // TODO: Change as required
+#define LOWEST 0  // TODO: Change as required
+#define MEDIUM 2  // TODO: Change as required
+#define HIGHEST 5 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
@@ -34,7 +34,7 @@ void test_prio() {
 
   
   bussy_wait(WAIT);
-/*   print("\nCHANGING PRIORITIES...\n");
+  print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
     int n = setPriority(pids[i], prio[i]);
@@ -62,7 +62,7 @@ void test_prio() {
   print("UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    unblock(pids[i]); */
+    unblock(pids[i]); 
 
   bussy_wait(WAIT);
   print("\nKILLING...\n"); 

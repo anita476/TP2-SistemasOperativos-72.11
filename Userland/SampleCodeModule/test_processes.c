@@ -28,15 +28,14 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   print("Max processes: ");
   print(buffer2);
   print("\n");
-
   p_rq p_rqs[max_processes];
 
   while (1) {
-    print("Starting loop\n");
+    print("\n Starting loop\n");
     createProcessInfo loopInfo = {.name = "endless_loop",
                                   .fg_flag = 0,
                                   .priority = DEFAULT_PRIORITY,
-                                  .start = (ProcessStart) endless_loop,
+                                  .start = (ProcessStart) endless_loop_print, // change if you dont want to see the processes running
                                   .argc = 0,
                                   .argv = (const char *const *) argvAux};
 

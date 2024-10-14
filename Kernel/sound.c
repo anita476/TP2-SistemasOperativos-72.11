@@ -3,9 +3,9 @@
 
 // Soundcode source: https://wiki.osdev.org/PC_Speaker
 
-#include <lib.h>
-#include <time.h>
 #include <sound.h>
+#include <time.h>
+#include <lib.h>
 
 extern void outb(uint32_t param1, uint32_t param2);
 extern uint8_t inb(uint16_t param1);
@@ -120,5 +120,4 @@ void playBetterCallSaul() {
 	playNoteSound(RE2,5,0);
 	playNoteSound(DO2,5,1);
 	playNoteSound(LA,20,1);
-
 }

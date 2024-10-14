@@ -38,8 +38,7 @@ void load_IDT() {
 	// Keyboard and timer interruptions enabled
 	picMasterMask(0xFC); 
 	picSlaveMask(0xFF);
-/*   // Enable interruptions
-	_sti(); */
+	//_sti();
 }
 
 static void setup_IDT_entry (int index, uint64_t offset) {

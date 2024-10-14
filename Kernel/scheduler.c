@@ -1,19 +1,19 @@
 #include <videoDriver.h>
-#include <lib.h>
 #include <scheduler.h>
-
-int getState(pid, PCB ** pcb);
-int getQuantum(pid pid);
-pid getNextReady();
-PCB * getCurrentProcess();
+#include <lib.h>
 
 extern void * createProcessStack(int argc, const char *const argv[], void *rsp, ProcessStart start);
 extern void int81();
 
+int getState(pid, PCB ** pcb);
+PCB * getCurrentProcess();
+int getQuantum(pid pid);
+pid getNextReady();
+
 static PCB processTable[MAX_PROCESSES];
+static uint8_t currentQuantum;
 static pid currentPID;
 static pid nextPID;
-static uint8_t currentQuantum;
 
 static void * mainRSP;
 
@@ -30,7 +30,7 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     processTable[pid].processStatus = READY;
     processTable[pid].priority = priority;
     processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
-    if(processTable[pid].currentRSP == NULL){
+    if (processTable[pid].currentRSP == NULL) {
         return 1;
     }
     return 0;
@@ -38,7 +38,7 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
 
 int processWasKilled(pid pid) {
     PCB * pcb;
-    if(getState(pid, &pcb)){
+    if (getState(pid, &pcb)) {
         return 1;
     }
     if (pcb->processStatus == KILLED) {
@@ -60,12 +60,12 @@ void yield() {
 }
 
 void * switchP(void *cRSP) {
-    // If im in kernel:
+    // If in kernel
     if (currentPID == PID_KERNEL) {
         mainRSP = cRSP;
     }
 
-    // If im in a "normal process"
+    // If in a "normal process"
     else if (currentPID >= 0) {
         processTable[currentPID].currentRSP = cRSP;
         if (processTable[currentPID].processStatus == RUNNING) {
@@ -73,11 +73,10 @@ void * switchP(void *cRSP) {
 
         }
     }
-    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){ 
+    if ((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY) {
         currentPID = nextPID;
         nextPID = NO_PROC;
-        //print("More time?\n");
-        //assign how much more time based on process priority
+        // Assign how much more time based on process priority
         currentQuantum = getQuantum(currentPID);
     }
 
@@ -90,19 +89,12 @@ void * switchP(void *cRSP) {
         currentQuantum = getQuantum(currentPID);
     }
 
+    // Keep running the same procs
     else {
-        // Keep running the same procs
         currentQuantum -= 1;
     }
-     processTable[currentPID].processStatus = RUNNING;
-/*   print("Current pid: ");
-    char buf[10];
-    intToStr(currentPID, buf,10);
-    print(buf);
-    intToStr(currentQuantum,buf,10);
-    print("Quantum:");
-    print(buf);
-    print("\n");  */
+    
+    processTable[currentPID].processStatus = RUNNING;
     return processTable[currentPID].currentRSP;
 }
 
@@ -128,18 +120,20 @@ int unblock(pid pid) {
         return 0;
     }
     processTable[pid].processStatus = READY;
-    // If its of "high priority" -> run it next
+    // If its of "high priority", run it next
     if (processTable[pid].priority >= (MAX_PRIORITY / 2)) {
         nextPID = pid;
     }
     return 0;
 }
 
-int getQuantum(pid currentPID){ //asigns time based on priority -> lower prio means less time 
+// Assigns time based on priority -> lower priority means less time 
+int getQuantum(pid currentPID) { 
     return (QUANTUM + processTable[currentPID].priority);
 }
 
-pid getNextReady(){ //order remains the same, what changes is the amount of time a process will be allowed to run
+// Order remains the same, what changes is the amount of time a process will be allowed to run
+pid getNextReady() { 
     pid first = currentPID < 0 ? 0 : currentPID;
     pid next = first;
     do {
@@ -188,9 +182,7 @@ int setPriority(pid pid, priority newPrio) {
         return 1;
     }
     PCB *pcb;
-    if (getState(pid, &pcb)){
-        print("Hello\n");
-
+    if (getState(pid, &pcb)) {
         return 1;
     }
     pcb->priority = newPrio;

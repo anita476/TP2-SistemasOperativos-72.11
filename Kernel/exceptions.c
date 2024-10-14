@@ -15,14 +15,12 @@ static void zero_division();
 static void wrong_opcode();
 
 extern uint64_t resetMain();
-//RIP RAX RBX RCX RDX RSI RDI RBP RSP R8 R9 R10 R11 R12 R13 R14 R15 
 
 static char * registerOrder[18] = {"RIP", "RAX", "RBX", "RCX", "RDX", "RSI", "RDI", "RBP", "RSP", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "RFLAGS"};
 static char * errorMessage = "Program failed due to unhandled exception:\n";
 static char * waiting = "Restarting...";
 
 void exceptionDispatcher(int exception, uint64_t registers[17]) {
-	//rdi, rsi params
 	wait(18*3);
 	clearScreen();
 	print(errorMessage);
@@ -41,17 +39,17 @@ void exceptionDispatcher(int exception, uint64_t registers[17]) {
 		print("Unknown");
 		print("\n");
 	}
-	for (int i = 0; i< 18; i++) {
+	for (int i = 0; i < 18; i++) {
 		print(registerOrder[i]);
 		print(": ");
 		intToStr(registers[i], buffer, 16);
 		print(buffer);
 		if (i != 17) print(", ");
 	}
-	timer_wait(18*5); // Time to see the registers
+	timer_wait(18 * 5); // Time to see the registers
 	print("\n");
 	print(waiting);
-	timer_wait(18*2);
+	timer_wait(18 * 2);
 	clearScreen();
 	setCursorLine(0);
 	resetMain();

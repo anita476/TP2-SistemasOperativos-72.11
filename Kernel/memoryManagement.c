@@ -52,10 +52,9 @@ void *malloc(size_t bytes) {
 // Free memory
 void free(void * ptr) {
     if (ptr == NULL) {
-        //print("Pointer is null\n");
         return;
     }
-    struct block * blockToFree = (struct block *)((char *) ptr - BLOCK_SIZE);
+    struct block * blockToFree = (struct block *) ((char *) ptr - BLOCK_SIZE);
     blockToFree->next = freeList;
     freeList = blockToFree; // Add to the front of the free list
 }

@@ -3,7 +3,7 @@ GLOBAL start
 
 start:
     call rdx
-    mov rax, 30 ; code designated as exit function
+    mov rax, 0x1D ; code designated as exit function
     int 80h
 
 createProcessStack:

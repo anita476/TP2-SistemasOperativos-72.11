@@ -80,10 +80,7 @@ void * switchP(void *cRSP) {
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
-            if(currentPID>0){
-                haltcpu();
 
-            }
         }
     }
     if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){

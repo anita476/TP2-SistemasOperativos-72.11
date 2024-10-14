@@ -44,8 +44,7 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 
 size_t strlen(const char *str) {
     size_t l;
-    for (l = 0; *str != 0; str++, l++)
-        ;
+    for (l = 0; *str != 0; str++, l++);
     return l;
 }
 
@@ -151,8 +150,7 @@ void shell() {
       print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
       print("caOS>");
-      while(1){
-      insertCommand();
+      while (1) {
+            insertCommand();
       }
 }
-

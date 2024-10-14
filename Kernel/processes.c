@@ -4,7 +4,6 @@
 
 static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS ** pr);
-/* MISSING MEMORY STATE COUUNTERSSS */
 
 static ProcessS processArr[MAX_PROCESSES]; // We store all of our proccesses info here
 int lastPID = 0;
@@ -25,8 +24,7 @@ pid createProcess(createProcessInfo * info) {
     char * nameCopy = NULL;
     char ** argvCopy = NULL;
 
-    // Allocate space for each field 
-    // Maybe later design specific error messages for each case 
+    // Allocate space for each field
     stackEnd = malloc(STACK_SIZE);
     if (stackEnd == NULL) {
         print("Could not allocate stackEnd\n");
@@ -118,8 +116,7 @@ int kill(pid pid) {
         free(process->memory[i]);
     } 
     free(process->memory); 
-    //print("Something went wrong\n");
-
+    
     // Call scheduler to take it out of queue
     processWasKilled(pid);
 
@@ -127,7 +124,7 @@ int kill(pid pid) {
         free(process->argv[i]);
     }
     //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
-    //free(process->argv); 
+    // free(process->argv); 
 
     free(process->stackEnd);
     free(process->name);

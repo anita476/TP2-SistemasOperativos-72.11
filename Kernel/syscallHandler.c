@@ -51,7 +51,6 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
     return i;
 }
 
-// i s
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer , uint64_t length) {
     if (fileDescriptor != STDOUT) return 1;
     else {
@@ -216,32 +215,23 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
             free((void *)rdi);
             break;
         case 22: 
-        /* createprocess */
             return (uint64_t) createProcess((void *) rdi);
         case 23:
-        /*getpid*/
             return (uint64_t) getpid();
         case 24:
-        /*kill*/
             return (uint64_t) kill(rdi);
         case 25:
-        /* block */
             return (uint64_t) block(rdi);
         case 26:
-        /* unblock */
             return (uint64_t) unblock(rdi);
         case 27:
-        /* yield */
             yield();
             break;
         case 28:
-        /* change priority */
             return setPriority(rdi, rsi);
         case 29:
-        /* get all proceses  */
             return listProcessesInfo((void *) rdi, rsi);
         case 30: 
-        /* exit_process */
             exit_process();
             break;
         case 35:

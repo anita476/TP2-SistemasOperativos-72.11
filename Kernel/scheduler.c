@@ -35,14 +35,13 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     if(processTable[pid].currentRSP == NULL){
         return 1;
     }
-    print("hello processWasCreated\n");
     return 0;
 }
 
 
 int processWasKilled(pid pid){
     PCB * pcb;
-    if(!getState(pid, &pcb)){
+    if(getState(pid, &pcb)){
         return 1;
     }
     if(pcb->processStatus == KILLED){
@@ -60,7 +59,6 @@ int processWasKilled(pid pid){
 
 void yield(){
     currentQuantum = 0;
-    print("Yield");
     int81();
 }
 
@@ -73,16 +71,14 @@ void * switchP(void *cRSP) {
 
     // If im in a "normal process"
     else if (currentPID >= 0) {
-        if(currentPID>0){
-            print("contextSWITCH WHILE RUNNING DIF FROM SHELL\n");
-        }
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
 
         }
     }
-    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){
+    if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){ //it never gets here!!
+    //next never changes, its always NO_PROC -> FIX ASAP
         print("Next pid RSP is dif from null\n");
         currentPID = nextPID;
         nextPID = NO_PROC;
@@ -147,7 +143,7 @@ int getQuantum(pid currentPID){ //asigns time based on priority
     return (MAX_PRIORITY - processTable[currentPID].priority);
 }
 
-pid getNextReady(){ //todo fix
+pid getNextReady(){ //todo fix -> ASAP
     pid first = currentPID < 0 ? 0 : currentPID;
     pid next = first;
     do {

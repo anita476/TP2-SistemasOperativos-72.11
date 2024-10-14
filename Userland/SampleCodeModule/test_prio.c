@@ -5,8 +5,8 @@
 #include <libSysCalls.h>
 
 
-#define MINOR_WAIT 10 // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT 1000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
+#define MINOR_WAIT 1000000 // TODO: Change this value to prevent a process from flooding the screen
+#define WAIT 100000000      // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 
 #define TOTAL_PROCESSES 3
 #define LOWEST 1  // TODO: Change as required
@@ -17,22 +17,24 @@ int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
 void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
-  char *argv[] = {0};
+  char *argv[] = {"9000000"};
   uint64_t i;
   createProcessInfo endlessInfo = {.name = "endless",
                                      .fg_flag = 1,
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
-                                     .argv = NULL};
+                                     .argv = (const char *const *) argv};
+  print("First argument is:\n");
+  print(endlessInfo.argv[0]);
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
     pids[i] = createProcess(&endlessInfo);
   }
 
   
-/*  bussy_wait(WAIT);
-  print("\nCHANGING PRIORITIES...\n");
+  bussy_wait(WAIT);
+/*   print("\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++){
     int n = setPriority(pids[i], prio[i]);
@@ -60,11 +62,11 @@ void test_prio() {
   print("UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    unblock(pids[i]);
+    unblock(pids[i]); */
 
   bussy_wait(WAIT);
   print("\nKILLING...\n"); 
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    kill(pids[i]); */
+    kill(pids[i]); 
 }

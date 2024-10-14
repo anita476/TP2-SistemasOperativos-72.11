@@ -99,54 +99,15 @@ void executeCommand(char * str) {
       case 11:
             test_prio();
             break;
-      default: //print("Unrecognized command\n");
-               //errorSound();
-                   createProcessInfo endlessInfo = {
-                                                      .name = "endless",
-                                                      .fg_flag = 1,
-                                                      .priority = DEFAULT_PRIORITY,
-                                                      .start = endless_loop_print,
-                                                      .argc = 0,
-                                                      .argv = NULL
-                                                      };
-
-                createProcessInfo *newProcessInfo = malloc(sizeof(createProcessInfo));
-                  if (newProcessInfo == NULL) {
-                  print("Failed to allocate memory");
-                  return 1;
-                  }
-                  size_t nameLength = strlen(endlessInfo.name) + 1; // +1 for the null terminator
-                  newProcessInfo->name = malloc(nameLength);
-                  if (newProcessInfo->name == NULL) {
-                  print("Failed to allocate memory for name");
-                  free(newProcessInfo); // Free previously allocated memory
-                  }
-
-                  // Copy the name using memcpy
-                  memcpy(newProcessInfo->name, endlessInfo.name, nameLength);
-
-                  // Copy the other fields
-                  newProcessInfo->fg_flag = endlessInfo.fg_flag;
-                  newProcessInfo->priority = endlessInfo.priority;
-                  newProcessInfo->start = endlessInfo.start;
-                  newProcessInfo->argc = endlessInfo.argc;
-
-                   // If argv is not NULL, you would need to copy it as well, but it's NULL in this case
-                  newProcessInfo->argv = NULL;
-                  createProcessInfo info = 	  {.name = "pro",
-                                     .fg_flag = 1,
-                                     .priority = DEFAULT_PRIORITY,
-                                     .start = (ProcessStart) endless_loop_print,
-                                     .argc = 0,
-                                     .argv = (const char *const *) NULL};
-	            createProcess(newProcessInfo);
+      default: 
+            print("Unrecognized command\n");
+            errorSound();
             break;
       }
 }
 
 void insertCommand() {
       print("caOS>");
-     // haltcpu();
       char buffer[BUFFER_SIZE] = {'\0'};
       int bufferIndex = 0;
       char c = 0;
@@ -183,11 +144,8 @@ void shell() {
       print("\n * testprio : Run a priority test");
       print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
-      test_prio();
-      int i = 0;
-      while(i!= 10){
+      while(1){
       insertCommand();
-      i++;
       }
 }
 

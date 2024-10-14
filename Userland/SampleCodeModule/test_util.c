@@ -10,6 +10,8 @@
 static uint32_t m_z = 362436069;
 static uint32_t m_w = 521288629;
 
+extern void haltcpu();
+
 uint32_t GetUint() {
   m_z = 36969 * (m_z & 65535) + (m_z >> 16);
   m_w = 18000 * (m_w & 65535) + (m_w >> 16);
@@ -65,17 +67,16 @@ void bussy_wait(uint64_t n) {
 
 void endless_loop() {
   while (1)
-    ;
+  ;
 }
 
 void endless_loop_print(uint64_t wait) {
-  print("Hello in loop\n");
-/*   int64_t pid = getpid();
+  int64_t pid = getpid();
   
   while (1) {
     char buffer[5];
     itoa(pid,buffer,10);
     print(buffer);
-    bussy_wait(wait);
-  } */
+    bussy_wait(9000000);
+  } 
 } 

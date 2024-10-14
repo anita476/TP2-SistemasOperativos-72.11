@@ -10,8 +10,8 @@
 
 #define TOTAL_PROCESSES 3
 #define LOWEST 0  // TODO: Change as required
-#define MEDIUM 2  // TODO: Change as required
-#define HIGHEST 5 // TODO: Change as required
+#define MEDIUM 5  // TODO: Change as required
+#define HIGHEST 10 // TODO: Change as required
 
 int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 
@@ -25,6 +25,7 @@ void test_prio() {
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,
                                      .argv = (const char *const *) argv};
+  print("\n");
   print("CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++){
     pids[i] = createProcess(&endlessInfo);

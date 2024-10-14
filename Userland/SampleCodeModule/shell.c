@@ -97,7 +97,13 @@ void executeCommand(char * str) {
             }
             break;
       case 11:
-            test_prio();
+      	createProcessInfo testprio = {.name = "priority",
+                                     .fg_flag = 1,
+                                     .priority = DEFAULT_PRIORITY,
+                                     .start = (ProcessStart) test_prio,
+                                     .argc = 0,
+                                     .argv = (const char *const *) NULL};
+	      createProcess(&testprio);
             break;
       default: 
             print("Unrecognized command\n");
@@ -107,7 +113,6 @@ void executeCommand(char * str) {
 }
 
 void insertCommand() {
-      print("caOS>");
       char buffer[BUFFER_SIZE] = {'\0'};
       int bufferIndex = 0;
       char c = 0;
@@ -125,6 +130,7 @@ void insertCommand() {
       }
       print("\n");
       executeCommand(buffer);
+      print("caOS>");
       //insertCommand();
 }
 
@@ -144,6 +150,7 @@ void shell() {
       print("\n * testprio : Run a priority test");
       print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n");
+      print("caOS>");
       while(1){
       insertCommand();
       }

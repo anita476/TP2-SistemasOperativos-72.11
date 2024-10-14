@@ -7,13 +7,14 @@
 #include <lib.h>
 #include <processes.h>
 
-#define QUANTUM  5 // In ms
+
+#define QUANTUM  5 //In ms
 #define NO_PROC -2 
 #define PID_KERNEL -1
 
 
-#define MAX_PRIORITY 5
-#define DEFAULT_PRIORITY 1
+#define MAX_PRIORITY 10
+#define DEFAULT_PRIORITY 3
 #define MIN_PRIORITY 0
 
 

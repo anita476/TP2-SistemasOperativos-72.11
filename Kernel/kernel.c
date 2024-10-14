@@ -79,19 +79,7 @@ void welcomeSequence() {
 	scale_down();
 	clear_screen();
 }
-void endlessLoop(int argc, char *argv[]) {
 
-    while (1){
-		print("In endless loop\n");
-		wait(1000);
-	}
-}
-void endlessLoop2(int argc, char *argv[]){
-	while (1){
-		print("In endless loop 2\n");
-		wait(1000);
-	}
-}
 
 int main() {
 	_cli();
@@ -102,21 +90,6 @@ int main() {
 	init_scheduler();
 	init_shell();
 	_sti();
-	/* createProcessInfo ifnoLoop = {.name = "loop",
-                                     .fg_flag = 1,
-                                     .priority = DEFAULT_PRIORITY,
-                                     .start = (ProcessStart) endlessLoop,
-                                     .argc = 0,
-                                     .argv = (const char *const *) NULL};
-
-	pid n = createProcess(&ifnoLoop);
-	createProcessInfo ifnoLoop2 = {.name = "loop",
-                                     .fg_flag = 1,
-                                     .priority = DEFAULT_PRIORITY,
-                                     .start = (ProcessStart) endlessLoop2,
-                                     .argc = 0,
-                                     .argv = (const char *const *) NULL};
-	pid nn = createProcess(&ifnoLoop2); */
  	while(1){
 		yield();
 		_hlt();

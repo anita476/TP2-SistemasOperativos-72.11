@@ -76,7 +76,6 @@ void * switchP(void *cRSP) {
         if(currentPID>0){
             print("contextSWITCH WHILE RUNNING DIF FROM SHELL\n");
         }
-        //print("PID is not kernel\n");
         processTable[currentPID].currentRSP = cRSP;
         if(processTable[currentPID].processStatus == RUNNING){
             processTable[currentPID].processStatus = READY;
@@ -84,6 +83,7 @@ void * switchP(void *cRSP) {
         }
     }
     if((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY){
+        print("Next pid RSP is dif from null\n");
         currentPID = nextPID;
         nextPID = NO_PROC;
         //print("More time?\n");
@@ -100,11 +100,10 @@ void * switchP(void *cRSP) {
     }
     else{
         //keep running the same procs
-        //print("Keep running\n");
         currentQuantum -= 1;
     }
      processTable[currentPID].processStatus = RUNNING;
-/*     print("Current pid: ");
+/*   print("Current pid: ");
     char buf[10];
     intToStr(currentPID, buf,10);
     print(buf);
@@ -144,11 +143,11 @@ int unblock(pid pid){
     return 0;
 }
 
-int getQuantum(pid currentPID){
+int getQuantum(pid currentPID){ //asigns time based on priority
     return (MAX_PRIORITY - processTable[currentPID].priority);
 }
 
-pid getNextReady(){
+pid getNextReady(){ //todo fix
     pid first = currentPID < 0 ? 0 : currentPID;
     pid next = first;
     do {

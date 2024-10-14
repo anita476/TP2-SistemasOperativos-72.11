@@ -225,6 +225,8 @@ _int80Handler:
 	push r13
 	push r14
 	push r15
+
+	;mov rdi,rax
     call syscallHandler
 	pop r15
 	pop r14

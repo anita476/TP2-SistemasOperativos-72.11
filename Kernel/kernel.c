@@ -86,6 +86,9 @@ int main() {
 	welcomeSequence();
 	init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
+		((EntryPoint)sampleCodeModuleAddress)();
+
+
 	init_shell();
 	_sti();
  	while (1) {

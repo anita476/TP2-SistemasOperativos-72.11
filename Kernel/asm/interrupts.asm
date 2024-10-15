@@ -1,12 +1,6 @@
-GLOBAL _cli
-GLOBAL _sti
-GLOBAL _hlt
-GLOBAL haltcpu
-GLOBAL int81
-GLOBAL _schedule
+GLOBAL _cli, _sti, _hlt, haltcpu, int81, _schedule
 
-GLOBAL picMasterMask
-GLOBAL picSlaveMask
+GLOBAL picMasterMask, picSlaveMask
 
 GLOBAL _irq00Handler
 GLOBAL _irq01Handler
@@ -226,8 +220,17 @@ _int80Handler:
 	push r14
 	push r15
 
-	; mov rdi, rax
+	mov rbp, rsp 
+
+	mov rdi, rax
     call syscallHandler
+
+	; shouldnt we signal PIC EOI?
+	; mov al, 20h
+	; out 20h, al
+
+	mov rsp, rbp 
+
 	pop r15
 	pop r14
 	pop r13
@@ -259,6 +262,11 @@ _schedule:
 	call switchP
 	mov rsp, rax
 
+	popState
+	iretq
+
+initIdle: 
+	mov rsp, rdi ; idk what this does honestly...
 	popState
 	iretq
 

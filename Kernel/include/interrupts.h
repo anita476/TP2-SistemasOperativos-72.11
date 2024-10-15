@@ -30,4 +30,8 @@ void picSlaveMask(uint8_t mask);
 
 void haltcpu(void);
 
+void int81();
+
+void initHalt();
+
 #endif /* INTERRUPS_H_ */

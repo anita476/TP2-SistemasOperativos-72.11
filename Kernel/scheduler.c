@@ -27,6 +27,16 @@ void init_scheduler() {
 }
 
 int processWasCreated(pid pid, int argc, const char * const argv[], priority priority, ProcessStart entryPoint, void * currentRSP) {
+    print("Info: "); 
+    char buffer[10];
+    intToStr(pid, buffer, 10);
+    print("pid: "); 
+    print(buffer); 
+    print("\tprio: ");
+    intToStr(priority, buffer, 10);
+    print(buffer); 
+    print("\n");
+
     if (priority < MIN_PRIORITY || priority > MAX_PRIORITY) {
         priority = DEFAULT_PRIORITY;
     }
@@ -76,6 +86,8 @@ void * switchP(void *cRSP) {
 
         }
     }
+
+    // If there is a process to run next
     if ((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY) {
         currentPID = nextPID;
         nextPID = NO_PROC;

@@ -6,3 +6,22 @@
 * Camila Lee
 * Matías Leporini
 * Ana Negre
+
+### Instrucciones de compilación 
+En tiempo de compilación, el usuario puede elegir el tipo de administrador de memoria física. 
+* Free List (default).
+* Buddy.
+
+Para correr el Buddy MMU correr: 
+
+    ./compile.sh BUDDY
+
+Para correr la Free List MMU correr: 
+
+    ./compile.sh
+
+### Instrucciones de ejecución
+
+Desde el directorio del proyecto correr:
+
+    ./run.sh

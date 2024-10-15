@@ -32,6 +32,7 @@ void test_prio() {
   print("CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++){
     pids[i] = createProcess(&endlessInfo);
+    print("Process has been created\n");
   }
 
   

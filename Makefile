@@ -1,5 +1,6 @@
 
-all:  bootloader kernel userland image
+all: bootloader kernel userland image
+	@echo "Building with MEMORY_MANAGER=$(MEMORY_MANAGER)"
 
 bootloader:
 	cd Bootloader; make all

@@ -6,14 +6,15 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <videoDriver.h>
-#include <processes.h>
-#include <scheduler.h>
+#include "processes.h"
+#include "scheduler.h"
 #include <idtLoader.h>
 #include <stdint.h>
 #include <string.h>
 #include <sound.h>
 #include <time.h>
 #include <lib.h>
+#include "defs.h"
 
 extern void _cli();
 extern void _sti();

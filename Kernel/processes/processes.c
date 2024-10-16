@@ -1,9 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <videoDriver.h>
-#include <processes.h>
-#include <scheduler.h>
+
+#include "processes.h"
 
 static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS ** pr);

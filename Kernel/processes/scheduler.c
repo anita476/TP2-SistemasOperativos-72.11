@@ -1,9 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <videoDriver.h>
-#include <scheduler.h>
-#include <lib.h>
+#include "scheduler.h"
 
 extern void * createProcessStack(int argc, const char *const argv[], void *rsp, ProcessStart start);
 extern void int81();
@@ -14,7 +12,7 @@ int getQuantum(pid pid);
 pid getNextReady();
 
 static PCB processTable[MAX_PROCESSES];
-static uint8_t currentQuantum;
+static int currentQuantum;
 static pid currentPID;
 static pid nextPID;
 

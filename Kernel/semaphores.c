@@ -7,11 +7,11 @@
 extern void acquire(uint8_t * lock);
 extern void release(uint8_t * lock);
 
-uint8_t lock = 1;; 
+uint8_t lock = 1; // global lock to access semaphore resources and to guarantee no two processes try to grab resources at the same time
 
 typedef struct Semaphore{
 	sem_name name;
-	unsigned int sem_value;
+	uint8_t sem_value;
     pid interestedProcesses[MAX_PROCESSES];
     /* 
     not necesary to use queues because max quantity of processes is 10, 
@@ -21,6 +21,23 @@ typedef struct Semaphore{
 
 Semaphore semaphoreList[MAX_SEMAPHORES] = {{0}};
 int active = 0;
+
+
+
+static int grabSemaphore(sem sem) {
+    acquire(&lock);
+
+    if (sem < 0 || sem > MAX_SEMAPHORES ) {
+        release(&lock);
+        return INVALID_VALUE_ERROR;
+    }
+
+    acquire(&(semaphoreList[sem].sem_value));
+    release(&lock);
+    return 0;
+}
+
+
 
 int sem_open(sem_name semName, int initValue ){
 	pid currentPid = getpid();
@@ -87,15 +104,39 @@ int sem_close(sem  sem){
 }
 
 int sem_post(sem  sem){
-
+	if (grabSemaphore(sem) != 0) {
+        return -1;
+    }
+    semaphoreList[sem].sem_value ++;
+	/* unlock the first waiting process and take it to back of line */
+    release(&semaphoreList[sem].sem_value);
+    return 0;
 }
 
 int sem_wait ( sem sem){
+	if(grabSemaphore(sem) != 0){
+		return -1;
+	}
 
+	acquire(&(semaphoreList[sem].sem_value));
+	if(semaphoreList[sem].sem_value > 0){
+		semaphoreList[sem].sem_value--;
+	}
+	else{
+		pid currentPid = getpid();
+		block(currentPid); //couldnt wait ....... process must be blocked
+	
+		release(&(semaphoreList[sem].sem_value)); //
+		return 0;
+	}
+	release(&(semaphoreList[sem].sem_value));
 }
 
 int sem_value( sem sem){
-    
+    if(sem < 0 || sem > MAX_PROCESSES){
+		return -1;
+	}
+	return semaphoreList[sem].sem_value;
 } 
 
 sem sem_get(sem_name semName){

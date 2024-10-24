@@ -66,21 +66,6 @@ void yield() {
 }
 
 void * switchP(void *cRSP) {
-    if(currentPID == 2){
-        print("in dec first\n");
-    }
-    if(currentPID == 3){
-        print("in dec 2\n");
-    }
-    if(currentPID == 4){
-        print("in dec 3\n");
-    }
-    if(currentPID == 5){
-        print("in dec 4\n");
-    }
-    if(currentPID == 1){
-        print("Running testsincro\n");
-    }
     // If in kernel
     if (currentPID == PID_KERNEL) {
         mainRSP = cRSP;

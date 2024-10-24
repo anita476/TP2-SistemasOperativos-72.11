@@ -72,11 +72,6 @@ myProcessInc(int argc, char *argv[]) {
 
 
 
-    char buff[10];
-    intToStr(use_sem, buff,10);
-    print("USE SEM IS: ");
-    print(buff);
-    print("\n");
 
     sem sem;
 
@@ -86,6 +81,11 @@ myProcessInc(int argc, char *argv[]) {
             return;
         }
     }
+    char buff[10];
+    intToStr(sem, buff,10);
+    print("SEM FROM SEMOPEN: ");
+    print(buff);
+    print("\n");
 
     uint64_t i;
     for (i = 0; i < n; i++) {
@@ -108,12 +108,6 @@ testSync(int argc, char *argv[]) {
         print("testsync: usage: testsync [n] [use_sem]\n");
         return;
     }
-/*     print("Argv 0 : ");
-    print(argv[0]);
-    print("\n");
-    print("Argv 1: ");
-    print(argv[1]);
-    print("\n"); */
     
     char * argv2 [] = {"3","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};

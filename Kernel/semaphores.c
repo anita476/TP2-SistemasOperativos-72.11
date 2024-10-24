@@ -2,6 +2,7 @@
 #include <semaphores.h>
 #include <processes.h>
 #include <scheduler.h>
+#include <videoDriver.h>
 
 
 /* for critical region entering */
@@ -43,6 +44,7 @@ static int grabSemaphore(sem sem) {
 int sem_open(sem_name semName, int initValue ){
 	pid currentPid = getpid();
 	sem semId = sem_get(semName);
+	
 	if(semId == -1){ //need to create sem 
 		if(active == MAX_PROCESSES){
 			return MAX_SEMS_ERROR;
@@ -53,13 +55,15 @@ int sem_open(sem_name semName, int initValue ){
 		// i traverse the array to find the first available spot 
 		for( int i = 0; i< MAX_SEMAPHORES; i++){
 			if(semaphoreList[i].numberInterestedProcesses == 0) {//if all processes have closed the semaphore, w can step on the name and reuse the id
-				semaphoreList[i].name = malloc(strlen(semName));
+				semaphoreList[i].name = malloc(strlen(semName )+1);
 				if(semaphoreList[i].name == NULL){
 					return -1;
 				}
 				if(strcpy(semaphoreList[i].name, semName) == NULL){
+					print("DIDNT COPY SEMNAME");
 					return -1;
 				}
+				print(semaphoreList[i].name);
 				semaphoreList[i].sem_value = initValue;
 				semaphoreList[i].interestedProcesses[0] = currentPid;
 				semaphoreList[i].numberInterestedProcesses++;
@@ -75,7 +79,8 @@ int sem_open(sem_name semName, int initValue ){
 				return 0; //pid has already opened the semaphore and not closed it
 			}
 		}
-		semaphoreList[semId].interestedProcesses[++semaphoreList[semId].numberInterestedProcesses] = currentPid; 
+		semaphoreList[semId].interestedProcesses[semaphoreList[semId].numberInterestedProcesses] = currentPid; 
+		semaphoreList[semId].numberInterestedProcesses++;
 	}
 	return semId;
 }
@@ -142,8 +147,10 @@ int sem_value( sem sem){
 } 
 
 sem sem_get(sem_name semName){
-	for(int i = 0; i< MAX_SEMAPHORES; ){
+	for(int i = 0; i< active; ){
+		print("Looking for sem\n");
 		if(strcmp(semaphoreList[i].name, semName) == 0){
+			print("Found sem\n");
 			return i; //number in list is the "id" we use
 		}
 	}

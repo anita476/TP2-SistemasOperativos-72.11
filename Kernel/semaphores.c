@@ -114,7 +114,7 @@ int sem_post(sem  sem){
         return -1;
     }
     semaphoreList[sem].sem_value ++;
-	/* unlock the first waiting process and take it to back of line */
+	/* unlock the first waiting process and take it to back of line  -> THIS IS THE ISSUE UGH*/
     release(&semaphoreList[sem].sem_value);
     return 0;
 }
@@ -124,7 +124,6 @@ int sem_wait ( sem sem){
 		return -1;
 	}
 
-	acquire(&(semaphoreList[sem].sem_value));
 	if(semaphoreList[sem].sem_value > 0){
 		semaphoreList[sem].sem_value--;
 	}

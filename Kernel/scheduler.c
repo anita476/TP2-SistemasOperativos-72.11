@@ -40,6 +40,9 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
 }
 
 int processWasKilled(pid pid) {
+    if(pid ==1){
+        print("PROCESS 1 KILLED");
+    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
         return 1;
@@ -63,6 +66,21 @@ void yield() {
 }
 
 void * switchP(void *cRSP) {
+    if(currentPID == 2){
+        print("in dec first\n");
+    }
+    if(currentPID == 3){
+        print("in dec 2\n");
+    }
+    if(currentPID == 4){
+        print("in dec 3\n");
+    }
+    if(currentPID == 5){
+        print("in dec 4\n");
+    }
+    if(currentPID == 1){
+        print("Running testsincro\n");
+    }
     // If in kernel
     if (currentPID == PID_KERNEL) {
         mainRSP = cRSP;
@@ -102,9 +120,23 @@ void * switchP(void *cRSP) {
 }
 
 int block(pid pid) {
+    if(pid ==2){
+        print("Blocking first dec\n");
+    }
+    if(pid == 3){
+        print("Blocking second dec\n");
+    }
+    if(pid == 1){
+        print("Process 1 killed\n");
+    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
-        print("Get state failed\n");
+        char buffer[10];
+        intToStr(pid, buffer,10);
+        print("For pid: ");
+        print(buffer);
+
+        print(" Get state failed\n");
         return 1;
     }
     processTable[pid].processStatus = BLOCKED;
@@ -115,6 +147,12 @@ int block(pid pid) {
 }
 
 int unblock(pid pid) {
+    if(pid == 2){
+        print("Unblocking first dec\n");
+    }
+    if(pid == 3){
+        print("Unblocking second dec\n");
+    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
         return 1;

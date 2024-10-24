@@ -14,6 +14,7 @@
 #include <sound.h>
 #include <time.h>
 #include <lib.h>
+#include <test_sync.h>
 
 extern void _cli();
 extern void _sti();
@@ -64,6 +65,16 @@ void init_shell() {
                                      .argc = 0,
                                      .argv = (const char * const *) NULL};
 	createProcess(&shellInfo);
+		int argc = 2;
+	char * argv [] = {"3000","2"};
+	createProcessInfo decInfo = {.name = "processSynchro",
+                                 .fg_flag = 1,
+                                 .priority = DEFAULT_PRIORITY,
+                                 .start = (ProcessStart) testSync,
+                                 .argc = 2,
+                                 .argv = (const char *const *) argv};
+
+	createProcess(&decInfo);
 }
 
 void welcomeSequence() {
@@ -83,14 +94,15 @@ void welcomeSequence() {
 int main() {
 	_cli();
 	load_IDT();
-	welcomeSequence();
+	//welcomeSequence();
 	init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
 	init_shell();
 	_sti();
- 	while (1) {
+  	while (1) {
 		yield();
 		_hlt();
-	} 
+	}  
+
 	return 0;
 }

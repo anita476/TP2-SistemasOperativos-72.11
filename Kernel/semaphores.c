@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <semaphores.h>
 #include <processes.h>
+#include <scheduler.h>
 
 
 /* for critical region entering */
@@ -130,6 +131,7 @@ int sem_wait ( sem sem){
 		return 0;
 	}
 	release(&(semaphoreList[sem].sem_value));
+	return 0;
 }
 
 int sem_value( sem sem){

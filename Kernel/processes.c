@@ -88,6 +88,11 @@ pid createProcess(createProcessInfo * info) {
     }
 
     lastPID++;
+    print("Process was created:");
+    char buff[10];
+    intToStr(lastPID, buff,10);
+    print(buff);
+    print("\n");
     return pid;
 }
 

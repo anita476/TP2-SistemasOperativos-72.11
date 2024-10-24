@@ -115,6 +115,13 @@ int sem_post(sem  sem){
     }
     semaphoreList[sem].sem_value ++;
 	/* unlock the first waiting process and take it to back of line  -> THIS IS THE ISSUE UGH*/
+	int n = semaphoreList[sem].interestedProcesses[0];
+	unblock(n);
+	int i;
+	for(i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++){
+		semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i+1];
+	}
+	semaphoreList[sem].interestedProcesses[i] = n;
     release(&semaphoreList[sem].sem_value);
     return 0;
 }

@@ -33,9 +33,6 @@ static int grabSemaphore(sem sem) {
         release(&lock);
         return INVALID_VALUE_ERROR;
     }
-
-    acquire(&(semaphoreList[sem].sem_value));
-    release(&lock);
     return 0;
 }
 
@@ -114,14 +111,14 @@ int sem_post(sem  sem){
         return -1;
     }
     semaphoreList[sem].sem_value ++;
-	/* unlock the first waiting process and take it to back of line  -> THIS IS THE ISSUE UGH*/
+	/* unlock the first waiting process and take it to back of line */
 	int n = semaphoreList[sem].interestedProcesses[0];
-	unblock(n);
 	int i;
-	for(i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++){
+	for(i = 0; i < semaphoreList[sem].numberInterestedProcesses -1; i++){
 		semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i+1];
 	}
 	semaphoreList[sem].interestedProcesses[i] = n;
+	unblock(n);
     release(&semaphoreList[sem].sem_value);
     return 0;
 }
@@ -131,13 +128,12 @@ int sem_wait ( sem sem){
 		return -1;
 	}
 
-	if(semaphoreList[sem].sem_value > 0){
-		semaphoreList[sem].sem_value--;
+	if(semaphoreList[sem].sem_value >= 0){
+		semaphoreList[sem].sem_value--; //i dont need to do this .. it is always 0 or 1
 	}
 	else{
 		pid currentPid = getpid();
 		block(currentPid); //couldnt wait ....... process must be blocked
-	
 		release(&(semaphoreList[sem].sem_value)); //
 		return 0;
 	}

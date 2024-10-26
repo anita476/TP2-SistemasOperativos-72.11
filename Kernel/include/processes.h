@@ -29,6 +29,7 @@ typedef struct {
     char ** argv;
     int argc;
     void **memory;
+    pid parent;
     unsigned int memoryCount, memoryBufSize;
 } ProcessS;
 
@@ -53,6 +54,12 @@ typedef struct{
     int argc;
     const char *const *argv;
 } createProcessInfo;
+
+typedef struct{ /* not good if number of processes increases, but i think its fine for this project*/
+    pid childrenArr[MAX_PROCESSES];
+    int numberOfChildren;
+} familyUnit; 
+
 
 pid createProcess(createProcessInfo * info);
 

@@ -40,9 +40,6 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
 }
 
 int processWasKilled(pid pid) {
-    if(pid ==1){
-        print("PROCESS 1 KILLED");
-    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
         return 1;
@@ -59,7 +56,11 @@ int processWasKilled(pid pid) {
     }
     return 0;
 }
-
+/* make current proc wait for all children */
+void waitForChildren(){
+    int n = block(currentPID);
+    yield();
+}
 void yield() {
     currentQuantum = 0;
     int81();
@@ -132,12 +133,6 @@ int block(pid pid) {
 }
 
 int unblock(pid pid) {
-    if(pid == 2){
-        print("Unblocking first dec\n");
-    }
-    if(pid == 3){
-        print("Unblocking second dec\n");
-    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
         return 1;

@@ -71,7 +71,7 @@ testSync(int argc, char *argv[]) {
         return;
     }
     
-    char * argv2 [] = {"3","0"};
+    char * argv2 [] = {"10","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
 

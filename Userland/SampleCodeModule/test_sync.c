@@ -20,7 +20,6 @@ slowInc(int64_t *p, int64_t inc) {
 
 void
 myProcessInc(int argc, char *argv[]) {
-    print("Process inc\n");
     uint64_t n;
     int8_t inc;
     int8_t use_sem;

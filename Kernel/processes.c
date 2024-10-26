@@ -25,10 +25,6 @@ static void removeChild(pid child){
         families[parent].childrenArr[child] = 0;
         families[parent].numberOfChildren --;
         if(families[parent].numberOfChildren == 0){ //if it isnt blocked it has no effect
-            print("Unblocking parent after chuldren are dead\n");
-            print("Parent is: ");
-            print(buffer);
-            print("\n");
             unblock(parent);
         }
     }
@@ -46,11 +42,6 @@ static void shellAdoption(pid child, pid lastParent){
 
 pid createProcess(createProcessInfo * info) {
     pid parent = getpid();
-    char buffer[10];
-    intToStr(parent,buffer,10);
-    print("The parent creating is:");
-    print(buffer);
-    print("\n");
     pid pid = 0;
     // Find first empty slot
     for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++);
@@ -133,15 +124,6 @@ pid createProcess(createProcessInfo * info) {
         print("NAME POINTER IS NULL\n");
     }
     lastPID++;
-    print("Process was created:");
-    char buff[10];
-    intToStr(lastPID, buff,10);
-    print(buff);
-    print("\n");
-    intToStr(process->parent,buffer,10);
-    print("The parent creating in createProcess is:");
-    print(buffer);
-    print("\n");
     
     return pid;
 }
@@ -166,15 +148,12 @@ int kill(pid pid) { //if it had children, shell adopts them
     if(pid == 0){
         return -1; // cant kill shell
     }
-    if(pid == 1){
-        print("PROCESS TEST-SYNC WAS KILLED\n");
-    }
     ProcessS * process;
     if (!findPID(pid, &process)) {
         print("Validation error\n");
         return 1;
     }
-            /* remove from parent list*/
+    /* remove from parent list*/
     removeChild(pid);
 
     /* check if it has children and make shell adopt them*/
@@ -209,9 +188,6 @@ int kill(pid pid) { //if it had children, shell adopts them
     free(process->stackEnd);
     free(process->name);
     memset(process, 0, sizeof(ProcessS));
-
-
-
     lastPID--;
     return 0;
 }

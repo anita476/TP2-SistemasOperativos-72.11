@@ -58,7 +58,6 @@ int processWasKilled(pid pid) {
 }
 /* make current proc wait for all children */
 void waitForChildren(){
-    print("Waiting for children\n");
     block(currentPID);
     yield();
 }
@@ -136,9 +135,6 @@ int unblock(pid pid) {
     // If its of "high priority", run it next
     if (processTable[pid].priority >= (MAX_PRIORITY / 2)) {
         nextPID = pid;
-    }
-    if(pid ==1){
-        print("UNBLOCKING TESTSYNC\n");
     }
     return 0;
 }

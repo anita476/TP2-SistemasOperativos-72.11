@@ -60,10 +60,8 @@ int sem_open(sem_name semName, int initValue ){
 					return -1;
 				}
 				if(strcpy(semaphoreList[i].name, semName) == NULL){
-					print("DIDNT COPY SEMNAME");
 					return -1;
 				}
-				print(semaphoreList[i].name);
 				semaphoreList[i].sem_value = initValue;
 				semaphoreList[i].interestedProcesses[0] = currentPid;
 				semaphoreList[i].numberInterestedProcesses++;
@@ -152,9 +150,7 @@ int sem_value( sem sem){
 
 sem sem_get(sem_name semName){
 	for(int i = 0; i< active; ){
-		print("Looking for sem\n");
 		if(strcmp(semaphoreList[i].name, semName) == 0){
-			print("Found sem\n");
 			return i; //number in list is the "id" we use
 		}
 	}

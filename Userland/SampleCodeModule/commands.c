@@ -19,6 +19,7 @@ void help() {
     print("\n * testmm: Run a memory management test in an endless loop");
     print("\n * testprio : Run a priority test");
     print("\n * testproc : Run a process management test in an endless loop");
+    print("\n * testsync : Run a semaphore test");
     print("\n");
 }
 

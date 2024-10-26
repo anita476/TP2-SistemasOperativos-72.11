@@ -12,6 +12,7 @@
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
+#include <semaphores.h>
 
 #include <syscallHandler.h>
 
@@ -234,12 +235,23 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
         case 30: 
             exit_process();
             break;
+        case 31: 
+            waitForChildren();
+            break;
         case 35:
             wait(rdi);
             break;
         case 36:
             set_cursor(rdi, rsi);
             break;
+        case 37:
+            return sem_open((void *)rdi, rsi);
+        case 38:
+            return sem_close(rdi);
+        case 39:
+            return sem_post(rdi);
+        case 40:
+            return sem_wait(rdi);
         default:
             return 1;
     }

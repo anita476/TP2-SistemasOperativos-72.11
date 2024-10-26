@@ -13,16 +13,22 @@ static familyUnit families[MAX_PROCESSES]; //we store children here
 int lastPID = 0;
 
 static void addChild(pid parent, pid child){
-    processArr[child].parent = parent;
     families[parent].childrenArr[child] = 1;
     families[parent].numberOfChildren ++;
 }
 static void removeChild(pid child){
-    pid parent = processArr[child].parent;
+    ProcessS *  proc = &processArr[child];
+    pid parent = proc->parent;
+    char buffer[10];
+    intToStr(proc->parent,buffer,10);
     if(parent != (NO_PROC)){
         families[parent].childrenArr[child] = 0;
         families[parent].numberOfChildren --;
         if(families[parent].numberOfChildren == 0){ //if it isnt blocked it has no effect
+            print("Unblocking parent after chuldren are dead\n");
+            print("Parent is: ");
+            print(buffer);
+            print("\n");
             unblock(parent);
         }
     }
@@ -33,22 +39,22 @@ static void shellAdoption(pid child, pid lastParent){
     families[lastParent].numberOfChildren--;
     /* go through with adoption */
     processArr[child].parent = 0;
+    print("Hello im in shell adoption\n");
     families[0].childrenArr[child] = 1;
     families[0].numberOfChildren++;
 }
 
 pid createProcess(createProcessInfo * info) {
     pid parent = getpid();
+    char buffer[10];
+    intToStr(parent,buffer,10);
+    print("The parent creating is:");
+    print(buffer);
+    print("\n");
     pid pid = 0;
     // Find first empty slot
     for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++);
-    if(pid != (PID_KERNEL)){ /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
-        addChild(parent, pid);
-    }
-    else{
-        processArr[pid].parent = (NO_PROC);
-    }
-    
+
     if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
         if (pid >= MAX_PROCESSES) { }
         if (info->argc < 0) { }
@@ -113,6 +119,13 @@ pid createProcess(createProcessInfo * info) {
     process->name = nameCopy;
     process->argv = argvCopy;
     process->argc = info->argc;
+    if(pid != (PID_KERNEL)){ /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
+        addChild(parent, pid);
+        process->parent = parent;
+    }
+    else{
+        process->parent = (NO_PROC);
+    }
 
     // Call scheduler so that it adds the process to its queue and blocks parent process
     processWasCreated(pid, info->argc, info->argv, info->priority, info->start, process->stackStart);
@@ -125,6 +138,11 @@ pid createProcess(createProcessInfo * info) {
     intToStr(lastPID, buff,10);
     print(buff);
     print("\n");
+    intToStr(process->parent,buffer,10);
+    print("The parent creating in createProcess is:");
+    print(buffer);
+    print("\n");
+    
     return pid;
 }
 
@@ -148,33 +166,15 @@ int kill(pid pid) { //if it had children, shell adopts them
     if(pid == 0){
         return -1; // cant kill shell
     }
+    if(pid == 1){
+        print("PROCESS TEST-SYNC WAS KILLED\n");
+    }
     ProcessS * process;
     if (!findPID(pid, &process)) {
         print("Validation error\n");
         return 1;
     }
-    
-    // Free all process memory
-    for (int i = 0; i < process->memoryCount; i++) {
-        // This prints "pointer is null" -> its correct, process hasnt assigned memory lel
-        free(process->memory[i]);
-    } 
-    free(process->memory); 
-    
-    // Call scheduler to take it out of queue 
-    processWasKilled(pid);
-
-    for (int i = 0; i < process->argc; i++) {
-        free(process->argv[i]);
-    }
-    //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
-    // free(process->argv); 
-
-    free(process->stackEnd);
-    free(process->name);
-    memset(process, 0, sizeof(ProcessS));
-
-    /* remove from parent list*/
+            /* remove from parent list*/
     removeChild(pid);
 
     /* check if it has children and make shell adopt them*/
@@ -188,6 +188,29 @@ int kill(pid pid) { //if it had children, shell adopts them
             }
         }
     }
+    
+    // Free all process memory
+    for (int i = 0; i < process->memoryCount; i++) {
+        // This prints "pointer is null" -> its correct, process hasnt assigned memory lel
+        free(process->memory[i]);
+    } 
+    free(process->memory); 
+    
+    // Call scheduler to take it out of queue 
+    processWasKilled(pid);
+
+
+    for (int i = 0; i < process->argc; i++) {
+        free(process->argv[i]);
+    }
+    //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
+    // free(process->argv); 
+
+    free(process->stackEnd);
+    free(process->name);
+    memset(process, 0, sizeof(ProcessS));
+
+
 
     lastPID--;
     return 0;

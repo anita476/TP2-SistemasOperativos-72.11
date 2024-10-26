@@ -14,7 +14,6 @@
 #include <sound.h>
 #include <time.h>
 #include <lib.h>
-#include <test_sync.h>
 
 extern void _cli();
 extern void _sti();
@@ -65,16 +64,6 @@ void init_shell() {
                                      .argc = 0,
                                      .argv = (const char * const *) NULL};
 	createProcess(&shellInfo);
-		int argc = 2;
-	char * argv [] = {"3000","2"};
-	createProcessInfo decInfo = {.name = "processSynchro",
-                                 .fg_flag = 1,
-                                 .priority = DEFAULT_PRIORITY,
-                                 .start = (ProcessStart) testSync,
-                                 .argc = 2,
-                                 .argv = (const char *const *) argv};
-
-	createProcess(&decInfo);
 }
 
 void welcomeSequence() {

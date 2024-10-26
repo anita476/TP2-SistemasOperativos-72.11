@@ -58,7 +58,8 @@ int processWasKilled(pid pid) {
 }
 /* make current proc wait for all children */
 void waitForChildren(){
-    int n = block(currentPID);
+    print("Waiting for children\n");
+    block(currentPID);
     yield();
 }
 void yield() {
@@ -106,15 +107,6 @@ void * switchP(void *cRSP) {
 }
 
 int block(pid pid) {
-    if(pid ==2){
-        print("Blocking first dec\n");
-    }
-    if(pid == 3){
-        print("Blocking second dec\n");
-    }
-    if(pid == 1){
-        print("Process 1 killed\n");
-    }
     PCB * pcb;
     if (getState(pid, &pcb)) {
         char buffer[10];
@@ -144,6 +136,9 @@ int unblock(pid pid) {
     // If its of "high priority", run it next
     if (processTable[pid].priority >= (MAX_PRIORITY / 2)) {
         nextPID = pid;
+    }
+    if(pid ==1){
+        print("UNBLOCKING TESTSYNC\n");
     }
     return 0;
 }

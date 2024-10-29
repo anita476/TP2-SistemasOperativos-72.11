@@ -106,7 +106,7 @@ testSync(int argc, char *argv[]) {
         return;
     }
 
-    char * argv2 [] = {"5","1"};
+    char * argv2 [] = {"10","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
     
@@ -169,7 +169,7 @@ void testNoSync(int argc, char *argv[]) {
         return;
     }
 
-    char * argv2 [] = {"5","0"};
+    char * argv2 [] = {"10","0"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
     

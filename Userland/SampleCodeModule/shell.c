@@ -169,9 +169,10 @@ void shell() {
       print("\n * scaleup: Increment the text size (max: 4, default: 1)");
       print("\n * time: Display the current time");
       print("\n * testmm: Run a memory management test in an endless loop");
-      print("\n * testprio : Run a priority test");
-      print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
-      print("\n * testsync : Run a semaphore test");
+      print("\n * testprio: Run a priority test");
+      print("\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
+      print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
+      print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
       print("\n");
       print("caOS>");
       while (1) {

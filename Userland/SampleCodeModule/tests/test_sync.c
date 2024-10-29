@@ -58,6 +58,9 @@ myProcessInc(int argc, char *argv[]) {
             return;
         }
     }
+    else{
+        print("Not using sems\n");
+    }
 
     uint64_t i;
     for (i = 0; i < n; i++) {
@@ -102,12 +105,15 @@ testSync(int argc, char *argv[]) {
         print("testsync: usage: testsync [n] [use_sem]\n");
         return;
     }
-    
+
     char * argv2 [] = {"5","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
     
     print("Starting test with parameters:\n");
+    print(argv2[0]);
+    print(argv2[1]);
+    print("\n");
     print("Iterations: ");
     print(argv2[0]);
     print("\nUse semaphore: ");
@@ -145,6 +151,70 @@ testSync(int argc, char *argv[]) {
     print(buffer);
     print("\n");
 }
+
+    waitForChildren(); //this makes it wait until ALL children are dead
+    print("Final value:");
+    char buffer[300];
+    itoa(global,buffer,10);
+    print(buffer);
+    print("\n");
+
+    return;
+}
+
+
+void testNoSync(int argc, char *argv[]) {
+    if (argc != 2) {
+        print("testsync: usage: testsync [n] [use_sem]\n");
+        return;
+    }
+
+    char * argv2 [] = {"5","0"};
+    char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
+    char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
+    
+    print("Starting test with parameters:\n");
+    print(argv2[0]);
+    print("\t");
+    print(argv2[1]);
+    print("\n");
+    print("Iterations: ");
+    print(argv2[0]);
+    print("\nUse semaphore: ");
+    print(argv2[1]);
+    print("\n");
+
+    createProcessInfo decInfo = {.name = "processDec",
+                                 .fg_flag = 1,
+                                 .priority = DEFAULT_PRIORITY,
+                                 .start = (ProcessStart) myProcessInc,
+                                 .argc = 3,
+                                 .argv = (const char *const *) argvDec};
+
+    createProcessInfo incInfo = {.name = "processInc",
+                                 .fg_flag = 1,
+                                 .priority = DEFAULT_PRIORITY,
+                                 .start = (ProcessStart) myProcessInc,
+                                 .argc = 3,
+                                 .argv = (const char *const *) argvInc};
+
+    global = 0;
+
+    int pids[2 * TOTAL_PAIR_PROCESSES];
+
+    int i;
+    for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+        pids[i] =  createProcess(&decInfo);
+        pids[i + TOTAL_PAIR_PROCESSES] = createProcess(&incInfo);
+    }
+
+    for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
+    char buffer[20];
+    itoa(pids[i], buffer, 10);
+    print("Created process with PID: ");
+    print(buffer);
+    print("\n");
+    }
 
     waitForChildren(); //this makes it wait until ALL children are dead
     print("Final value:");

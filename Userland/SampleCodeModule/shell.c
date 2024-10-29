@@ -13,7 +13,7 @@
 #include "test_sync.h"
 #include "test_no_sync.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 13
+#define COMMANDS_SIZE 14
 #define MAXMEMORY  (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -50,7 +50,7 @@ size_t strlen(const char *str) {
     return l;
 }
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -117,11 +117,23 @@ void executeCommand(char * str) {
             break;
       case 12:
             {
-	            char * argv [] = {"3000","2"};
+	            char * argv [] = {"1","2"};
 	      createProcessInfo decInfo = {.name = "processSynchro",
                                     .fg_flag = 1,
                                     .priority = DEFAULT_PRIORITY,
                                     .start = (ProcessStart) testSync,
+                                    .argc = 2,
+                                    .argv = (const char *const *) argv};
+            createProcess(&decInfo);
+            }
+            break;
+      case 13:
+            {
+                  char * argv [] = {"0","2"};
+	      createProcessInfo decInfo = {.name = "processNoSynchro",
+                                    .fg_flag = 1,
+                                    .priority = DEFAULT_PRIORITY,
+                                    .start = (ProcessStart) testNoSync,
                                     .argc = 2,
                                     .argv = (const char *const *) argv};
             createProcess(&decInfo);

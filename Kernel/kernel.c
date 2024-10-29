@@ -83,14 +83,15 @@ void welcomeSequence() {
 int main() {
 	_cli();
 	load_IDT();
-	welcomeSequence();
+	//welcomeSequence();
 	init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
 	init_scheduler();
 	init_shell();
 	_sti();
- 	while (1) {
+  	while (1) {
 		yield();
 		_hlt();
-	} 
+	}  
+
 	return 0;
 }

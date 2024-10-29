@@ -9,13 +9,43 @@ static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS ** pr);
 
 static ProcessS processArr[MAX_PROCESSES]; // We store all of our proccesses info here
+static familyUnit families[MAX_PROCESSES]; //we store children here
 int lastPID = 0;
 
+static void addChild(pid parent, pid child){
+    families[parent].childrenArr[child] = 1;
+    families[parent].numberOfChildren ++;
+}
+static void removeChild(pid child){
+    ProcessS *  proc = &processArr[child];
+    pid parent = proc->parent;
+    char buffer[10];
+    intToStr(proc->parent,buffer,10);
+    if(parent != (NO_PROC)){
+        families[parent].childrenArr[child] = 0;
+        families[parent].numberOfChildren --;
+        if(families[parent].numberOfChildren == 0){ //if it isnt blocked it has no effect
+            unblock(parent);
+        }
+    }
+}
+static void shellAdoption(pid child, pid lastParent){
+    /* remove from home */
+    families[lastParent].childrenArr[child] = 0;
+    families[lastParent].numberOfChildren--;
+    /* go through with adoption */
+    processArr[child].parent = 0;
+    print("Hello im in shell adoption\n");
+    families[0].childrenArr[child] = 1;
+    families[0].numberOfChildren++;
+}
+
 pid createProcess(createProcessInfo * info) {
+    pid parent = getpid();
     pid pid = 0;
     // Find first empty slot
     for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++);
-    
+
     if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
         if (pid >= MAX_PROCESSES) { }
         if (info->argc < 0) { }
@@ -80,14 +110,21 @@ pid createProcess(createProcessInfo * info) {
     process->name = nameCopy;
     process->argv = argvCopy;
     process->argc = info->argc;
+    if(pid != (PID_KERNEL)){ /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
+        addChild(parent, pid);
+        process->parent = parent;
+    }
+    else{
+        process->parent = (NO_PROC);
+    }
 
-    // Call scheduler so that it adds the process to its queue
+    // Call scheduler so that it adds the process to its queue and blocks parent process
     processWasCreated(pid, info->argc, info->argv, info->priority, info->start, process->stackStart);
     if (process->name == NULL) {
         print("NAME POINTER IS NULL\n");
     }
-
     lastPID++;
+    
     return pid;
 }
 
@@ -106,11 +143,29 @@ static int nameValidation(const char * name) {
     return 0;
 }
 
-int kill(pid pid) {
+int kill(pid pid) { //if it had children, shell adopts them
+                    // if it had a parent, remove it from family
+    if(pid == 0){
+        return -1; // cant kill shell
+    }
     ProcessS * process;
     if (!findPID(pid, &process)) {
         print("Validation error\n");
         return 1;
+    }
+    /* remove from parent list*/
+    removeChild(pid);
+
+    /* check if it has children and make shell adopt them*/
+    if(families[pid].numberOfChildren!=0){
+        for(int i = 0; i < MAX_PROCESSES ; i++){
+            if(families[pid].childrenArr[i]){
+                shellAdoption(i,pid);
+                if(!families[pid].numberOfChildren){
+                    break;
+                }
+            }
+        }
     }
     
     // Free all process memory
@@ -120,8 +175,9 @@ int kill(pid pid) {
     } 
     free(process->memory); 
     
-    // Call scheduler to take it out of queue
+    // Call scheduler to take it out of queue 
     processWasKilled(pid);
+
 
     for (int i = 0; i < process->argc; i++) {
         free(process->argv[i]);
@@ -132,6 +188,7 @@ int kill(pid pid) {
     free(process->stackEnd);
     free(process->name);
     memset(process, 0, sizeof(ProcessS));
+    lastPID--;
     return 0;
 }
 

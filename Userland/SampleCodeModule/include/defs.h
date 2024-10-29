@@ -35,4 +35,15 @@ typedef struct{
     const char *const *argv;
 } createProcessInfo;
 
+
+/* Semaphore related defs*/
+#define MAX_SEMAPHORES 255
+#define MAX_SEM_LENGTH 16
+#define MAX_SEMS_ERROR -2
+
+#define INVALID_VALUE_ERROR -3
+
+typedef int sem; /* sem ids can be a max of 255 */
+typedef char * sem_name;
+
 #endif

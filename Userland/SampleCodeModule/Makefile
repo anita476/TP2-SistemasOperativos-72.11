@@ -1,7 +1,7 @@
 include ../Makefile.inc
 
 MODULE=0000-sampleCodeModule.bin
-SOURCES=$(wildcard [^_]*.c)
+SOURCES=$(wildcard [^_]*.c programs/*.c lib/*.c tests/*.c)
 SOURCES_ASM=$(wildcard assembler/*.asm)
 OBJECTS_ASM=$(SOURCES_ASM:assembler/%.asm=obj/%.asm.o)
 
@@ -16,6 +16,6 @@ obj/%.asm.o : assembler/%.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o
+	rm -rf *.o */*.o
 
 .PHONY: all clean print

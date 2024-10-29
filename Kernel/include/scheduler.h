@@ -32,6 +32,7 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
 void yield(); // Relinquish cpu usage to next process
 int block(pid pid);
 int unblock(pid pid);
+void waitForChildren();
 int killCurrent();
 int setPriority(pid pid, priority newPrio);
 void * switchP(void * cRSP);

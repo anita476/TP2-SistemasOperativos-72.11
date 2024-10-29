@@ -56,7 +56,11 @@ int processWasKilled(pid pid) {
     }
     return 0;
 }
-
+/* make current proc wait for all children */
+void waitForChildren(){
+    block(currentPID);
+    yield();
+}
 void yield() {
     currentQuantum = 0;
     int81();
@@ -104,7 +108,12 @@ void * switchP(void *cRSP) {
 int block(pid pid) {
     PCB * pcb;
     if (getState(pid, &pcb)) {
-        print("Get state failed\n");
+        char buffer[10];
+        intToStr(pid, buffer,10);
+        print("For pid: ");
+        print(buffer);
+
+        print(" Get state failed\n");
         return 1;
     }
     processTable[pid].processStatus = BLOCKED;

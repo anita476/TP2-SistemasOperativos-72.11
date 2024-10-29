@@ -10,8 +10,10 @@
 #include "test_prio.h"
 #include "test_processes.h"
 #include "test_util.h"
+#include "test_sync.h"
+#include "test_no_sync.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 12
+#define COMMANDS_SIZE 14
 #define MAXMEMORY  (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -48,7 +50,7 @@ size_t strlen(const char *str) {
     return l;
 }
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -113,6 +115,30 @@ void executeCommand(char * str) {
 	      createProcess(&testprio);
             }
             break;
+      case 12:
+            {
+	            char * argv [] = {"1","2"};
+	      createProcessInfo decInfo = {.name = "processSynchro",
+                                    .fg_flag = 1,
+                                    .priority = DEFAULT_PRIORITY,
+                                    .start = (ProcessStart) testSync,
+                                    .argc = 2,
+                                    .argv = (const char *const *) argv};
+            createProcess(&decInfo);
+            }
+            break;
+      case 13:
+            {
+                  char * argv [] = {"0","2"};
+	      createProcessInfo decInfo = {.name = "processNoSynchro",
+                                    .fg_flag = 1,
+                                    .priority = DEFAULT_PRIORITY,
+                                    .start = (ProcessStart) testNoSync,
+                                    .argc = 2,
+                                    .argv = (const char *const *) argv};
+            createProcess(&decInfo);
+            }
+            break;
       default: 
             print("Unrecognized command\n");
             errorSound();
@@ -155,8 +181,10 @@ void shell() {
       print("\n * scaleup: Increment the text size (max: 4, default: 1)");
       print("\n * time: Display the current time");
       print("\n * testmm: Run a memory management test in an endless loop");
-      print("\n * testprio : Run a priority test");
-      print("\n * testproc : Run a process management test in an endless loop. Receives max processes as parameter");
+      print("\n * testprio: Run a priority test");
+      print("\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
+      print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
+      print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
       print("\n");
       print("caOS>");
       while (1) {

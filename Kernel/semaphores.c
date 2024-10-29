@@ -46,6 +46,7 @@ int sem_open(sem_name semName, int initValue ){
 	sem semId = sem_get(semName);
 	
 	if(semId == -1){ //need to create sem 
+		print("Didnt find name\n");
 		if(active == MAX_PROCESSES){
 			return MAX_SEMS_ERROR;
 		}
@@ -72,6 +73,7 @@ int sem_open(sem_name semName, int initValue ){
 		}
 	}
 	else{
+		print("Sem already exists\n");
 		//sem already exists -> init value is ignored because the sem was NOT really created and it has its own value;
 		for(int i = 0; i< semaphoreList[semId].numberInterestedProcesses; i++){
 			if(semaphoreList[semId].interestedProcesses[i] == currentPid){
@@ -91,14 +93,16 @@ int sem_close(sem  sem){
 		return INVALID_VALUE_ERROR;
 	}
 	for(int i = 0; i< semaphoreList[sem].numberInterestedProcesses; i++) {
-		if(semaphoreList[sem].interestedProcesses[i] == currentPid){ 
+		if(semaphoreList[sem].interestedProcesses[i] == currentPid){  //first process is always the calling process
 			semaphoreList[sem].numberInterestedProcesses--;
 			if(semaphoreList[sem].numberInterestedProcesses == 0){
+				print("I have freed the name\n");
 				free(semaphoreList[sem].name);
+				semaphoreList[sem].sem_value = 0;
 			}
 			else{
 			//advance all
-				for(int j = i; j < semaphoreList[sem].numberInterestedProcesses; j++){
+				for(int j = i +1 ; j < semaphoreList[sem].numberInterestedProcesses; j++){
 					semaphoreList[sem].interestedProcesses[j-1] =  semaphoreList[sem].interestedProcesses[j];
 				}
 			}
@@ -113,14 +117,15 @@ int sem_post(sem  sem){
         return -1;
     }
     semaphoreList[sem].sem_value ++;
-	/* unlock the first waiting process and take it to back of line */
-	int n = semaphoreList[sem].interestedProcesses[0];
-	int i;
-	for(i = 0; i < semaphoreList[sem].numberInterestedProcesses -1; i++){
-		semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i+1];
+	if(semaphoreList[sem].numberInterestedProcesses >1){
+		int currentProc = semaphoreList[sem].interestedProcesses[0];
+		for(int i = 0;i< semaphoreList[sem].numberInterestedProcesses ; i++ ){
+			semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i +1];
+		}
+		semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses -1] = currentProc;
+		unblock( semaphoreList[sem].interestedProcesses[0] );
 	}
-	semaphoreList[sem].interestedProcesses[i] = n;
-	unblock(n);
+	
     release(&semaphoreList[sem].lock);
     return 0;
 }
@@ -131,11 +136,14 @@ int sem_wait ( sem sem){
 	}
 
 	if(semaphoreList[sem].sem_value > 0){
-		semaphoreList[sem].sem_value--; //i dont need to do this .. it is always 0 or 1
+		semaphoreList[sem].sem_value--; 
 	}
 	else{
 		pid currentPid = getpid();
 		block(currentPid); 
+		release(&(semaphoreList[sem].lock));
+		yield();
+		return 0;
 	}
 	release(&(semaphoreList[sem].lock));
 	return 0;
@@ -149,7 +157,7 @@ int sem_value( sem sem){
 } 
 
 sem sem_get(sem_name semName){
-	for(int i = 0; i< active; ){
+	for(int i = 0; i< active; i++){
 		if(strcmp(semaphoreList[i].name, semName) == 0){
 			return i; //number in list is the "id" we use
 		}

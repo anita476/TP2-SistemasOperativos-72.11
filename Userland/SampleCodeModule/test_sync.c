@@ -13,8 +13,8 @@ int64_t global;  // shared memory
 void
 slowInc(int64_t *p, int64_t inc) {
     uint64_t aux = *p;
-    yield();  // This makes the race condition highly probable
     aux += inc;
+    yield();
     *p = aux;
 }
 
@@ -36,12 +36,13 @@ myProcessInc(int argc, char *argv[]) {
     if ((use_sem = satoi(argv[2])) < 0)
         return;
 
-
+    
 
 
     sem sem;
 
     if (use_sem) {
+        print("Using semaphores\n");
         if ((sem = sem_open(SEM_ID, 1)) < 0) {
             print("testSync: ERROR opening semaphore\n");
             return;
@@ -70,7 +71,7 @@ testSync(int argc, char *argv[]) {
         return;
     }
     
-    char * argv2 [] = {"10","1"};
+    char * argv2 [] = {"1","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
 

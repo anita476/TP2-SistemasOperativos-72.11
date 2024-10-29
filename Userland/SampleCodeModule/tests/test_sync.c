@@ -98,8 +98,6 @@ myProcessInc(int argc, char *argv[]) {
 
 void
 testSync(int argc, char *argv[]) {
-    uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
-
     if (argc != 2) {
         print("testsync: usage: testsync [n] [use_sem]\n");
         return;
@@ -132,11 +130,22 @@ testSync(int argc, char *argv[]) {
 
     global = 0;
 
-    uint64_t i;
+    int pids[2 * TOTAL_PAIR_PROCESSES];
+
+    int i;
     for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
         pids[i] =  createProcess(&decInfo);
         pids[i + TOTAL_PAIR_PROCESSES] = createProcess(&incInfo);
     }
+
+    for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
+    char buffer[20];
+    itoa(pids[i], buffer, 10);
+    print("Created process with PID: ");
+    print(buffer);
+    print("\n");
+}
+
     waitForChildren(); //this makes it wait until ALL children are dead
     print("Final value:");
     char buffer[300];

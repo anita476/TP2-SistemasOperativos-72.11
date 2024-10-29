@@ -117,7 +117,6 @@ void executeCommand(char * str) {
             break;
       case 12:
             {
-                  int argc = 2;
 	            char * argv [] = {"3000","2"};
 	      createProcessInfo decInfo = {.name = "processSynchro",
                                     .fg_flag = 1,

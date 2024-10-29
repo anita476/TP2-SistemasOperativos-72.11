@@ -23,6 +23,7 @@ myProcessInc(int argc, char *argv[]) {
     uint64_t n;
     int8_t inc;
     int8_t use_sem;
+    char buffer[20];
 
     if (argc != 3) {
         print("Must receive three arguments: n, inc, useSem\n");
@@ -36,13 +37,22 @@ myProcessInc(int argc, char *argv[]) {
     if ((use_sem = satoi(argv[2])) < 0)
         return;
 
-    
+    print("Process PID: ");
+    itoa(getpid(), buffer, 10);
+    print(buffer);
+    print(" starting with inc=");
+    itoa(inc, buffer, 10);
+    print(buffer);
+    print("\n");
 
 
     sem sem;
 
     if (use_sem) {
-        print("Using semaphores\n");
+        print("PID ");
+        itoa(getpid(), buffer, 10);
+        print(buffer);
+        print(": Opening semaphore\n");
         if ((sem = sem_open(SEM_ID, 1)) < 0) {
             print("testSync: ERROR opening semaphore\n");
             return;
@@ -51,15 +61,39 @@ myProcessInc(int argc, char *argv[]) {
 
     uint64_t i;
     for (i = 0; i < n; i++) {
-        if (use_sem)
+        if (use_sem) {
+            print("PID ");
+            itoa(getpid(), buffer, 10);
+            print(buffer);
+            print(": Waiting on semaphore\n");
             sem_wait(sem);
+        }
+        int64_t before = global;
         slowInc(&global, inc);
+        int64_t after = global;
+        
+        print("PID ");
+        itoa(getpid(), buffer, 10);
+        print(buffer);
+        print(": ");
+        itoa(before, buffer, 10);
+        print(buffer);
+        print(" -> ");
+        itoa(after, buffer, 10);
+        print(buffer);
+        print("\n");
+
         if (use_sem)
             sem_post(sem);
     }
 
     if (use_sem)
         sem_close(sem);
+
+    print("Process PID: ");
+    itoa(getpid(), buffer, 10);
+    print(buffer);
+    print(" finishing\n");
 }
 
 void
@@ -71,9 +105,16 @@ testSync(int argc, char *argv[]) {
         return;
     }
     
-    char * argv2 [] = {"1","1"};
+    char * argv2 [] = {"5","1"};
     char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
     char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
+    
+    print("Starting test with parameters:\n");
+    print("Iterations: ");
+    print(argv2[0]);
+    print("\nUse semaphore: ");
+    print(argv2[1]);
+    print("\n");
 
     createProcessInfo decInfo = {.name = "processDec",
                                  .fg_flag = 1,

@@ -16,6 +16,6 @@ obj/%.asm.o : assembler/%.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
 
 clean:
-	rm -rf *.o
+	rm -rf *.o */*.o
 
 .PHONY: all clean print

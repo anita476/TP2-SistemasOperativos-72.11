@@ -193,6 +193,18 @@ int sem_wait(sem sem)
 	else
 	{
 		pid currentPid = getpid();
+		// agregamos esto 
+		int found = 0;
+		for(int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
+            if(semaphoreList[sem].interestedProcesses[i] == currentPid) {
+                found = 1;
+                break;
+            }
+		}
+		if(!found) {
+            semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses++] = currentPid;
+        }
+		// hasta aca
 		block(currentPid);
 		release(&(semaphoreList[sem].lock));
 		yield();

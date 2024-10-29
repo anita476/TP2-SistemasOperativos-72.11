@@ -183,13 +183,10 @@ int sem_wait(sem sem)
 {
 	if (grabSemaphore(sem) != 0) return -1; 
 
-	while (1) {
-		if (semaphoreList[sem].sem_value > 0) {
-			semaphoreList[sem].sem_value--;
-			break; 
-		}
+	pid currentPid = getpid();
+
+	while (semaphoreList[sem].sem_value <= 0) { 
 	
-		pid currentPid = getpid();
 		int found = 0;
 		for(int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
             if(semaphoreList[sem].interestedProcesses[i] == currentPid) {
@@ -209,7 +206,7 @@ int sem_wait(sem sem)
 		// when we wake up, reacquire lock and check again!!!
 		if (grabSemaphore(sem) != 0) return -1;
 	}
-
+	semaphoreList[sem].sem_value--;
 	release(&(semaphoreList[sem].lock));
 	return 0;
 

@@ -135,13 +135,16 @@ int sem_close(sem sem){
                 release(&lock);
             }
             else {
+				// agrego esto: 
+				int originalSize = semaphoreList[sem].numberInterestedProcesses;
+    			semaphoreList[sem].numberInterestedProcesses--;
                 // Shift remaining processes left, avoiding overflow
-                for(int j = i; j < semaphoreList[sem].numberInterestedProcesses; j++){
+                for(int j = i; j < originalSize-1; j++){
                     semaphoreList[sem].interestedProcesses[j] = 
                         semaphoreList[sem].interestedProcesses[j + 1];
                 }
                 // Clear the last slot
-                semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses] = 0;
+                semaphoreList[sem].interestedProcesses[originalSize-1] = 0;
             }
             break;
         }
@@ -164,15 +167,16 @@ int sem_post(sem sem)
 	}
 	semaphoreList[sem].sem_value++;
 	if (semaphoreList[sem].numberInterestedProcesses > 0)
-	{
-		unblock(semaphoreList[sem].interestedProcesses[0]); // lo muevo para aca pq si no, no se desbloquea el proceso que estaba esperando por mayor tiempo
-		int currentProc = semaphoreList[sem].interestedProcesses[0];
+	{	
+		pid toUnblock = semaphoreList[sem].interestedProcesses[0]; // lo muevo para aca pq si no, no se desbloquea el proceso que estaba esperando por mayor tiempo
 		for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses-1; i++) // agrego -1 para que no se desborde
 		{
 			semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i + 1];
 		}
-		semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses - 1] = currentProc;
-		// unblock(semaphoreList[sem].interestedProcesses[0]);
+		semaphoreList[sem].numberInterestedProcesses--;  // importante!! 
+
+		// semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses - 1] = currentProc;
+		unblock(toUnblock);
 	}
 
 	release(&semaphoreList[sem].lock);

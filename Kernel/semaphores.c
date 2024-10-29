@@ -163,15 +163,16 @@ int sem_post(sem sem)
 		return -1;
 	}
 	semaphoreList[sem].sem_value++;
-	if (semaphoreList[sem].numberInterestedProcesses > 1)
+	if (semaphoreList[sem].numberInterestedProcesses > 0)
 	{
+		unblock(semaphoreList[sem].interestedProcesses[0]); // lo muevo para aca pq si no, no se desbloquea el proceso que estaba esperando por mayor tiempo
 		int currentProc = semaphoreList[sem].interestedProcesses[0];
-		for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++)
+		for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses-1; i++) // agrego -1 para que no se desborde
 		{
 			semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i + 1];
 		}
 		semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses - 1] = currentProc;
-		unblock(semaphoreList[sem].interestedProcesses[0]);
+		// unblock(semaphoreList[sem].interestedProcesses[0]);
 	}
 
 	release(&semaphoreList[sem].lock);
@@ -199,6 +200,7 @@ int sem_wait(sem sem)
 	}
 	release(&(semaphoreList[sem].lock));
 	return 0;
+
 }
 
 int sem_value(sem sem)

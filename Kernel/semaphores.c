@@ -181,19 +181,15 @@ int sem_post(sem sem)
 
 int sem_wait(sem sem)
 {
-	if (grabSemaphore(sem) != 0)
-	{
-		return -1;
-	}
+	if (grabSemaphore(sem) != 0) return -1; 
 
-	if (semaphoreList[sem].sem_value > 0)
-	{
-		semaphoreList[sem].sem_value--;
-	}
-	else
-	{
+	while (1) {
+		if (semaphoreList[sem].sem_value > 0) {
+			semaphoreList[sem].sem_value--;
+			break; 
+		}
+	
 		pid currentPid = getpid();
-		// agregamos esto 
 		int found = 0;
 		for(int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
             if(semaphoreList[sem].interestedProcesses[i] == currentPid) {
@@ -201,15 +197,19 @@ int sem_wait(sem sem)
                 break;
             }
 		}
+
 		if(!found) {
             semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses++] = currentPid;
         }
-		// hasta aca
-		block(currentPid);
+
 		release(&(semaphoreList[sem].lock));
+		block(currentPid);
 		yield();
-		return 0;
+
+		// when we wake up, reacquire lock and check again!!!
+		if (grabSemaphore(sem) != 0) return -1;
 	}
+
 	release(&(semaphoreList[sem].lock));
 	return 0;
 

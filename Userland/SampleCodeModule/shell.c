@@ -11,6 +11,7 @@
 #include "test_processes.h"
 #include "test_util.h"
 #include "test_sync.h"
+#include "test_no_sync.h"
 #define BUFFER_SIZE 1024
 #define COMMANDS_SIZE 13
 #define MAXMEMORY  (0x2000000 - 0xF00000)

@@ -111,22 +111,25 @@ int ps() {
     int count = listProcessesInfo(array, MAX_PROCESSES);
     
     // Print header
-    print("PID    Name           Status    Priority    Foreground\n");
-    print("---    ----           ------    --------    ----------\n");
+    print("PID    Name           Status    Priority    Foreground    Parent\n");
+    print("---    ----           ------    --------    ----------    ------\n");
 
     for (int i = 0; i < count; i++) {
         const char *status = array[i].status == READY     ? "READY   "
                             : array[i].status == RUNNING  ? "RUNNING "
                             : array[i].status == BLOCKED  ? "BLOCKED "
                             : array[i].status == KILLED   ? "KILLED  "
-                                                          : "UNKNOWN ";
+                                                         : "UNKNOWN ";
         
         char buffer[300];
-        char pidStr[10], prioStr[10], fgStr[10];
+        char pidStr[10], prioStr[10], fgStr[10], parentStr[10];
         
         itoa(array[i].pid, pidStr, 10);
         itoa(array[i].priority, prioStr, 10);
         itoa(array[i].fg_flag, fgStr, 10);
+        
+        if (array[i].parent == NO_PROC) strcpy(parentStr, "NONE");
+        else itoa(array[i].parent, parentStr, 10);
         
         strcpy(buffer, pidStr);
         strcat(buffer, "      ");
@@ -138,9 +141,12 @@ int ps() {
         strcat(buffer, status);
         strcat(buffer, "  ");
         strcat(buffer, prioStr);
-        strcat(buffer, "          ");
+        strcat(buffer, "           ");
         strcat(buffer, fgStr);
+        strcat(buffer, "             ");
+        strcat(buffer, parentStr);
         strcat(buffer, "\n");
+        
         print(buffer);
     }
 

@@ -4,6 +4,7 @@
 #define MAX_PRIORITY 5
 #define DEFAULT_PRIORITY 1
 #define MIN_PRIORITY 0
+#define NO_PROC -1
 
 #define MAX_PROCESSES 10
 #define MAX_NAME_LENGTH 20
@@ -22,7 +23,7 @@ typedef struct{
     int fg_flag;
     priority priority;
     status status;
-
+    pid parent;
 } ProcessInfo;
 
 /*what is needed in order to create a process -> maybe it would be better passed as only args idk*/ 

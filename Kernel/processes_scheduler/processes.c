@@ -228,10 +228,10 @@ int listProcessesInfo(ProcessInfo * processes, int maxProcesses) {
             info->stackEnd = process->stackEnd;
             info->stackStart = process->stackStart;
             info->fg_flag = process->fg_flag;
+            info->parent = process->parent;
             getProcessInfo(i, info);
         }
     }
-
     return processCounter;
 }
 

@@ -42,7 +42,7 @@ typedef struct{
     int fg_flag;
     priority priority;
     status status;
-
+    pid parent;
 } ProcessInfo;
 
 /*what is needed in order to create a process -> maybe it would be better passed as only args idk*/ 

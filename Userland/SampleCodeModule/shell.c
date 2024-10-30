@@ -1,6 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include <_loader.h>
 #include "shell.h"
 #include "libSysCalls.h"
 #include "commands.h"
@@ -13,7 +14,7 @@
 #include "test_sync.h"
 #include "test_no_sync.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 14
+#define COMMANDS_SIZE 16
 #define MAXMEMORY  (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -44,13 +45,7 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	return destination;
 }
 
-size_t strlen(const char *str) {
-    size_t l;
-    for (l = 0; *str != 0; str++, l++);
-    return l;
-}
-
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync", "ps", "e"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -139,6 +134,33 @@ void executeCommand(char * str) {
             createProcess(&decInfo);
             }
             break;
+      case 14:
+            ps();
+            break;
+      case 15:
+            {
+                char *argvAux[] = {0};
+                createProcessInfo loopInfo = {
+                    .name = "endless_loop",
+                    .fg_flag = 1,  // Run in foreground
+                    .priority = DEFAULT_PRIORITY,
+                    .start = (ProcessStart) endless_loop,
+                    .argc = 0,
+                    .argv = (const char *const *) argvAux
+                };
+                
+                pid newPid = createProcess(&loopInfo);
+                if (newPid == -1) {
+                    print("Error creating endless loop process\n");
+                } else {
+                    char buffer[10];
+                    itoa(newPid, buffer, 10);
+                    print("Created endless loop process with PID: ");
+                    print(buffer);
+                    print("\n");
+                }
+            }
+            break;      
       default: 
             print("Unrecognized command\n");
             errorSound();
@@ -185,6 +207,7 @@ void shell() {
       print("\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
       print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
       print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
+      print("\n * ps: List all processes");
       print("\n");
       print("caOS>");
       while (1) {

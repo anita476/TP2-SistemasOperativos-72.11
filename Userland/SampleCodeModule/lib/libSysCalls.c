@@ -137,4 +137,3 @@ int sem_post(sem sem){
 int sem_wait(sem sem){
     return syscall(40, (uint64_t) sem, 0, 0, 0, 0);
 }
-

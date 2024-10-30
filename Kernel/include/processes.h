@@ -71,6 +71,6 @@ int bringToForeground(pid pid);
 
 int isForeground(pid pid);
 
-int listProcessesInfo(ProcessInfo * processes, int max_processes);
+int listProcessesInfo(ProcessInfo * processes, int maxProcesses);
 
 #endif

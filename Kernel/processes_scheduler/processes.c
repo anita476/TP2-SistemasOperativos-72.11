@@ -4,6 +4,7 @@
 #include <videoDriver.h>
 #include <processes.h>
 #include <scheduler.h>
+#include <lib.h>
 
 static int nameValidation(const char * name);
 static int findPID(pid pid, ProcessS ** pr);
@@ -216,9 +217,22 @@ int isForeground(pid pid) {
     return p->fg_flag;
 }
 
-int listProcessesInfo(ProcessInfo * processes, int max_processes) {
-    // Not implemented yet
-    return 0;
+int listProcessesInfo(ProcessInfo * processes, int maxProcesses) {
+    int processCounter = 0;
+    for (int i = 0; i < MAX_PROCESSES && processCounter < maxProcesses; ++i) {
+        ProcessS *process = &processArr[i];
+        if (process->stackEnd != NULL) {
+            ProcessInfo *info = &processes[processCounter++];
+            info->pid = i;
+            strcpy(info->name, process->name);
+            info->stackEnd = process->stackEnd;
+            info->stackStart = process->stackStart;
+            info->fg_flag = process->fg_flag;
+            getProcessInfo(i, info);
+        }
+    }
+
+    return processCounter;
 }
 
 static int findPID(pid pid, ProcessS **pr) {

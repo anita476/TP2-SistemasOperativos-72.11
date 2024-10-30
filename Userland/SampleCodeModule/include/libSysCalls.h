@@ -51,4 +51,3 @@ sem sem_open(sem_name semName, int initValue);
 int sem_close(sem sem);
 int sem_post(sem sem);
 int sem_wait(sem sem);
-

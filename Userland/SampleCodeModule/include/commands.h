@@ -7,3 +7,5 @@ void time();
 void regs();
 
 char* itoa(int num, char* str, int base);
+
+int ps();

@@ -37,7 +37,7 @@ int killCurrent();
 int setPriority(pid pid, priority newPrio);
 void * switchP(void * cRSP);
 
-int getPInfo(pid pid, ProcessInfo * pInfo); // Get process info
+int getProcessInfo(pid pid, ProcessInfo *processInfo); // Get process info
 pid getpid(); // Current process' pid
 
 

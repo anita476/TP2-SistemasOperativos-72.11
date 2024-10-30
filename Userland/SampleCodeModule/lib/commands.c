@@ -3,6 +3,7 @@
 
 #include <commands.h>
 #include <eliminator.h>
+#include <_loader.h>
 
 #define TIME_LENGTH 9
 
@@ -21,7 +22,8 @@ void help() {
     print("\n * testproc: Run a process management test in an endless loop");
     print("\n * testsync: Run a semaphore test");
     print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
-      print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
+    print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
+    print("\n * ps: Display the current processes");
     print("\n");
 }
 
@@ -102,4 +104,45 @@ void regs() {
         print("\n");
     }
     return;
+}
+
+int ps() {
+    ProcessInfo array[MAX_PROCESSES];
+    int count = listProcessesInfo(array, MAX_PROCESSES);
+    
+    // Print header
+    print("PID    Name           Status    Priority    Foreground\n");
+    print("---    ----           ------    --------    ----------\n");
+
+    for (int i = 0; i < count; i++) {
+        const char *status = array[i].status == READY     ? "READY   "
+                            : array[i].status == RUNNING  ? "RUNNING "
+                            : array[i].status == BLOCKED  ? "BLOCKED "
+                            : array[i].status == KILLED   ? "KILLED  "
+                                                          : "UNKNOWN ";
+        
+        char buffer[300];
+        char pidStr[10], prioStr[10], fgStr[10];
+        
+        itoa(array[i].pid, pidStr, 10);
+        itoa(array[i].priority, prioStr, 10);
+        itoa(array[i].fg_flag, fgStr, 10);
+        
+        strcpy(buffer, pidStr);
+        strcat(buffer, "      ");
+        strcat(buffer, array[i].name);
+        int nameLen = strlen(array[i].name);
+        for (int j = nameLen; j < 15; j++) {
+            strcat(buffer, " ");
+        }
+        strcat(buffer, status);
+        strcat(buffer, "  ");
+        strcat(buffer, prioStr);
+        strcat(buffer, "          ");
+        strcat(buffer, fgStr);
+        strcat(buffer, "\n");
+        print(buffer);
+    }
+
+    return 0;
 }

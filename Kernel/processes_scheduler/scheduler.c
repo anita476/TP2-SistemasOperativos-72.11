@@ -176,6 +176,14 @@ PCB * getCurrentProcess() {
     return NULL;
 }
 
+int getProcessInfo(pid pid, ProcessInfo *processInfo) {
+    PCB *pcb;
+    if (getState(pid, &pcb)) return 1;
+    processInfo->status = pcb->processStatus;
+    processInfo->priority = pcb->priority;
+    return 0;
+}
+
 // Same as get process by pid -> if it exists return its struct
 int getState(pid pid, PCB ** pcb) {
     if (pid < 0 || pid >= MAX_PROCESSES || (processTable[pid].currentRSP == NULL)) {

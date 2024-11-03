@@ -19,18 +19,6 @@
 
 extern void haltcpu();
 void * memcpy(void * destination, const void * source, uint64_t length) {
-	/*
-	* memcpy does not support overlapping buffers, so always do it
-	* forwards. (Don't change this without adjusting memmove.)
-	*
-	* For speedy copying, optimize the common case where both pointers
-	* and the length are word-aligned, and copy word-at-a-time instead
-	* of byte-at-a-time. Otherwise, copy by bytes.
-	*
-	* The alignment logic below should be portable. We rely on
-	* the compiler to be reasonably intelligent about optimizing
-	* the divides and modulos out. Fortunately, it is.
-	*/
 	uint64_t i;
 	if ((uint64_t)destination % sizeof(uint32_t) == 0 && (uint64_t)source % sizeof(uint32_t) == 0 && length % sizeof(uint32_t) == 0) {
 		uint32_t *d = (uint32_t *) destination;
@@ -54,7 +42,7 @@ int isCommand(char * str, int command) {
       for (; str[i] != '\0' && commands[command][i] != '\0'; i++)
             if (str[i] != commands[command][i]) return 0;   
       
-      return str[i] == commands[command][i];    // Checking if they have the same length 
+      return str[i] == commands[command][i];
 }
 
 int findCommand(char * str) {
@@ -63,7 +51,14 @@ int findCommand(char * str) {
       return -1;
 }
 
-void executeCommand(char * str) {
+void executeCommand(char * str, int argc, char * argv[]) {
+      int in_bg = 0;
+      if (argc > 0 && strcmp(argv[0], "-b") == 0) {
+            in_bg = 1;
+            argv++;
+            argc--;
+      }
+
       switch (findCommand(str)) {
       case 0: help(); break;
       case 1: time(); break;
@@ -81,57 +76,54 @@ void executeCommand(char * str) {
       case 7: divzero(); break;
       case 8: invalidOpCode(); break;
       case 9: 
-            {
-            char * argv[1] = {"500000"};
-            if (test_mm(1, argv) == (-1)) {
-                  print("Memory test failed\n");
-            }}
+            test_mm(argc, argv);
             break;
       case 10:
-            {
-            char * argv2[1] = {0};
-            createProcessInfo testproc = {.name = "processes",
-                                     .fg_flag = 1,
-                                     .priority = DEFAULT_PRIORITY,
-                                     .start = (ProcessStart) test_processes,
-                                     .argc = 0,
-                                     .argv = (const char *const *) argv2};
-	      createProcess(&testproc);
-            }
+            createProcessInfo testproc = {
+                  .name = "processes",
+                  .fg_flag = !in_bg,
+                  .priority = DEFAULT_PRIORITY,
+                  .start = (ProcessStart) test_processes,
+                  .argc = argc,
+                  .argv = (const char *const *) argv
+            };
+            createProcess(&testproc);
             break;
       case 11:
-            {
-      	createProcessInfo testprio = {.name = "priority",
-                                     .fg_flag = 1,
-                                     .priority = DEFAULT_PRIORITY,
-                                     .start = (ProcessStart) test_prio,
-                                     .argc = 0,
-                                     .argv = (const char *const *) NULL};
-	      createProcess(&testprio);
-            }
+      	createProcessInfo testprio = {
+                  .name = "priority",
+                  .fg_flag = !in_bg,
+                  .priority = DEFAULT_PRIORITY,
+                  .start = (ProcessStart) test_prio,
+                  .argc = argc,
+                  .argv = (const char *const *) argv
+            };
+            createProcess(&testprio);
             break;
       case 12:
             {
-	            char * argv [] = {"1","2"};
-	      createProcessInfo decInfo = {.name = "processSynchro",
-                                    .fg_flag = 1,
-                                    .priority = DEFAULT_PRIORITY,
-                                    .start = (ProcessStart) testSync,
-                                    .argc = 2,
-                                    .argv = (const char *const *) argv};
-            createProcess(&decInfo);
+                  createProcessInfo decInfo = {
+                        .name = "processSynchro",
+                        .fg_flag = !in_bg,
+                        .priority = DEFAULT_PRIORITY,
+                        .start = (ProcessStart) testSync,
+                        .argc = argc,
+                        .argv = (const char *const *) argv
+                  };
+                  createProcess(&decInfo);
             }
             break;
       case 13:
             {
-                  char * argv [] = {"0","2"};
-	      createProcessInfo decInfo = {.name = "processNoSynchro",
-                                    .fg_flag = 1,
-                                    .priority = DEFAULT_PRIORITY,
-                                    .start = (ProcessStart) testNoSync,
-                                    .argc = 2,
-                                    .argv = (const char *const *) argv};
-            createProcess(&decInfo);
+                  createProcessInfo decInfo = {
+                        .name = "processNoSynchro",
+                        .fg_flag = !in_bg,
+                        .priority = DEFAULT_PRIORITY,
+                        .start = (ProcessStart) testNoSync,
+                        .argc = argc,
+                        .argv = (const char *const *) argv
+                  };
+                  createProcess(&decInfo);
             }
             break;
       case 14:
@@ -142,7 +134,7 @@ void executeCommand(char * str) {
                 char *argvAux[] = {0};
                 createProcessInfo loopInfo = {
                     .name = "endless_loop",
-                    .fg_flag = 1,  // Run in foreground
+                    .fg_flag = !in_bg,
                     .priority = DEFAULT_PRIORITY,
                     .start = (ProcessStart) endless_loop,
                     .argc = 0,
@@ -172,6 +164,7 @@ void insertCommand() {
       char buffer[BUFFER_SIZE] = {'\0'};
       int bufferIndex = 0;
       char c = 0;
+
       while ((c = getChar()) != '\n' && bufferIndex < BUFFER_SIZE) {
             if (c != '\0') {
                   if (c == '\b' && bufferIndex > 0) {
@@ -185,9 +178,31 @@ void insertCommand() {
             }
       }
       print("\n");
-      executeCommand(buffer);
+
+      char * args[BUFFER_SIZE] = {NULL};
+      int argc = 0;
+      char * current = buffer;
+
+      args[argc++] = current;
+
+      while (* current) {
+            if (* current == ' ') {
+                  * current = '\0';
+                  current++;
+                  if (* current && argc < BUFFER_SIZE) {
+                        args[argc++] = current;
+                  }
+            }
+            else {
+                  current++;
+            }
+      }
+
+      if (argc > 0) {
+            executeCommand(args[0], argc - 1, args + 1);
+      }
+      
       print("caOS>");
-      //insertCommand();
 }
 
 void shell() {

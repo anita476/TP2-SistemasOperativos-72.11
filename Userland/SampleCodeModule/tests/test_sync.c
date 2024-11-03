@@ -106,19 +106,18 @@ testSync(int argc, char *argv[]) {
         return;
     }
 
-    char * argv2 [] = {"10","1"};
-    char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
-    char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
-    
+    char bufferaa[20];
     print("Starting test with parameters:\n");
-    print(argv2[0]);
-    print(argv2[1]);
-    print("\n");
     print("Iterations: ");
-    print(argv2[0]);
+    itoa(satoi(argv[0]), bufferaa, 10);
+    print(bufferaa);
     print("\nUse semaphore: ");
-    print(argv2[1]);
+    itoa(satoi(argv[1]), bufferaa, 10);
+    print(bufferaa);
     print("\n");
+
+    char *argvDec[] = {argv[0], "-1", argv[1], NULL};
+    char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
     createProcessInfo decInfo = {.name = "processDec",
                                  .fg_flag = 1,
@@ -169,19 +168,18 @@ void testNoSync(int argc, char *argv[]) {
         return;
     }
 
-    char * argv2 [] = {"10","0"};
-    char *argvDec[] = {argv2[0], "-1", argv2[1], NULL};
-    char *argvInc[] = {argv2[0], "1", argv2[1], NULL};
+    char *argvDec[] = {argv[0], "-1", argv[1], NULL};
+    char *argvInc[] = {argv[0], "1", argv[1], NULL};
     
     print("Starting test with parameters:\n");
-    print(argv2[0]);
+    print(argv[0]);
     print("\t");
-    print(argv2[1]);
+    print(argv[1]);
     print("\n");
     print("Iterations: ");
-    print(argv2[0]);
+    print(argv[0]);
     print("\nUse semaphore: ");
-    print(argv2[1]);
+    print(argv[1]);
     print("\n");
 
     createProcessInfo decInfo = {.name = "processDec",

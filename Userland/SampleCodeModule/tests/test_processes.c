@@ -18,16 +18,14 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   uint8_t alive = 0;
   uint8_t action;
   char *argvAux[] = {0};
-/*
   uint64_t max_processes;
   
-
   if (argc != 1)
     return -1;
 
   if ((max_processes = satoi(argv[0])) <= 0){
     return -1;
-  } */
+  }
   
   p_rq p_rqs[MAX_PROC];
 

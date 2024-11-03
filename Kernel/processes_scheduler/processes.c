@@ -122,7 +122,7 @@ pid createProcess(createProcessInfo * info) {
     }
 
     // Call scheduler so that it adds the process to its queue and blocks parent process
-    processWasCreated(pid, info->argc, info->argv, info->priority, info->start, process->stackStart);
+    processWasCreated(pid, process->argc, (const char *const *) process->argv, info->priority, info->start, process->stackStart);
     if (process->name == NULL) {
         print("NAME POINTER IS NULL\n");
     }

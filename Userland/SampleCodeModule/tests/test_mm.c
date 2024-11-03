@@ -14,6 +14,11 @@ typedef struct MM_rq {
 } mm_rq;
 
 uint64_t test_mm(uint64_t argc, char *argv[]) {
+
+  if (argc != 1) {
+    return -1;
+  }
+
   print("Starting test...\n");
 
   mm_rq mm_rqs[MAX_BLOCKS];

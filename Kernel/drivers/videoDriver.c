@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <videoDriver.h>
+#include <processes.h>
+#include <scheduler.h>
 #include <font.h>
 #include <lib.h>
 
@@ -198,12 +200,16 @@ int putCharCursor(char c) {
 }
 
 void print(char * str) {
-	for (; *str != '\0'; str++) putCharCursor(*str);
+	if (isForeground(getpid())) {
+		for (; *str != '\0'; str++) putCharCursor(*str);
+	}
 }
 
 void println(char * str) {
-	print(str);
-	newLine();
+	if (isForeground(getpid())) {
+		print(str);
+		newLine();
+	}
 }
 
 void setColor(uint32_t newColor) {

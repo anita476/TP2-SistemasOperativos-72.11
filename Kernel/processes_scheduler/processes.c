@@ -17,6 +17,7 @@ static void addChild(pid parent, pid child){
     families[parent].childrenArr[child] = 1;
     families[parent].numberOfChildren ++;
 }
+
 static void removeChild(pid child){
     ProcessS *  proc = &processArr[child];
     pid parent = proc->parent;
@@ -30,6 +31,7 @@ static void removeChild(pid child){
         }
     }
 }
+
 static void shellAdoption(pid child, pid lastParent){
     /* remove from home */
     families[lastParent].childrenArr[child] = 0;

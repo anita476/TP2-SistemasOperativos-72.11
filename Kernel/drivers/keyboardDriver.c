@@ -81,7 +81,7 @@ void keyboardHandler() {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
       // cleanBuffer();
-      print("caOS>");
+      print(STDOUT,"caOS>");
       return;
     }
   }

@@ -7,7 +7,7 @@
 #include <scheduler.h>
 #include <videoDriver.h>
 
-#define GREEN 0x00159854
+#define WHITE 0xFFFFFF
 #define RED 0xFF0000
 
 struct vbe_mode_info_structure {
@@ -59,7 +59,7 @@ uint8_t scale = 1;
 uint16_t cursorX = 0;
 uint16_t cursorY = 0;
 
-uint32_t textColor = GREEN;
+uint32_t textColor = WHITE;
 
 uint8_t getScale() { return scale; }
 
@@ -199,7 +199,7 @@ void print(fd fileDes, char *str) {
       setColor(RED);
     }
     else{
-      setColor(GREEN);
+      setColor(WHITE);
     }
     for (; *str != '\0'; str++){
       putCharCursor(*str);

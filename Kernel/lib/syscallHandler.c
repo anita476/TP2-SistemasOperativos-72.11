@@ -242,6 +242,8 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
             return getProcessInfo(rdi, (void *) rsi);
         case 33:
             return isForeground(rdi);
+        case 34:
+            return nice(rdi, rsi);
         case 35:
             wait(rdi);
             break;

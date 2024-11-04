@@ -139,6 +139,26 @@ int unblock(pid pid) {
     return 0;
 }
 
+int nice(pid pid, priority newPrio) {
+    PCB * pcb;
+    if (getState(pid, &pcb)) {
+        return -1;
+    }
+    
+    if (newPrio < MIN_PRIORITY || newPrio > MAX_PRIORITY) {
+        return -1;
+    }
+    
+    pcb->priority = newPrio;
+    
+    // If it is a high priority process, make it run next
+    if (newPrio >= (MAX_PRIORITY / 2) && pcb->processStatus == READY) {
+        nextPID = pid;
+    }
+    
+    return 0;
+}
+
 // Assigns time based on priority -> lower priority means less time 
 int getQuantum(pid currentPID) { 
     return (QUANTUM + processTable[currentPID].priority);

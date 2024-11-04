@@ -130,6 +130,10 @@ int isForeground(pid pid) {
     return syscall(33, (uint64_t) pid, 0, 0, 0, 0);
 }
 
+int nice(pid pid, priority newPrio) {
+    return syscall(34, (uint64_t) pid, (uint64_t) newPrio, 0, 0, 0);
+}
+
 void wait(uint64_t ms) {
     syscall(35, (uint64_t) ms, 0, 0, 0, 0);
 }

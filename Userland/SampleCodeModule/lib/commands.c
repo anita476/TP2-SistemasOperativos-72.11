@@ -25,6 +25,10 @@ void help() {
     print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
     print("\n * ps: Display the current processes");
     print("\n * loop: Run an endless loop");
+    print("\n * kill: Kill a process by its PID");
+    print("\n * block: Block a process by its PID");
+    print("\n * unblock: Unblock a process by its PID");
+    print("\n * nice: Change the priority of a process by its PID");
     print("\n");
 }
 

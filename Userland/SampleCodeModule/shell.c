@@ -14,7 +14,7 @@
 #include "test_sync.h"
 #include "test_no_sync.h"
 #define BUFFER_SIZE 1024
-#define COMMANDS_SIZE 16
+#define COMMANDS_SIZE 20
 #define MAXMEMORY  (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -33,7 +33,7 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	return destination;
 }
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync", "ps", "loop"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync", "ps", "loop", "kill", "block", "unblock", "nice"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -148,6 +148,41 @@ void executeCommand(char * str, int argc, char * argv[]) {
             };
             createProcess(&loopInfo);
             break;
+      case 16:
+            if (argc != 1) {
+                print("Usage: kill <pid>\n");
+                break;
+            }
+            pid pid_to_kill = satoi(argv[0]);
+            if (pid_to_kill <= 0) {
+                print("Invalid PID\n");
+                break;
+            }
+            if (kill(pid_to_kill) != 0) {
+                print("Error killing process\n");
+            }
+            break;
+      case 17:
+            if (argc != 1) {
+                  print("Usage: block <pid>\n");
+                  break;
+            }
+            block(satoi(argv[0]));
+            break;
+      case 18:
+            if (argc != 1) {
+                  print("Usage: unblock <pid>\n");
+                  break;
+            }
+            unblock(satoi(argv[0]));
+            break;
+      case 19:
+            if (argc != 2) {
+                  print("Usage: nice <pid> <new_priority>\n");
+                  break;
+            }
+            nice(satoi(argv[0]), satoi(argv[1]));
+            break;
       default: 
             print("Unrecognized command\n");
             errorSound();
@@ -219,6 +254,10 @@ void shell() {
       print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
       print("\n * ps: List all processes");
       print("\n * loop: Run an endless loop");
+      print("\n * kill: Kill a process by its PID");
+      print("\n * block: Block a process by its PID");
+      print("\n * unblock: Unblock a process by its PID");
+      print("\n * nice: Change the priority of a process by its PID");
       print("\n");
       print("caOS>");
       while (1) {

@@ -70,6 +70,7 @@ void keyboardHandler() {
       if (current != NULL && isForeground(getpid())) {
         killCurrent();
         print("^C\n");
+        cleanBuffer();
         return;
       }
     }
@@ -77,6 +78,7 @@ void keyboardHandler() {
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
       print("^D\n");
+      // cleanBuffer();
       return;
     }
   }

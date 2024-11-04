@@ -3,6 +3,8 @@
 
 /* _loader.c */
 #include <_loader.h>
+#include <libSysCalls.h>
+#include <defs.h>
 
 extern char bss;
 extern char endOfBinary;
@@ -50,4 +52,10 @@ char * strcat(char * dst, const char * src) {
     while (* dst) dst++;
     while ((* dst++ = * src++));
     return rdest;
+}
+
+int isForeground(pid pid) {
+    ProcessInfo info;
+    if (getProcessInfo(pid, &info) != 0) return -1;
+    return info.fg_flag;
 }

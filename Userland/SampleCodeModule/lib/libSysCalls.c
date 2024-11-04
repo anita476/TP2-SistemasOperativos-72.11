@@ -118,22 +118,26 @@ void exit_process() {
     syscall(30, 0, 0, 0, 0, 0);
 }
 
-void waitForChildren(){
-    syscall(31,0,0,0,0,0);
+void waitForChildren() {
+    syscall(31, 0, 0, 0, 0, 0);
 }
 
-sem sem_open(sem_name semName, int initValue){
+int getProcessInfo(pid pid, ProcessInfo * processInfo) {
+    return syscall(32, (uint64_t) pid, (uint64_t) processInfo, 0, 0, 0);
+}
+
+sem sem_open(sem_name semName, int initValue) {
     return (sem) syscall(37,(uint64_t) semName, (uint64_t) initValue, 0, 0, 0);
 }
 
-int sem_close(sem sem){
+int sem_close(sem sem) {
     return syscall(38,(uint64_t)sem, 0, 0, 0, 0);
 }
 
-int sem_post(sem sem){
+int sem_post(sem sem) {
     return syscall(39, (uint64_t)sem, 0, 0, 0, 0 );
 }
 
-int sem_wait(sem sem){
+int sem_wait(sem sem) {
     return syscall(40, (uint64_t) sem, 0, 0, 0, 0);
 }

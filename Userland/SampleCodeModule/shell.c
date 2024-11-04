@@ -76,7 +76,15 @@ void executeCommand(char * str, int argc, char * argv[]) {
       case 7: divzero(); break;
       case 8: invalidOpCode(); break;
       case 9: 
-            test_mm(argc, argv);
+            createProcessInfo testmm = {  
+                  .name = "memory",
+                  .fg_flag = !in_bg,
+                  .priority = DEFAULT_PRIORITY,
+                  .start = (ProcessStart) test_mm,
+                  .argc = argc,
+                  .argv = (const char *const *) argv
+            };
+            createProcess(&testmm);
             break;
       case 10:
             createProcessInfo testproc = {

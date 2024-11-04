@@ -238,6 +238,8 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
         case 31: 
             waitForChildren();
             break;
+        case 32:
+            return getProcessInfo(rdi, (void *) rsi);
         case 35:
             wait(rdi);
             break;

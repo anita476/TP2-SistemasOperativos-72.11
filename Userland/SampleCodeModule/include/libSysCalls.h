@@ -43,6 +43,7 @@ int unblock(pid pid);
 void yield();
 int setPriority(pid pid, priority priority);
 int listProcessesInfo(ProcessInfo * processes, int max_proc);
+int getProcessInfo(pid pid, ProcessInfo * processInfo);
 void exit_process();
 
 

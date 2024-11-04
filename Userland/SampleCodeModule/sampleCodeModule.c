@@ -4,6 +4,4 @@
 /* sampleCodeModule.c */
 #include "shell.h"
 
-void main() {
-	shell();
-}
+void main() { shell(); }

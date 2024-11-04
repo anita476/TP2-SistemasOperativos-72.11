@@ -1,8 +1,8 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <libSysCalls.h>
 #include <commands.h>
+#include <libSysCalls.h>
 #include <stdint.h>
 
 // Random
@@ -24,7 +24,7 @@ uint32_t GetUniform(uint32_t max) {
 
 // Memory
 uint8_t memcheck(void *start, uint8_t value, uint32_t size) {
-  uint8_t *p = (uint8_t *)start;
+  uint8_t *p = (uint8_t *) start;
   uint32_t i;
 
   for (i = 0; i < size; i++, p++)
@@ -57,7 +57,7 @@ int64_t satoi(char *str) {
   return res * sign;
 }
 
- // Dummies
+// Dummies
 void bussy_wait(uint64_t n) {
   uint64_t i;
   for (i = 0; i < n; i++)
@@ -66,16 +66,16 @@ void bussy_wait(uint64_t n) {
 
 void endless_loop() {
   while (1)
-  ;
+    ;
 }
 
 void endless_loop_print(uint64_t wait) {
   int64_t pid = getpid();
-  
+
   while (1) {
     char buffer[5];
     itoa(pid, buffer, 10);
     print(buffer);
     bussy_wait(9000000);
-  } 
-} 
+  }
+}

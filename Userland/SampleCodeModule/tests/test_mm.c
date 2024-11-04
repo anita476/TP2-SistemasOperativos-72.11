@@ -1,10 +1,10 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include <_loader.h>
+#include <libSysCalls.h>
 #include <stdlib.h>
 #include <test_util.h>
-#include <libSysCalls.h>
-#include <_loader.h>
 
 #define MAX_BLOCKS 128
 
@@ -53,29 +53,28 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
 
     // Set
     uint32_t i;
-    for (i = 0; i < rq; i++){
-      if (mm_rqs[i].address){
+    for (i = 0; i < rq; i++) {
+      if (mm_rqs[i].address) {
         print("Memset passed\n");
         memset(mm_rqs[i].address, i, mm_rqs[i].size);
       }
     }
 
     // Check
-    for (i = 0; i < rq; i++){
-      if (mm_rqs[i].address){
+    for (i = 0; i < rq; i++) {
+      if (mm_rqs[i].address) {
         if (!memcheck(mm_rqs[i].address, i, mm_rqs[i].size)) {
           print("test_mm ERROR\n");
           return -1;
-        }
-        else{
+        } else {
           print("Memcheck passed\n");
         }
       }
     }
 
     // Free
-    for (i = 0; i < rq; i++){
-      if (mm_rqs[i].address){
+    for (i = 0; i < rq; i++) {
+      if (mm_rqs[i].address) {
         print("Freeing block\n");
         free(mm_rqs[i].address);
       }

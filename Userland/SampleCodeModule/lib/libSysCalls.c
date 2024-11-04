@@ -126,6 +126,10 @@ int getProcessInfo(pid pid, ProcessInfo * processInfo) {
     return syscall(32, (uint64_t) pid, (uint64_t) processInfo, 0, 0, 0);
 }
 
+int isForeground(pid pid) {
+    return syscall(33, (uint64_t) pid, 0, 0, 0, 0);
+}
+
 sem sem_open(sem_name semName, int initValue) {
     return (sem) syscall(37,(uint64_t) semName, (uint64_t) initValue, 0, 0, 0);
 }

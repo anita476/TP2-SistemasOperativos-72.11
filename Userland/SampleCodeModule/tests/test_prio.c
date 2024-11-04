@@ -22,8 +22,11 @@ void test_prio() {
   int64_t pids[TOTAL_PROCESSES];
   char *argv[] = {0};
   uint64_t i;
+
+  int fg_flag = isForeground(getpid());
+
   createProcessInfo endlessInfo = {.name = "endless",
-                                     .fg_flag = 1,
+                                     .fg_flag = fg_flag,
                                      .priority = DEFAULT_PRIORITY,
                                      .start = (ProcessStart) endless_loop_print,
                                      .argc = 0,

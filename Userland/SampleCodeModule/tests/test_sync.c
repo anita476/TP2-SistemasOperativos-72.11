@@ -119,15 +119,17 @@ testSync(int argc, char *argv[]) {
     char *argvDec[] = {argv[0], "-1", argv[1], NULL};
     char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
+    int fg_flag = isForeground(getpid());
+
     createProcessInfo decInfo = {.name = "processDec",
-                                 .fg_flag = 1,
+                                 .fg_flag = fg_flag,
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) myProcessInc,
                                  .argc = 3,
                                  .argv = (const char *const *) argvDec};
 
     createProcessInfo incInfo = {.name = "processInc",
-                                 .fg_flag = 1,
+                                 .fg_flag = fg_flag,
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) myProcessInc,
                                  .argc = 3,
@@ -182,15 +184,17 @@ void testNoSync(int argc, char *argv[]) {
     print(argv[1]);
     print("\n");
 
+    int fg_flag = isForeground(getpid());
+
     createProcessInfo decInfo = {.name = "processDec",
-                                 .fg_flag = 1,
+                                 .fg_flag = fg_flag,
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) myProcessInc,
                                  .argc = 3,
                                  .argv = (const char *const *) argvDec};
 
     createProcessInfo incInfo = {.name = "processInc",
-                                 .fg_flag = 1,
+                                 .fg_flag = fg_flag,
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) myProcessInc,
                                  .argc = 3,

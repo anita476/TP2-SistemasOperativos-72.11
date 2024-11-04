@@ -31,8 +31,11 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
 
   while (1) {
     print("\n Starting loop\n");
+    
+    int fg_flag = isForeground(getpid());
+
     createProcessInfo loopInfo = {.name = "endless_loop",
-                                  .fg_flag = 0,
+                                  .fg_flag = fg_flag,
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) endless_loop,
                                   .argc = 0,

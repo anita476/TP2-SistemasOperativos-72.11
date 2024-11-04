@@ -69,9 +69,9 @@ void keyboardHandler() {
       for (int i = 1; i < MAX_PROCESSES; i++) {
         if (isForeground(i)) {
           kill(i);
-          print("^C\n");
+          print(STDOUT,"^C\n");
           cleanBuffer();
-          print("caOS>");
+          print(STDOUT,"caOS>");
           return;
         }
       }
@@ -79,7 +79,7 @@ void keyboardHandler() {
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
-      print("^D\n");
+      print(STDOUT, "^D\n");
       // cleanBuffer();
       print("caOS>");
       return;

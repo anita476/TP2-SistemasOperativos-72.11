@@ -38,7 +38,6 @@ static void shellAdoption(pid child, pid lastParent) {
   families[lastParent].numberOfChildren--;
   /* go through with adoption */
   processArr[child].parent = 0;
-  print("Hello im in shell adoption\n");
   families[0].childrenArr[child] = 1;
   families[0].numberOfChildren++;
 }
@@ -64,17 +63,17 @@ pid createProcess(createProcessInfo *info) {
   // Allocate space for each field
   stackEnd = malloc(STACK_SIZE);
   if (stackEnd == NULL) {
-    print("Could not allocate stackEnd\n");
+    print(STDERR, "Could not allocate stackEnd\n");
     return -1;
   }
 
   if ((nameCopy = malloc(strlen(info->name) + 1)) == NULL) {
-    print("Could not allocate for name\n");
+    print(STDERR, "Could not allocate for name\n");
     return -1;
   }
 
   if (info->argc != 0 && ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL)) {
-    print("Could not malloc for argv\n");
+    print(STDERR, "Could not malloc for argv\n");
     free(stackEnd);
     free(nameCopy);
     return -1;
@@ -92,7 +91,7 @@ pid createProcess(createProcessInfo *info) {
         free(argvCopy[i]);
       }
       free(argvCopy);
-      print("Argv could not malloc");
+      print(STDERR, "Argv could not malloc");
       return -1;
     }
 
@@ -101,7 +100,7 @@ pid createProcess(createProcessInfo *info) {
 
   strcpy(nameCopy, info->name);
   if (nameCopy == NULL) {
-    print("NAME COPY IS NULL\n");
+    print(STDERR, "NAME COPY IS NULL\n");
   }
 
   ProcessS *process = &processArr[pid];
@@ -125,7 +124,7 @@ pid createProcess(createProcessInfo *info) {
   processWasCreated(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
                     process->stackStart);
   if (process->name == NULL) {
-    print("NAME POINTER IS NULL\n");
+    print(STDERR, "NAME POINTER IS NULL\n");
   }
   lastPID++;
 
@@ -134,7 +133,7 @@ pid createProcess(createProcessInfo *info) {
 
 static int nameValidation(const char *name) {
   if (name == NULL) {
-    print("Name is null\n");
+    print(STDERR, "Name is null\n");
     return 0;
   }
   int i = 0;
@@ -154,7 +153,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
   ProcessS *process;
   if (!findPID(pid, &process)) {
-    print("Validation error\n");
+    print(STDERR, "Validation error\n");
     return -1;
   }
   /* remove from parent list*/

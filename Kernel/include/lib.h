@@ -4,6 +4,18 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+
+
+/* Defines for file descriptors */
+#define STDIN  0
+#define STDOUT 1
+#define STDERR 2
+#define KBDIN  3
+
+#define EOF_CHAR 4
+
+typedef int fd;
+
 /*
     @brief Calculates the length of a string
     @param str The string

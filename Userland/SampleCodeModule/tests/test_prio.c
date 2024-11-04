@@ -31,38 +31,38 @@ void test_prio() {
                                    .start = (ProcessStart) endless_loop_print,
                                    .argc = 0,
                                    .argv = (const char *const *) argv};
-  print("\n");
-  print("CREATING PROCESSES...\n");
+  fprintf(STDOUT,"\n");
+  fprintf(STDOUT,"CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     pids[i] = createProcess(&endlessInfo);
   }
 
   bussy_wait(WAIT);
-  print("\nCHANGING PRIORITIES...\n");
+  fprintf(STDOUT,"\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     setPriority(pids[i], prio[i]);
   }
 
   bussy_wait(WAIT);
-  print("\nBLOCKING...\n");
+  fprintf(STDOUT,"\nBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     block(pids[i]);
 
-  print("CHANGING PRIORITIES WHILE BLOCKED...\n");
+  fprintf(STDOUT,"CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     setPriority(pids[i], MEDIUM);
   }
 
-  print("UNBLOCKING...\n");
+  fprintf(STDOUT,"UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     unblock(pids[i]);
 
   bussy_wait(WAIT);
-  print("\nKILLING...\n");
+  fprintf(STDOUT,"\nKILLING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     kill(pids[i]);

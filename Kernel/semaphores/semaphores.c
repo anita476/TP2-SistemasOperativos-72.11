@@ -42,7 +42,7 @@ int sem_open(sem_name semName, int initValue) {
   sem semId = sem_get(semName);
 
   if (semId == -1) {  // need to create sem
-    print("Didnt find name\n");
+    print(STDERR, "Didnt find name\n");
     if (active == MAX_PROCESSES) {
       return MAX_SEMS_ERROR;
     }
@@ -69,7 +69,7 @@ int sem_open(sem_name semName, int initValue) {
       }
     }
   } else {
-    print("Sem already exists\n");
+    print(STDERR, "Sem already exists\n");
     // sem already exists -> init value is ignored because the sem was NOT really created and it has its own value;
     for (int i = 0; i < semaphoreList[semId].numberInterestedProcesses; i++) {
       if (semaphoreList[semId].interestedProcesses[i] == currentPid) {
@@ -104,7 +104,7 @@ int sem_close(sem sem) {
 
       // If this was the last process using the semaphore
       if (semaphoreList[sem].numberInterestedProcesses == 0) {
-        print("Freeing semaphore resources\n");
+        print(STDOUT, "Freeing semaphore resources\n");
 
         // Get global lock before modifying active count
         acquire(&lock);

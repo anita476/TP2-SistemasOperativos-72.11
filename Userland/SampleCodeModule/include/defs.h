@@ -47,4 +47,16 @@ typedef struct{
 typedef int sem; /* sem ids can be a max of 255 */
 typedef char * sem_name;
 
+
+
+/* Defines for file descriptors */
+#define STDIN  0
+#define STDOUT 1
+#define STDERR 2
+#define KBDIN  3
+
+#define EOF_CHAR 4
+
+typedef int fd;
+
 #endif

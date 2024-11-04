@@ -4,9 +4,12 @@
 #include <interrupts.h>
 #include <keyboardDriver.h>
 #include <lib.h>
+#include <processes.h>
+#include <scheduler.h>
 #include <videoDriver.h>
 
 #define BUFFER_SIZE 1024
+#define EOF_CHAR    4
 
 // Assembly function
 extern int getKey();
@@ -23,6 +26,7 @@ static char buffer[BUFFER_SIZE] = {0};
 static int writeIndex = 0;
 static int readIndex = 0;
 static int lastIndexFlag = 0;
+static char ctrlFlag = 0;
 
 // Flags
 char enterFlag = 0;
@@ -45,10 +49,38 @@ void keyboardHandler() {
   if (buffer[readIndex - 1] == '\b')
     removeCharFromBuffer();
 
-  // While enter key is not pressed
   unsigned char scancodeKey = getKey();
-  // Translate the key to ASCII
   char ASCIIkey = keyboard[scancodeKey];
+
+  // Left Ctrl pressed
+  if (scancodeKey == 0x1D) {
+    ctrlFlag = 1;
+    return;
+  }
+  // Left Ctrl released
+  else if (scancodeKey == 0x9D) {
+    ctrlFlag = 0;
+    return;
+  }
+
+  if (ctrlFlag) {
+    // Ctrl+C
+    if (ASCIIkey == 'c' || ASCIIkey == 'C') {
+      PCB *current = getCurrentProcess();
+      if (current != NULL && isForeground(getpid())) {
+        killCurrent();
+        print("^C\n");
+        return;
+      }
+    }
+    // Ctrl+D
+    else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
+      addToBuffer(EOF_CHAR);
+      print("^D\n");
+      return;
+    }
+  }
+
   // Alternate capslock
   if (scancodeKey == 0x3A)
     capsLockFlag = !capsLockFlag;

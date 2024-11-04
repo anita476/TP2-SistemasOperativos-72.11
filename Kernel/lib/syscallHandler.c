@@ -21,6 +21,8 @@
 #define STDERR 2
 #define KBDIN  3
 
+#define EOF_CHAR 4
+
 // from interruptions we get the register array to read it
 extern const uint64_t show_registers_dump[17];
 extern const uint64_t has_regs;
@@ -46,8 +48,10 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   char readCharacter;
   cleanRead();
   while (i < length && (readCharacter = getFromBuffer()) != '\0') {
-    bufferPosition[i] = readCharacter;
-    i++;
+    if (readCharacter == EOF_CHAR) {
+      bufferPosition[i] = '\0';
+      return i;
+    }
   }
   bufferPosition[i] = '\0';
   return i;

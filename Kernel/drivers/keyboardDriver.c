@@ -66,12 +66,14 @@ void keyboardHandler() {
   if (ctrlFlag) {
     // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
-      PCB *current = getCurrentProcess();
-      if (current != NULL && isForeground(getpid())) {
-        killCurrent();
-        print(STDOUT , "^C\n");
-        cleanBuffer();
-        return;
+      for (int i = 1; i < MAX_PROCESSES; i++) {
+        if (isForeground(i)) {
+          kill(i);
+          print(STDOUT,"^C\n");
+          cleanBuffer();
+          print(STDOUT,"caOS>");
+          return;
+        }
       }
     }
     // Ctrl+D
@@ -79,6 +81,7 @@ void keyboardHandler() {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
       // cleanBuffer();
+      print("caOS>");
       return;
     }
   }

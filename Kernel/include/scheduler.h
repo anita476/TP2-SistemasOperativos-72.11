@@ -114,6 +114,12 @@ void * switchP(void * cRSP);
 int getProcessInfo(pid pid, ProcessInfo *processInfo); 
 
 /* 
+    @brief Gets the current process
+    @returns The current process
+*/
+PCB *getCurrentProcess();
+
+/* 
     @brief Gets the current process' PID
     @returns The current process' PID
 */

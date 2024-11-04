@@ -24,7 +24,7 @@ void putChar(char c);
     @brief Prints a buffer
     @param buffer The buffer
 */
-uint64_t print(char* buffer);                       
+uint64_t fprintf(fd fileDes, char* buffer);                       
 
 /*
     @brief Gets the time

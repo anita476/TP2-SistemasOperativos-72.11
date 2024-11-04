@@ -30,7 +30,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   p_rq p_rqs[MAX_PROC];
 
   while (1) {
-    print("\n Starting loop\n");
+    fprintf(STDOUT,"\n Starting loop\n");
 
     int fg_flag = isForeground(getpid());
 
@@ -45,7 +45,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
     for (rq = 0; rq < MAX_PROC; rq++) {
       p_rqs[rq].pid = createProcess(&loopInfo);
       if (p_rqs[rq].pid == -1) {
-        print("test_processes: ERROR creating process\n");
+        fprintf(STDERR,"test_processes: ERROR creating process\n");
         return -1;
       } else {
         p_rqs[rq].state = RUNNING;
@@ -63,7 +63,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
         case 0:
           if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED) {
             if (kill(p_rqs[rq].pid) != 0) {
-              print("test_processes: ERROR killing process\n");
+              fprintf(STDERR,"test_processes: ERROR killing process\n");
               return -1;
             }
             p_rqs[rq].state = KILLED;
@@ -74,7 +74,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
         case 1:
           if (p_rqs[rq].state == RUNNING) {
             if (block(p_rqs[rq].pid) != 0) {
-              print("test_processes: ERROR blocking process\n");
+              fprintf(STDERR,"test_processes: ERROR blocking process\n");
 
               return -1;
             }
@@ -87,13 +87,13 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
       for (rq = 0; rq < MAX_PROC; rq++) {
         if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2) {
           if (unblock(p_rqs[rq].pid) != 0) {
-            print("test_processes: ERROR unblocking process\n");
+            fprintf(STDERR,"test_processes: ERROR unblocking process\n");
             return -1;
           }
           p_rqs[rq].state = RUNNING;
         }
       }
     }
-    print("Loop done\n");
+    fprintf(STDOUT, "Loop done\n");
   }
 }

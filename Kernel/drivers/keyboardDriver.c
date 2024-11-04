@@ -69,7 +69,7 @@ void keyboardHandler() {
       PCB *current = getCurrentProcess();
       if (current != NULL && isForeground(getpid())) {
         killCurrent();
-        print("^C\n");
+        print(STDOUT , "^C\n");
         cleanBuffer();
         return;
       }
@@ -77,7 +77,7 @@ void keyboardHandler() {
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
-      print("^D\n");
+      print(STDOUT, "^D\n");
       // cleanBuffer();
       return;
     }

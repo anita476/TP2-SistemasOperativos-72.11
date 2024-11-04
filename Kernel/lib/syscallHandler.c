@@ -16,12 +16,6 @@
 
 #include <syscallHandler.h>
 
-#define STDIN  0
-#define STDOUT 1
-#define STDERR 2
-#define KBDIN  3
-
-#define EOF_CHAR 4
 
 // from interruptions we get the register array to read it
 extern const uint64_t show_registers_dump[17];
@@ -58,12 +52,8 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
 }
 
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
-  if (fileDescriptor != STDOUT)
-    return 1;
-  else {
-    print((char *) buffer);
+    print(fileDescriptor, (char *) buffer);
     return 0;
-  }
 }
 
 uint64_t get_current_time() {

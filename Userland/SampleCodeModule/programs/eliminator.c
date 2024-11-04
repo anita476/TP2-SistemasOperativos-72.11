@@ -114,24 +114,24 @@ void lose(int whoLost, int pts) {
   setCursor(0, 15);
   switch (whoLost) {
   case 1:
-    print("\n                                      Player 1 LOST! Do you want to play again? YES / NO?\n               "
+    fprintf(STDOUT,"\n                                      Player 1 LOST! Do you want to play again? YES / NO?\n               "
           "                                   (change decision with a or d)\n\n");
     break;
   case 2:
-    print("\n                                      Player 2 LOST! Do you want to play again? YES / NO?\n               "
+    fprintf(STDOUT,"\n                                      Player 2 LOST! Do you want to play again? YES / NO?\n               "
           "                                   (change decision with a or d)\n\n");
     break;
   case 3:
-    print("\n                                           Player 1 and 2 TIED! Want a rematch? YES / NO?\n               "
+    fprintf(STDOUT, "\n                                           Player 1 and 2 TIED! Want a rematch? YES / NO?\n               "
           "                                   (change decision with a or d)\n\n");
     break;
   default:
     break;
   }
-  print("                                                       Y               N");
-  print("\n\n                                                           PTS: ");
+  fprintf(STDOUT,"                                                       Y               N");
+  fprintf(STDOUT,"\n\n                                                           PTS: ");
   char aux[7] = {0};
-  print(itoa(pts, aux, 10));
+  fprintf(STDOUT,itoa(pts, aux, 10));
 
   char c = 0;
   char currentDecision = 1;
@@ -160,9 +160,9 @@ void lose(int whoLost, int pts) {
 
 void printPts(int pts) {
   setCursor(4, 0);
-  print("PTS: ");
+  fprintf(STDOUT,"PTS: ");
   char s[50] = {0};
-  print(itoa(pts, s, 10));
+  fprintf(STDOUT,itoa(pts, s, 10));
 }
 
 void play1() {
@@ -251,9 +251,9 @@ void eliminator() {
     scaleDown();
   clearScreen();
   setCursor(0, 15);
-  print("\n                                      Please select the amount of players and press ENTER\n                 "
+  fprintf(STDOUT,"\n                                      Please select the amount of players and press ENTER\n                 "
         "                               (change decision with a or d)\n\n");
-  print("                                                       1               2");
+  fprintf(STDOUT,"                                                       1               2");
   playDragonMelody();
   char c = 0;
   char currentDecision = 1;

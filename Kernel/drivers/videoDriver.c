@@ -8,6 +8,7 @@
 #include <videoDriver.h>
 
 #define GREEN 0x00159854
+#define RED 0xFF0000
 
 struct vbe_mode_info_structure {
   uint16_t attributes;   // deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a
@@ -192,16 +193,23 @@ int putCharCursor(char c) {
   return successFlag;
 }
 
-void print(char *str) {
-  if (isForeground(getpid())) {
-    for (; *str != '\0'; str++)
+void print(fd fileDes, char *str) {
+  if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
+    if(fileDes == STDERR){
+      setColor(RED);
+    }
+    else{
+      setColor(GREEN);
+    }
+    for (; *str != '\0'; str++){
       putCharCursor(*str);
+    }
   }
 }
 
-void println(char *str) {
+void println(char *str) { //unused
   if (isForeground(getpid())) {
-    print(str);
+    print( STDOUT, str);
     newLine();
   }
 }

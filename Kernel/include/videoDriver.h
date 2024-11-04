@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "lib.h"
 
 /*
     @brief Gets the width of the screen in pixels
@@ -60,9 +61,10 @@ int putCharCursor(char c);
 
 /*
     @brief Prints a string on the screen
+    @param fileDes File descriptor
     @param str The string
 */
-void print(char * str);
+void print(fd fileDes, char * str);
 
 /*
     @brief Prints a string on the screen and adds a new line

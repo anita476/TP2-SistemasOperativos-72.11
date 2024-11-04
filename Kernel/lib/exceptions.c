@@ -24,31 +24,31 @@ static char *waiting = "Restarting...";
 void exceptionDispatcher(int exception, uint64_t registers[17]) {
   wait(18 * 3);
   clearScreen();
-  print(errorMessage);
+  print(STDERR, errorMessage);
   char buffer[10];
   intToStr(exception, buffer, 10);
-  print("Code: ");
-  print(buffer);
-  print("\n");
+  print(STDERR, "Code: ");
+  print(STDERR, buffer);
+  print(STDERR,"\n");
   if (exception == ZERO_EXCEPTION_CODE) {
     zero_division();
   } else if (exception == WRONG_OPCODE_EXC_CODE) {
     wrong_opcode();
   } else {
-    print("Unknown");
-    print("\n");
+    print(STDERR,"Unknown");
+    print(STDERR, "\n");
   }
   for (int i = 0; i < 18; i++) {
-    print(registerOrder[i]);
-    print(": ");
+    print(STDERR, registerOrder[i]);
+    print(STDERR, ": ");
     intToStr(registers[i], buffer, 16);
-    print(buffer);
+    print(STDERR, buffer);
     if (i != 17)
-      print(", ");
+      print(STDERR, ", ");
   }
   timer_wait(18 * 5);  // Time to see the registers
-  print("\n");
-  print(waiting);
+  print(STDERR,"\n");
+  print(STDOUT, waiting);
   timer_wait(18 * 2);
   clearScreen();
   setCursorLine(0);
@@ -56,11 +56,11 @@ void exceptionDispatcher(int exception, uint64_t registers[17]) {
 }
 
 static void zero_division() {
-  print("Zero division");
-  print("\n");
+  print(STDERR, "Zero division");
+  print(STDERR, "\n");
 }
 
 static void wrong_opcode() {
-  print("Wrong opcode");
-  print("\n");
+  print(STDERR,"Wrong opcode");
+  print(STDERR,"\n");
 }

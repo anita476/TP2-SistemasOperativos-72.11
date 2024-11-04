@@ -155,41 +155,41 @@ void executeCommand(char *str, int argc, char *argv[]) {
     break;
   case 16:
     if (argc != 1) {
-      print("Usage: kill <pid>\n");
+      fprintf(STDERR,"Usage: kill <pid>\n");
       break;
     }
     pid pid_to_kill = satoi(argv[0]);
     if (pid_to_kill <= 0) {
-      print("Invalid PID\n");
+      fprintf(STDERR, "Invalid PID\n");
       break;
     }
     if (kill(pid_to_kill) != 0) {
-      print("Error killing process\n");
+      fprintf(STDERR,"Error killing process\n");
     }
     break;
   case 17:
     if (argc != 1) {
-      print("Usage: block <pid>\n");
+      fprintf(STDERR, "Usage: block <pid>\n");
       break;
     }
     block(satoi(argv[0]));
     break;
   case 18:
     if (argc != 1) {
-      print("Usage: unblock <pid>\n");
+      fprintf(STDERR,"Usage: unblock <pid>\n");
       break;
     }
     unblock(satoi(argv[0]));
     break;
   case 19:
     if (argc != 2) {
-      print("Usage: nice <pid> <new_priority>\n");
+      fprintf(STDERR, "Usage: nice <pid> <new_priority>\n");
       break;
     }
     nice(satoi(argv[0]), satoi(argv[1]));
     break;
   default:
-    print("Unrecognized command\n");
+    fprintf(STDERR, "Unrecognized command\n");
     errorSound();
     break;
   }
@@ -211,7 +211,7 @@ void insertCommand() {
       }
     }
   }
-  print("\n");
+  fprintf(STDOUT,"\n");
 
   char *args[BUFFER_SIZE] = {NULL};
   int argc = 0;
@@ -235,35 +235,12 @@ void insertCommand() {
     executeCommand(args[0], argc - 1, args + 1);
   }
 
-  print("caOS>");
+  fprintf(STDOUT, "caOS>");
 }
 
 void shell() {
-  print("Welcome to caOS shell! Please input your command\n");
-  print("Choose from the following:");
-  print("\n * clear: Clean the screen");
-  print("\n * divzero: Divide by 0 to trigger a zero division exception");
-  print("\n * eliminator: Play Eliminator against yourself or a friend. Use WASD to move Player 1, IJKL to move Player 2");
-  print("\n * help: Lists the available commands");
-  print("\n * invalidopcode: Make an invalid opcode to trigger an invalid opcode exception");
-  print("\n * regs: Display the last saved value of registers, press CTRL to save the registers");
-  print("\n * scaledown: Reduce the text size (min: 1, default: 1)");
-  print("\n * scaleup: Increment the text size (max: 4, default: 1)");
-  print("\n * time: Display the current time");
-  print("\n * ps: List all processes");
-  print("\n * loop: Run an endless loop");
-  print("\n * kill: Kill a process by its PID");
-  print("\n * block: Block a process by its PID");
-  print("\n * unblock: Unblock a process by its PID");
-  print("\n * nice: Change the priority of a process by its PID");
-  print("\n ----------------------------Tests----------------------------");
-  print("\n * testmm: Run a memory management test in an endless loop");
-  print("\n * testprio: Run a priority test");
-  print("\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
-  print("\n * testsync: Run synchronization test using semaphores");
-  print("\n * testnosync: Run synchronization test without semaphores");
-  print("\n");
-  print("caOS>");
+  help();
+  fprintf(STDOUT,"caOS>");
   while (1) {
     insertCommand();
   }

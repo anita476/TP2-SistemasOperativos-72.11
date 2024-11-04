@@ -27,5 +27,6 @@ $(LOADEROBJECT):
 
 clean:
 	rm -rf asm/*.o *.o *.bin */*.o
+	rm -rf *.elf
 
 .PHONY: all clean

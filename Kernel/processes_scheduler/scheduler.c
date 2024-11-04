@@ -34,7 +34,7 @@ int processWasCreated(pid pid, int argc, const char * const argv[], priority pri
     processTable[pid].priority = priority;
     processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
     if (processTable[pid].currentRSP == NULL) {
-        return 1;
+        return -1;
     }
     return 0;
 }
@@ -114,7 +114,7 @@ int block(pid pid) {
         print(buffer);
 
         print(" Get state failed\n");
-        return 1;
+        return -1;
     }
     processTable[pid].processStatus = BLOCKED;
     if (currentPID == PID_KERNEL) {
@@ -126,7 +126,7 @@ int block(pid pid) {
 int unblock(pid pid) {
     PCB * pcb;
     if (getState(pid, &pcb)) {
-        return 1;
+        return -1;
     }
     if (processTable[pid].processStatus == READY || processTable[pid].processStatus == RUNNING) {
         return 0;
@@ -219,11 +219,11 @@ pid getpid() {
 
 int setPriority(pid pid, priority newPrio) {
     if (newPrio < MIN_PRIORITY || newPrio > MAX_PRIORITY) {
-        return 1;
+        return -1;
     }
     PCB *pcb;
     if (getState(pid, &pcb)) {
-        return 1;
+        return -1;
     }
     pcb->priority = newPrio;
     return 0;

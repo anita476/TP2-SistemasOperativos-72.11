@@ -23,15 +23,40 @@
 #define SI2 987
 #define DO3 1046
 
+/* 
+    @brief Plays a sound
+    @param nFrequence The frequency of the sound
+*/
 void play_sound(uint32_t nFrequence);
+
+/* 
+    @brief Stops the sound
+*/
 void nosound();
 
+/* 
+    @brief Plays a beep
+    @param freq The frequency of the beep
+    @param duration The duration of the beep
+*/
 void beep(/* int freq, int duration */);
 
+/* 
+    @brief Plays a note sound
+    @param freq The frequency of the note
+    @param duration The duration of the note
+    @param waitAfter The time to wait after the note
+*/
 void playNoteSound(int freq, int duration, int waitAfter);
 
+/* 
+    @brief Plays a lovely melody
+*/
 void playMelody();
-void nosound();
+
+/*  
+    @brief Plays the Better Call Saul theme
+*/
 void playBetterCallSaul();
 
 #endif /* SOUND_H */

@@ -154,7 +154,7 @@ int kill(pid pid) { //if it had children, shell adopts them
     ProcessS * process;
     if (!findPID(pid, &process)) {
         print("Validation error\n");
-        return 1;
+        return -1;
     }
     /* remove from parent list*/
     removeChild(pid);

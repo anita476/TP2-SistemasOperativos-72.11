@@ -46,7 +46,7 @@ int listProcessesInfo(ProcessInfo * processes, int max_proc);
 int getProcessInfo(pid pid, ProcessInfo * processInfo);
 int isForeground(pid pid);
 void exit_process();
-
+void wait(uint64_t ms);
 
 void waitForChildren();
 sem sem_open(sem_name semName, int initValue);

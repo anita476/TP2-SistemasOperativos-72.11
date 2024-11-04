@@ -130,6 +130,10 @@ int isForeground(pid pid) {
     return syscall(33, (uint64_t) pid, 0, 0, 0, 0);
 }
 
+void wait(uint64_t ms) {
+    syscall(35, (uint64_t) ms, 0, 0, 0, 0);
+}
+
 sem sem_open(sem_name semName, int initValue) {
     return (sem) syscall(37,(uint64_t) semName, (uint64_t) initValue, 0, 0, 0);
 }

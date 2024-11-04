@@ -24,6 +24,7 @@ void help() {
     print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
     print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
     print("\n * ps: Display the current processes");
+    print("\n * loop: Run an endless loop");
     print("\n");
 }
 
@@ -151,4 +152,17 @@ int ps() {
     }
 
     return 0;
+}
+
+void loop() {
+    pid_t pid = getpid();
+    char buffer[10];
+    
+    while (1) {
+        itoa(pid, buffer, 10);
+        print("Hello from process ");
+        print(buffer);
+        print("!\n");
+        wait(2000);
+    }
 }

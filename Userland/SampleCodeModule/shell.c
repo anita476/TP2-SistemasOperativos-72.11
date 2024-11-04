@@ -33,7 +33,7 @@ void * memcpy(void * destination, const void * source, uint64_t length) {
 	return destination;
 }
 
-static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync", "ps", "e"};
+static char* commands[] = {"help", "time", "eliminator", "regs", "clear", "scaledown", "scaleup", "divzero", "invalidopcode","testmm", "testproc","testprio","testsync","testnosync", "ps", "loop"};
 
 int isCommand(char * str, int command) {
       if (command >= COMMANDS_SIZE) return -1;
@@ -138,29 +138,16 @@ void executeCommand(char * str, int argc, char * argv[]) {
             ps();
             break;
       case 15:
-            {
-                char *argvAux[] = {0};
-                createProcessInfo loopInfo = {
-                    .name = "endless_loop",
-                    .fg_flag = !in_bg,
-                    .priority = DEFAULT_PRIORITY,
-                    .start = (ProcessStart) endless_loop,
-                    .argc = 0,
-                    .argv = (const char *const *) argvAux
-                };
-                
-                pid newPid = createProcess(&loopInfo);
-                if (newPid == -1) {
-                    print("Error creating endless loop process\n");
-                } else {
-                    char buffer[10];
-                    itoa(newPid, buffer, 10);
-                    print("Created endless loop process with PID: ");
-                    print(buffer);
-                    print("\n");
-                }
-            }
-            break;      
+            createProcessInfo loopInfo = {
+                  .name = "loop",
+                  .fg_flag = !in_bg,
+                  .priority = DEFAULT_PRIORITY,
+                  .start = (ProcessStart) loop,
+                  .argc = argc,
+                  .argv = (const char *const *) argv
+            };
+            createProcess(&loopInfo);
+            break;
       default: 
             print("Unrecognized command\n");
             errorSound();
@@ -231,6 +218,7 @@ void shell() {
       print("\n * testsync: Run synchronization test using semaphores (10 iterations)");
       print("\n * testnosync: Run synchronization test without semaphores (10 iterations)");
       print("\n * ps: List all processes");
+      print("\n * loop: Run an endless loop");
       print("\n");
       print("caOS>");
       while (1) {

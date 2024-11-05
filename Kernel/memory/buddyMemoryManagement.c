@@ -4,8 +4,8 @@
 #ifdef BUDDY
 
 // Must be power of 2
-#define MIN_BLOCK_SIZE 16
-#define MAX_ORDER 16
+#define MIN_BLOCK_SIZE 64
+#define MAX_ORDER 26 // (~128MB)
 #define BLOCK_HEADER_SIZE sizeof(block_t)
 
 typedef struct block {
@@ -57,44 +57,105 @@ static block_t* get_buddy(block_t* block) {
 }
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
+    char buffer[32];
+    
+    print("Initializing buddy allocator\n");
+    print("Total size: ");
+    intToStr(totalSize, buffer, 10);
+    print(buffer);
+    print("\n");
+
     buddy.start = startHeapAddress;
     buddy.total_size = totalSize;
     buddy.free_memory = totalSize;
     for (int i = 0; i < MAX_ORDER; i++) {
         buddy.free_lists[i] = NULL;
     }
+    size_t block_size = MIN_BLOCK_SIZE; 
+       while ((block_size * 2) <= totalSize) {
+        block_size *= 2;
+    }
+
+    print("Initial block size: ");
+    intToStr(block_size, buffer, 10);
+    print(buffer);
+    print("\n");
+
     block_t *initial = (block_t *)startHeapAddress;
-    size_t block_size = next_power_of_2(totalSize);
     initial->size = block_size;
     initial->is_free = 1;
 
     int order = get_order(block_size);
     initial->next = NULL;
-    buddy.free_lists[order] = initial; 
+    buddy.free_lists[order] = initial;
+
+    // Verify initialization
+    print("Initialized with order: ");
+    intToStr(order, buffer, 10);
+    print(buffer);
+    print("\n");
+
+    print("Verifying free lists:\n");
+    for (int i = 0; i < MAX_ORDER; i++) {
+        if (buddy.free_lists[i] != NULL) {
+            print("Order ");
+            intToStr(i, buffer, 10);
+            print(buffer);
+            print(" has blocks\n");
+        }
+    }
 }
 
 void *malloc(size_t size) {
+    char buffer[32];
+    print("\nMalloc request for size: ");
+    intToStr(size, buffer, 10);
+    print(buffer);
+    print("\n");
+
     size_t required = size + BLOCK_HEADER_SIZE; // let's see if it works without this 
+    // size_t required = size; 
     if (required < MIN_BLOCK_SIZE) required = MIN_BLOCK_SIZE;
-
     required = next_power_of_2(required);
-    int order = get_order(required);
 
+    print("Required block size after rounding: ");
+    intToStr(required, buffer, 10);
+    print(buffer);
+    print("\n");
+
+    int order = get_order(required);
+    print("Looking for order: ");
+    intToStr(order, buffer, 10);
+    print(buffer);
+    print("\n");
     // find a suitable block 
     int current_order = order; 
     block_t* block = NULL; 
 
     // look for the smallest block that fits 
-    while (current_order < MAX_ORDER) {
+    while (current_order < MAX_ORDER && block==NULL) {
+        print("Checking order: ");
+        intToStr(current_order, buffer, 10);
+        print(buffer);
         if (buddy.free_lists[current_order] != NULL) {
+            print(" - Found block!\n");
             block = buddy.free_lists[current_order]; 
             buddy.free_lists[current_order] = block->next;
             break; 
         }
+        print(" - No blocks\n");
         current_order++; 
     }
 
-    if (block == NULL) return NULL; // no encontro 
+    if (block == NULL) {
+        print("No suitable block found\n");
+        return NULL; // no encontro 
+    }
+
+    print("Found block of size: ");
+    intToStr(block->size, buffer, 10);
+    print(buffer);
+    print("\n");
 
     // split blocks until desired size 
     while (current_order > order) {
@@ -107,10 +168,15 @@ void *malloc(size_t size) {
 
         buddy_block->next = buddy.free_lists[current_order];
         buddy.free_lists[current_order] = buddy_block;
+        block->size = new_size;
     }
     // found the best fit 
     block->is_free = 0;
     buddy.free_memory -= block->size;
+    print("Allocated block of size: ");
+    intToStr(block->size, buffer, 10);
+    print(buffer);
+    print("\n");
     return (void*)(block + 1);  // (block+BLOCK_HEADER_SIZE)
 }
 

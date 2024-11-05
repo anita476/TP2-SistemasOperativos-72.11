@@ -53,12 +53,12 @@ pid createProcess(createProcessInfo *info) {
   if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
     if (pid >= MAX_PROCESSES) {}
     if (info->argc < 0) {}
-    if (!nameValidation(info->name)) {}
+    if (!nameValidation(info->name)) {} // add prints? 
     return -1;
   }
 
   void *stackEnd = NULL;
-  char *nameCopy = NULL;
+  // char *nameCopy = NULL;
   char **argvCopy = NULL;
 
   // Allocate space for each field
@@ -68,15 +68,15 @@ pid createProcess(createProcessInfo *info) {
     return -1;
   }
 
-  if ((nameCopy = malloc(strlen(info->name) + 1)) == NULL) {
-    print("Could not allocate for name\n");
-    return -1;
-  }
+  // if ((nameCopy = malloc(strlen(info->name) + 1)) == NULL) {
+  //   print("Could not allocate for name\n");
+  //   return -1;
+  // }
 
   if (info->argc != 0 && ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL)) {
     print("Could not malloc for argv\n");
     free(stackEnd);
-    free(nameCopy);
+    // free(nameCopy);
     return -1;
   }
 
@@ -86,7 +86,7 @@ pid createProcess(createProcessInfo *info) {
 
     if ((argvCopy[i] = malloc(length)) == NULL) {
       free(stackEnd);
-      free(nameCopy);
+      // free(nameCopy);
       while (i > 0) {
         i--;
         free(argvCopy[i]);
@@ -99,19 +99,20 @@ pid createProcess(createProcessInfo *info) {
     memcpy(argvCopy[i], info->argv[i], length);
   }
 
-  strcpy(nameCopy, info->name);
-  if (nameCopy == NULL) {
-    print("NAME COPY IS NULL\n");
-  }
-
   ProcessS *process = &processArr[pid];
 
   memset(process, 0, sizeof(ProcessS));
 
+  strcpy(process->name, info->name);
+  process->name[MAX_NAME_LENGTH] = '\0';
+  // if (nameCopy == NULL) {
+  //   print("NAME COPY IS NULL\n");
+  // }
+
   process->stackEnd = stackEnd;
   process->stackStart = stackEnd + STACK_SIZE;
   process->fg_flag = info->fg_flag;
-  process->name = nameCopy;
+  // process->name = nameCopy;
   process->argv = argvCopy;
   process->argc = info->argc;
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
@@ -189,7 +190,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   // free(process->argv);
 
   free(process->stackEnd);
-  free(process->name);
+  // free(process->name);
   memset(process, 0, sizeof(ProcessS));
   lastPID--;
   return 0;

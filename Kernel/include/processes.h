@@ -21,7 +21,7 @@ typedef enum {READY = 0, RUNNING = 1, BLOCKED = 2, KILLED= 3} status;
 
 /* what is saved */ /* priority is saved why scheduling queue*/
 typedef struct {
-    char * name;
+    char name[MAX_NAME_LENGTH];
     void * stackStart;
     void * stackEnd;
     int fg_flag;

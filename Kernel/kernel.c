@@ -92,11 +92,9 @@ int main() {
   load_IDT();
   // welcomeSequence();
   init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
-  // memory_manager_state(); 
   init_scheduler();
-  memory_manager_state(); 
   init_shell();
-  memory_manager_state(); 
+  // memory_manager_state();
   _sti();
   while (1) {
     yield();

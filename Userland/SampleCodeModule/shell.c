@@ -97,6 +97,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     invalidOpCode();
     break;
   case 9:
+  {
     createProcessInfo testmm = {.name = "memory",
                                 .fg_flag = !in_bg,
                                 .priority = DEFAULT_PRIORITY,
@@ -104,8 +105,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                 .argc = argc,
                                 .argv = (const char *const *) argv};
     createProcess(&testmm);
+  }
     break;
   case 10:
+  {
     createProcessInfo testproc = {.name = "processes",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -113,8 +116,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&testproc);
+  }
     break;
   case 11:
+  {
     createProcessInfo testprio = {.name = "priority",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -122,6 +127,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&testprio);
+  }
     break;
   case 12: {
     createProcessInfo decInfo = {.name = "processSynchro",
@@ -145,6 +151,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     ps();
     break;
   case 15:
+  {
     createProcessInfo loopInfo = {.name = "loop",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -152,8 +159,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&loopInfo);
+  }
     break;
   case 16:
+  {
     if (argc != 1) {
       fprintf(STDERR,"Usage: kill <pid>\n");
       break;
@@ -166,31 +175,40 @@ void executeCommand(char *str, int argc, char *argv[]) {
     if (kill(pid_to_kill) != 0) {
       fprintf(STDERR,"Error killing process\n");
     }
+  }
     break;
   case 17:
+  {
     if (argc != 1) {
       fprintf(STDERR, "Usage: block <pid>\n");
       break;
     }
     block(satoi(argv[0]));
+  }
     break;
   case 18:
+  {
     if (argc != 1) {
       fprintf(STDERR,"Usage: unblock <pid>\n");
       break;
     }
     unblock(satoi(argv[0]));
+  }
     break;
   case 19:
+  {
     if (argc != 2) {
       fprintf(STDERR, "Usage: nice <pid> <new_priority>\n");
       break;
     }
     nice(satoi(argv[0]), satoi(argv[1]));
+  }
     break;
   default:
+  {
     fprintf(STDERR, "Unrecognized command\n");
     errorSound();
+  }
     break;
   }
 }

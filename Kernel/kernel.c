@@ -54,14 +54,23 @@ void *initializeKernelBinary() {
 }
 
 void init_shell() {
-  createProcessInfo shellInfo = {.name = "shell",
-                                 .fg_flag = 1,
-                                 .priority = DEFAULT_PRIORITY,
-                                 .start = (ProcessStart) sampleCodeModuleAddress,
-                                 .argc = 0,
-                                 .argv = (const char *const *) NULL};
-  createProcess(&shellInfo);
+    print("Starting shell initialization...\n");
+    createProcessInfo shellInfo = {
+        .name = "shell",
+        .fg_flag = 1,
+        .priority = DEFAULT_PRIORITY,
+        .start = (ProcessStart) sampleCodeModuleAddress,
+        .argc = 0,
+        .argv = (const char *const *) NULL
+    };
+    int result = createProcess(&shellInfo);
+    print("Shell created with PID: ");
+    char buffer[10];
+    intToStr(result, buffer, 10);
+    print(buffer);
+    print("\n");
 }
+
 
 void welcomeSequence() {
   for (int i = 0; i < 4; i++)
@@ -85,14 +94,10 @@ int main() {
   init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
   // memory_manager_state(); 
   init_scheduler();
-    memory_manager_state(); 
+  memory_manager_state(); 
   init_shell();
-      memory_manager_state(); 
-
+  memory_manager_state(); 
   _sti();
-  print("STI\n");
-        memory_manager_state(); 
-
   while (1) {
     yield();
     _hlt();

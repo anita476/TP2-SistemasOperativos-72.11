@@ -1,176 +1,201 @@
-
 #include <memoryManagement.h>
+#include <stdbool.h>
 
 #ifdef BUDDY
 
-#define BLOCK_SIZE sizeof(struct block)
-#define DEBUG_MEMORY 1
+// Must be power of 2
+#define MIN_BLOCK_SIZE 16
+#define MAX_ORDER 16
+#define BLOCK_HEADER_SIZE sizeof(block_t)
 
-struct block {
-    size_t size;         // Size of the block
-    struct block *next;  // Pointer to the next free block
-    #if DEBUG_MEMORY
-    int allocated;       // Flag to track if block is allocated
-    size_t requested_size; // Original requested size
-    #endif
-};
+typedef struct block {
+    size_t size;     // Total size of block including header
+    // unsigned char order;       // Level in the buddy system (0 = largest)
+    unsigned char is_free;   // 1 if allocated, 0 if free
+    struct block *next;  // Next block in free list
+} block_t; 
 
-static struct block *freeList;
-static size_t total_allocations = 0;
-static size_t total_frees = 0;
-static size_t current_allocated_memory = 0;
+typedef struct {
+    void *start;
+    block_t *free_lists[MAX_ORDER];
+    size_t total_size; 
+    size_t free_memory; 
+} buddy_t; 
+
+static buddy_t buddy; 
+
+static inline bool is_power_of_2(size_t x) {
+    return (x & (x - 1)) == 0;
+}
+
+static size_t next_power_of_2(size_t size) {
+    size--;
+    size |= size >> 1;
+    size |= size >> 2;
+    size |= size >> 4;
+    size |= size >> 8;
+    size |= size >> 16;
+    size |= size >> 32;
+    return size + 1;
+}
+
+static int get_order(size_t size) {
+    int order = 0;
+    size = size - 1;
+    while (size >>= 1) order++;
+    return order;
+}
+
+static block_t* get_buddy(block_t* block) {
+    size_t offset = (char*)block - (char*)buddy.start;
+    // If offset divisible by block_size * 2, buddy is after, else before
+    if ((offset & (block->size * 2 - 1)) == 0) {
+        return (block_t*)((char*)block + block->size);
+    } else {
+        return (block_t*)((char*)block - block->size);
+    }
+}
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
-    freeList = (struct block *)startHeapAddress;
-    freeList->size = totalSize - BLOCK_SIZE;
-    freeList->next = NULL;
-    #if DEBUG_MEMORY
-    freeList->allocated = 0;
-    freeList->requested_size = 0;
-    #endif
-    
-    current_allocated_memory = 0;
-    total_allocations = 0;
-    total_frees = 0;
+    buddy.start = startHeapAddress;
+    buddy.total_size = totalSize;
+    buddy.free_memory = totalSize;
+    for (int i = 0; i < MAX_ORDER; i++) {
+        buddy.free_lists[i] = NULL;
+    }
+    block_t *initial = (block_t *)startHeapAddress;
+    size_t block_size = next_power_of_2(totalSize);
+    initial->size = block_size;
+    initial->is_free = 1;
+
+    int order = get_order(block_size);
+    initial->next = NULL;
+    buddy.free_lists[order] = initial; 
 }
 
-void *malloc(size_t bytes) {
-    if (bytes == 0) return NULL;
-    
-    struct block *current, *previous;
-    size_t total_required = bytes + BLOCK_SIZE;
-    
-    #if DEBUG_MEMORY
-    print("Attempting to allocate ");
-    char buffer[20];
-    intToStr(bytes, buffer, 10);
-    print(buffer);
-    print(" bytes\n");
-    #endif
+void *malloc(size_t size) {
+    size_t required = size + BLOCK_HEADER_SIZE; // let's see if it works without this 
+    if (required < MIN_BLOCK_SIZE) required = MIN_BLOCK_SIZE;
 
-    previous = NULL;
-    for (current = freeList; current != NULL; current = current->next) {
-        if (current->size >= total_required) {
-            // Found a block big enough
-            if (current->size >= total_required + BLOCK_SIZE + sizeof(struct block)) {
-                // Split the block if there's enough space for a new header
-                struct block *newBlock = (struct block *)((char *)current + total_required);
-                newBlock->size = current->size - total_required;
-                newBlock->next = current->next;
-                #if DEBUG_MEMORY
-                newBlock->allocated = 0;
-                newBlock->requested_size = 0;
-                #endif
-                
-                current->size = total_required;
-                current->next = newBlock;
-            }
+    required = next_power_of_2(required);
+    int order = get_order(required);
 
-            // Remove block from free list
-            if (previous == NULL) {
-                freeList = current->next;
-            } else {
-                previous->next = current->next;
-            }
+    // find a suitable block 
+    int current_order = order; 
+    block_t* block = NULL; 
 
-            #if DEBUG_MEMORY
-            current->allocated = 1;
-            current->requested_size = bytes;
-            total_allocations++;
-            current_allocated_memory += current->size;
-            
-            print("Successfully allocated memory at address ");
-            intToStr((size_t)((char *)current + BLOCK_SIZE), buffer, 16);
-            print(buffer);
-            print("\n");
-            #endif
-
-            return (void *)((char *)current + BLOCK_SIZE);
+    // look for the smallest block that fits 
+    while (current_order < MAX_ORDER) {
+        if (buddy.free_lists[current_order] != NULL) {
+            block = buddy.free_lists[current_order]; 
+            buddy.free_lists[current_order] = block->next;
+            break; 
         }
-        previous = current;
+        current_order++; 
     }
 
-    #if DEBUG_MEMORY
-    print("Failed to allocate memory of size ");
-    intToStr(bytes, buffer, 10);
-    print(buffer);
-    print("\n");
-    #endif
+    if (block == NULL) return NULL; // no encontro 
 
-    return NULL;
+    // split blocks until desired size 
+    while (current_order > order) {
+        current_order--; 
+        size_t new_size = block->size / 2; 
+
+        block_t* buddy_block = (block_t*)((char*)block + new_size);
+        buddy_block->size = new_size; 
+        buddy_block->is_free = 1;
+
+        buddy_block->next = buddy.free_lists[current_order];
+        buddy.free_lists[current_order] = buddy_block;
+    }
+    // found the best fit 
+    block->is_free = 0;
+    buddy.free_memory -= block->size;
+    return (void*)(block + 1);  // (block+BLOCK_HEADER_SIZE)
 }
+
 
 void free(void *ptr) {
-    if (ptr == NULL) return;
+    if (!ptr) return; 
 
-    struct block *blockToFree = (struct block *)((char *)ptr - BLOCK_SIZE);
-    
-    #if DEBUG_MEMORY
-    if (!blockToFree->allocated) {
-        print("WARNING: Attempting to free already freed memory!\n");
-        return;
+    block_t* block = ((block_t*)ptr) - 1; // start block from the beginnig of the block header
+
+    // invalid pointer
+    if ((void*)block < buddy.start || 
+        (void*)block >= (void*)((char*)buddy.start + buddy.total_size)) {
+        return;  
     }
-    blockToFree->allocated = 0;
-    total_frees++;
-    current_allocated_memory -= blockToFree->size;
-    #endif
 
-    // Add to front of free list
-    blockToFree->next = freeList;
-    freeList = blockToFree;
+    block->is_free = 1; 
+    buddy.free_memory += block->size;
+
+    while (1) {
+        block_t* buddy_block = get_buddy(block);
+        if ((void*)buddy_block >= buddy.start + buddy.total_size || 
+            (void*)buddy_block < buddy.start || 
+            !buddy_block->is_free || 
+            buddy_block->size != block->size) {
+            break; 
+        }
+
+        // remove buddy from list 
+        block_t** current = &buddy.free_lists[get_order(block->size)];
+        while (*current != buddy_block) {
+            current = &(*current)->next;
+        }
+        *current = buddy_block->next; 
+
+        if (buddy_block < block) {
+            block = buddy_block; 
+        }
+        block->size *= 2;
+    }
+
+    int order = get_order(block->size);
+    block->next = buddy.free_lists[order];
+    buddy.free_lists[order] = block;
 }
 
-void memory_manager_state() {
-    size_t free_memory = 0;
-    size_t largest_block = 0;
-    int free_blocks = 0;
-    struct block *current = freeList;
-    
-    while (current != NULL) {
-        free_memory += current->size;
-        if (current->size > largest_block) {
-            largest_block = current->size;
-        }
-        free_blocks++;
-        current = current->next;
-    }
 
+void memory_manager_state() {
     char buffer[32];
-    
     print("\n=== Memory Manager State ===\n");
     
+    size_t total_free = 0;
+    for (int i = 0; i < MAX_ORDER; i++) {
+        size_t block_size = (size_t)1 << (i + 6);  
+        int count = 0;
+        block_t *current = buddy.free_lists[i];
+        
+        while (current != NULL) {
+            count++;
+            total_free += current->size;
+            current = current->next;
+        }
+        
+        if (count > 0) {
+            print("Order ");
+            intToStr(i, buffer, 10);
+            print(buffer);
+            print(" (");
+            intToStr(block_size, buffer, 10);
+            print(buffer);
+            print(" bytes): ");
+            intToStr(count, buffer, 10);
+            print(buffer);
+            print(" free blocks\n");
+        }
+    }
+    
+    print("\nTotal memory: ");
+    intToStr(buddy.total_size, buffer, 10);
+    print(buffer);
+    print(" bytes\n");
+    
     print("Free memory: ");
-    intToStr(free_memory, buffer, 10);
+    intToStr(buddy.free_memory, buffer, 10);
     print(buffer);
     print(" bytes\n");
-    
-    print("Largest free block: ");
-    intToStr(largest_block, buffer, 10);
-    print(buffer);
-    print(" bytes\n");
-    
-    print("Number of free blocks: ");
-    intToStr(free_blocks, buffer, 10);
-    print(buffer);
-    print("\n");
-    
-    #if DEBUG_MEMORY
-    print("Total allocations: ");
-    intToStr(total_allocations, buffer, 10);
-    print(buffer);
-    print("\n");
-    
-    print("Total frees: ");
-    intToStr(total_frees, buffer, 10);
-    print(buffer);
-    print("\n");
-    
-    print("Currently allocated: ");
-    intToStr(current_allocated_memory, buffer, 10);
-    print(buffer);
-    print(" bytes\n");
-    #endif
-    
     print("========================\n");
 }
 

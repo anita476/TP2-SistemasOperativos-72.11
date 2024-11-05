@@ -33,7 +33,8 @@ static const uint64_t PageSize = 0x1000;
 
 static void *const sampleCodeModuleAddress = (void *) 0x400000;
 static void *const startHeapAddres = (void *) 0xF00000;
-static void *const endHeapAddres = (void *) 0x2000000;
+// static void *const startHeapAddres = (void *)0x100000;  // 1MB mark
+static void *const endHeapAddres = (void *) 0x8000000;
 
 typedef int (*EntryPoint)();
 
@@ -82,9 +83,16 @@ int main() {
   load_IDT();
   // welcomeSequence();
   init_memory_manager(startHeapAddres, (size_t) (endHeapAddres - startHeapAddres));
+  // memory_manager_state(); 
   init_scheduler();
+    memory_manager_state(); 
   init_shell();
+      memory_manager_state(); 
+
   _sti();
+  print("STI\n");
+        memory_manager_state(); 
+
   while (1) {
     yield();
     _hlt();

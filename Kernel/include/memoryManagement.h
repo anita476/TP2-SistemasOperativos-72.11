@@ -2,8 +2,11 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <lib.h>
+#include <videoDriver.h>
 
 typedef long ALIGN;
+
 
 
 /* Kernighan section 8.7*/
@@ -31,3 +34,8 @@ void *malloc(size_t bytes);
     @param ptr Pointer to block to be freed
 */
 void free(void *ptr);
+
+/*
+    @brief Prints the current memory state: total, free, and allocated memory
+*/
+void memory_manager_state();

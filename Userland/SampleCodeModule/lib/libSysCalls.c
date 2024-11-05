@@ -93,3 +93,5 @@ int sem_close(sem sem) { return syscall(38, (uint64_t) sem, 0, 0, 0, 0); }
 int sem_post(sem sem) { return syscall(39, (uint64_t) sem, 0, 0, 0, 0); }
 
 int sem_wait(sem sem) { return syscall(40, (uint64_t) sem, 0, 0, 0, 0); }
+
+void memory_manager_state() { syscall(41, 0, 0, 0, 0, 0); }

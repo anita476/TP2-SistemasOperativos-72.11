@@ -3,6 +3,8 @@
 
 #include <memoryManagement.h>
 #include <unistd.h>
+
+#ifdef LIST
 // #include <videoDriver.h>
 
 #define BLOCK_SIZE sizeof(struct block)
@@ -13,12 +15,21 @@ struct block {
 };
 
 static struct block *freeList;
+// static size_t totalMemory; 
+
+// struct memory_manager {
+//     struct block *freeList;
+//     size_t totalMemory;
+// };
+
+// static struct memory_manager mm;
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
   freeList = (struct block *) startHeapAddress;
   // Set the size of the first block
   freeList->size = totalSize - BLOCK_SIZE;  // Subtract size of the block header
   freeList->next = NULL;                    // No other blocks yet
+  // totalMemory = totalSize;
 }
 
 void *malloc(size_t bytes) {
@@ -37,6 +48,7 @@ void *malloc(size_t bytes) {
         current->size = bytes;
         current->next = newBlock;
       }
+      // freeMemory -= (current->size + BLOCK_SIZE);
       // Remove from free list
       if (previous == NULL) {
         freeList = current->next;
@@ -56,6 +68,35 @@ void free(void *ptr) {
     return;
   }
   struct block *blockToFree = (struct block *) ((char *) ptr - BLOCK_SIZE);
+  // freeMemory += blockToFree->size + BLOCK_SIZE;
   blockToFree->next = freeList;
   freeList = blockToFree;  // Add to the front of the free list
 }
+
+void memory_manager_state() {
+size_t currentFreeMemory = 0;
+    struct block *current = freeList;
+    
+    while (current != NULL) {
+        currentFreeMemory += current->size;
+        current = current->next;
+    }
+
+    char buffer[20]; 
+    // intToStr(totalMemory, buffer, 10);
+    // print("Total memory: ");
+    // print(buffer);
+    // print("\n");
+
+    intToStr(currentFreeMemory, buffer, 10);
+    print("Free memory: ");
+    print(buffer);
+    print("\n");
+
+    // intToStr(freeListory - currentFreeMemory, buffer, 10);
+    // print("Used memory: ");
+    // print(buffer);
+    // print("\n");
+}
+
+#endif

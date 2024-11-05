@@ -5,6 +5,9 @@ GLOBAL haltcpu
 GLOBAL int81
 GLOBAL _schedule
 
+GLOBAL forceChangeOfProcess
+GLOBAL forceTimerTick
+
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 
@@ -249,19 +252,30 @@ haltcpu:
 	hlt
 	ret
 
+forceTimerTick: 
+	int 20h 
+	ret 
+
+forceChangeOfProcess:
+	mov rsp, rdi 
+	popState 
+	iretq
+
 int81:
 	int 81h
 	ret
+
 _schedule: 
-	pushState
+	;pushState
 	
-	mov rdi, rsp
-	call switchP
-	mov rsp, rax
+	;mov rdi, rsp
+	mov rsp, rdi 
+	;call switchP
+	;mov rsp, rax
 
 	popState
-	iretq
-
+    iretq
+	
 SECTION .bss
     has_regs resb 1 ; to check whether we have saved or not!
     show_registers resq 18 ; reserve a qword for each register 

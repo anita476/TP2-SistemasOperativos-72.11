@@ -124,11 +124,18 @@ void * malloc(size_t bytes);
 */
 void free(void * ptr);
 
+/* @brief Prints memory manager info 
+*/
+
+void memory_manager_state(); 
+
+
 /*
     @brief Creates a process
     @param info The process info
     @returns The pid of the created process
 */
+
 pid createProcess(createProcessInfo * info);
 
 /*

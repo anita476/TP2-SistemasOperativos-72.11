@@ -30,4 +30,7 @@ void picSlaveMask(uint8_t mask);
 
 void haltcpu(void);
 
+void forceTimerTick();
+void forceChangeOfProcess(uint64_t *RSP);
+
 #endif /* INTERRUPS_H_ */

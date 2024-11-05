@@ -14,7 +14,7 @@
 #include "test_util.h"
 #include <_loader.h>
 #define BUFFER_SIZE   1024
-#define COMMANDS_SIZE 20
+#define COMMANDS_SIZE 21
 #define MAXMEMORY     (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -37,7 +37,7 @@ void *memcpy(void *destination, const void *source, uint64_t length) {
 
 static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
                            "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync",  "testnosync",
-                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice"};
+                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate"};
 
 int isCommand(char *str, int command) {
   if (command >= COMMANDS_SIZE)
@@ -97,6 +97,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     invalidOpCode();
     break;
   case 9:
+  {
     createProcessInfo testmm = {.name = "memory",
                                 .fg_flag = !in_bg,
                                 .priority = DEFAULT_PRIORITY,
@@ -104,8 +105,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                 .argc = argc,
                                 .argv = (const char *const *) argv};
     createProcess(&testmm);
+  }
     break;
   case 10:
+  {
     createProcessInfo testproc = {.name = "processes",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -113,8 +116,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&testproc);
+    }
     break;
   case 11:
+  {
     createProcessInfo testprio = {.name = "priority",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -122,6 +127,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&testprio);
+    }
     break;
   case 12: {
     createProcessInfo decInfo = {.name = "processSynchro",
@@ -145,6 +151,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     ps();
     break;
   case 15:
+  {
     createProcessInfo loopInfo = {.name = "loop",
                                   .fg_flag = !in_bg,
                                   .priority = DEFAULT_PRIORITY,
@@ -152,8 +159,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argc = argc,
                                   .argv = (const char *const *) argv};
     createProcess(&loopInfo);
+    }
     break;
   case 16:
+  {
     if (argc != 1) {
       print("Usage: kill <pid>\n");
       break;
@@ -166,27 +175,37 @@ void executeCommand(char *str, int argc, char *argv[]) {
     if (kill(pid_to_kill) != 0) {
       print("Error killing process\n");
     }
+    }
     break;
   case 17:
+  {
     if (argc != 1) {
       print("Usage: block <pid>\n");
       break;
     }
     block(satoi(argv[0]));
+  }
     break;
   case 18:
+  {
     if (argc != 1) {
       print("Usage: unblock <pid>\n");
       break;
     }
     unblock(satoi(argv[0]));
+    }
     break;
   case 19:
+  {
     if (argc != 2) {
       print("Usage: nice <pid> <new_priority>\n");
       break;
     }
     nice(satoi(argv[0]), satoi(argv[1]));
+    }
+    break;
+  case 20: 
+    memory_manager_state();
     break;
   default:
     print("Unrecognized command\n");

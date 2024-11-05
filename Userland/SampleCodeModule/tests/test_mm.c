@@ -20,6 +20,7 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
   }
 
   print("Starting test...\n");
+  print("Anohter check...\n");
 
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;

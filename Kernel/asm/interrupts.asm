@@ -5,9 +5,6 @@ GLOBAL haltcpu
 GLOBAL int81
 GLOBAL _schedule
 
-GLOBAL forceChangeOfProcess
-GLOBAL forceTimerTick
-
 GLOBAL picMasterMask
 GLOBAL picSlaveMask
 
@@ -252,15 +249,6 @@ haltcpu:
 	hlt
 	ret
 
-forceTimerTick: 
-	int 20h 
-	ret 
-
-forceChangeOfProcess:
-	mov rsp, rdi 
-	popState 
-	iretq
-
 int81:
 	int 81h
 	ret
@@ -268,7 +256,6 @@ int81:
 _schedule: 
 	;pushState
 	
-	;mov rdi, rsp
 	mov rsp, rdi 
 	;call switchP
 	;mov rsp, rax

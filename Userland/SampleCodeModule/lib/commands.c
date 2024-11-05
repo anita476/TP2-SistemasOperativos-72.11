@@ -25,6 +25,7 @@ void help() {
   print("\n * block: Block a process by its PID");
   print("\n * unblock: Unblock a process by its PID");
   print("\n * nice: Change the priority of a process by its PID");
+  print("\n * mmstate: Display the current state of the memory manager");
   print("\n ----------------------------Tests----------------------------");
   print("\n * testmm: Run a memory management test in an endless loop");
   print("\n * testprio: Run a priority test");

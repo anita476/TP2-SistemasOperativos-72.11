@@ -5,8 +5,6 @@
 #include <unistd.h>
 
 #ifdef LIST
-// #include <videoDriver.h>
-
 #define BLOCK_SIZE sizeof(struct block)
 
 struct block {
@@ -15,88 +13,75 @@ struct block {
 };
 
 static struct block *freeList;
-// static size_t totalMemory; 
-
-// struct memory_manager {
-//     struct block *freeList;
-//     size_t totalMemory;
-// };
-
-// static struct memory_manager mm;
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
   freeList = (struct block *) startHeapAddress;
-  // Set the size of the first block
-  freeList->size = totalSize - BLOCK_SIZE;  // Subtract size of the block header
-  freeList->next = NULL;                    // No other blocks yet
-  // totalMemory = totalSize;
+  freeList->size = totalSize - BLOCK_SIZE;  
+  freeList->next = NULL;                    
 }
 
 void *malloc(size_t bytes) {
   struct block *current, *previous;
-  bytes += BLOCK_SIZE;  // Account for block header
+  bytes += BLOCK_SIZE;  
 
-  // Search for block
   previous = NULL;
   for (current = freeList; current != NULL; current = current->next) {
-    if (current->size >= bytes) {  // Found a big enough block
+    if (current->size >= bytes) {
       if (current->size > bytes + BLOCK_SIZE) {
-        // Split the block
         struct block *newBlock = (struct block *) ((char *) current + bytes);
         newBlock->size = current->size - bytes;
         newBlock->next = current->next;
         current->size = bytes;
         current->next = newBlock;
       }
-      // freeMemory -= (current->size + BLOCK_SIZE);
-      // Remove from free list
       if (previous == NULL) {
         freeList = current->next;
       } else {
         previous->next = current->next;
       }
-      return (void *) ((char *) current + BLOCK_SIZE);  // Return memory address
+      return (void *) ((char *) current + BLOCK_SIZE);
     }
     previous = current;
   }
-  return NULL;  // No suitable block found
+  return NULL;
 }
 
-// Free memory
 void free(void *ptr) {
-  if (ptr == NULL) {
-    return;
-  }
+  if (ptr == NULL) return;
   struct block *blockToFree = (struct block *) ((char *) ptr - BLOCK_SIZE);
-  // freeMemory += blockToFree->size + BLOCK_SIZE;
   blockToFree->next = freeList;
-  freeList = blockToFree;  // Add to the front of the free list
+  freeList = blockToFree;
 }
+
 
 void memory_manager_state() {
-size_t currentFreeMemory = 0;
-    struct block *current = freeList;
+    char buffer[32];
+    print("\n=== Memory Manager State ===\n");
     
+    // Calculate total allocated by traversing the free list
+    size_t total_free = 0;
+    struct block *current = freeList;
     while (current != NULL) {
-        currentFreeMemory += current->size;
+        total_free += current->size;
         current = current->next;
     }
-
-    char buffer[20]; 
-    // intToStr(totalMemory, buffer, 10);
-    // print("Total memory: ");
-    // print(buffer);
-    // print("\n");
-
-    intToStr(currentFreeMemory, buffer, 10);
-    print("Free memory: ");
+    
+    // The total is what we got in init
+    size_t total = freeList->size + BLOCK_SIZE;  // Add back the first block header
+    
+    print("Total memory: ");
+    intToStr(total, buffer, 10);
     print(buffer);
-    print("\n");
-
-    // intToStr(freeListory - currentFreeMemory, buffer, 10);
-    // print("Used memory: ");
-    // print(buffer);
-    // print("\n");
+    print(" bytes\n");
+    
+    print("Free memory: ");
+    intToStr(total_free, buffer, 10);
+    print(buffer);
+    print(" bytes\n");
+    
+    print("Allocated memory: ");
+    intToStr(total - total_free, buffer, 10);
+    print(buffer);
+    print(" bytes\n");
 }
-
 #endif

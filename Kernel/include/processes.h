@@ -74,6 +74,13 @@ pid createProcess(createProcessInfo * info);
 int kill(pid pid);
 
 /* 
+    @brief Kills a process with its children
+    @param pid The PID of the process
+    @returns 0 if successful, -1 if error
+*/
+int killWithChildren(pid pid);
+
+/* 
     @brief Sends a process to the background
     @param pid The PID of the process
     @returns 0 if successful, -1 if error

@@ -159,11 +159,14 @@ int kill(pid pid) {  // if it had children, shell adopts them
   /* remove from parent list*/
   removeChild(pid);
 
-  /* check if it has children and make shell kill them*/
+  /* check if it has children and make shell adopt them*/
   if (families[pid].numberOfChildren != 0) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
       if (families[pid].childrenArr[i]) {
-        kill(i);
+        shellAdoption(i, pid);
+        if (!families[pid].numberOfChildren) {
+          break;
+        }
       }
     }
   }
@@ -183,6 +186,45 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
   //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
   // free(process->argv);
+
+  free(process->stackEnd);
+  free(process->name);
+  memset(process, 0, sizeof(ProcessS));
+  lastPID--;
+  return 0;
+}
+
+int killWithChildren(pid pid) {
+  if (pid == 0) {
+    return -1;
+  }
+
+  ProcessS *process;
+  if (!findPID(pid, &process)) {
+    print(STDERR, "Validation error\n");
+    return -1;
+  }
+
+  removeChild(pid);
+
+  if (families[pid].numberOfChildren != 0) {
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+      if (families[pid].childrenArr[i]) {
+        kill(i);
+      }
+    }
+  }
+
+  for (int i = 0; i < process->memoryCount; i++) {
+    free(process->memory[i]);
+  }
+  free(process->memory);
+
+  processWasKilled(pid);
+
+  for (int i = 0; i < process->argc; i++) {
+    free(process->argv[i]);
+  }
 
   free(process->stackEnd);
   free(process->name);

@@ -68,7 +68,7 @@ void keyboardHandler() {
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
       for (int i = 1; i < MAX_PROCESSES; i++) {
         if (isForeground(i)) {
-          kill(i);
+          killWithChildren(i);
           print(STDOUT,"^C\n");
           cleanBuffer();
           print(STDOUT,"caOS>");

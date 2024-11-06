@@ -246,3 +246,8 @@ int sem_post(sem sem);
     @returns 0 if successful, -1 otherwise
 */
 int sem_wait(sem sem);
+
+/* @brief Prints memory manager info 
+*/
+
+void memory_manager_state(); 

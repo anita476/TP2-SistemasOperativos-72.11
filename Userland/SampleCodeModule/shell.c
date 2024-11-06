@@ -14,7 +14,7 @@
 #include "test_util.h"
 #include <_loader.h>
 #define BUFFER_SIZE   1024
-#define COMMANDS_SIZE 20
+#define COMMANDS_SIZE 21
 #define MAXMEMORY     (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -37,7 +37,7 @@ void *memcpy(void *destination, const void *source, uint64_t length) {
 
 static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
                            "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync",  "testnosync",
-                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice"};
+                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate"};
 
 int isCommand(char *str, int command) {
   if (command >= COMMANDS_SIZE)
@@ -203,6 +203,9 @@ void executeCommand(char *str, int argc, char *argv[]) {
     }
     nice(satoi(argv[0]), satoi(argv[1]));
   }
+    break;
+  case 20: 
+    memory_manager_state();
     break;
   default:
   {

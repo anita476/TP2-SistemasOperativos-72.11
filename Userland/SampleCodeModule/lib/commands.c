@@ -25,6 +25,7 @@ void help() {
   fprintf(STDOUT,"\n * block: Block a process by its PID");
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
+  fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
   fprintf(STDOUT,"\n ----------------------------Tests----------------------------");
   fprintf(STDOUT,"\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT,"\n * testprio: Run a priority test");

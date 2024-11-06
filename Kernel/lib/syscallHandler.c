@@ -238,6 +238,9 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
     return sem_post(rdi);
   case 40:
     return sem_wait(rdi);
+  case 41: 
+    memory_manager_state(); 
+    break;
   default:
     return 1;
   }

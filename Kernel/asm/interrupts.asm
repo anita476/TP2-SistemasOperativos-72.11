@@ -253,11 +253,12 @@ int81:
 	int 81h
 	ret
 _schedule: 
-	pushState
+	;pushState
 	
-	mov rdi, rsp
-	call switchP
-	mov rsp, rax
+	;mov rdi, rsp
+	mov rsp, rdi
+	;call switchP
+	;mov rsp, rax
 
 	popState
 	iretq

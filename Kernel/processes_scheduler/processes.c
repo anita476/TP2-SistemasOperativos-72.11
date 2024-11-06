@@ -159,14 +159,11 @@ int kill(pid pid) {  // if it had children, shell adopts them
   /* remove from parent list*/
   removeChild(pid);
 
-  /* check if it has children and make shell adopt them*/
+  /* check if it has children and make shell kill them*/
   if (families[pid].numberOfChildren != 0) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
       if (families[pid].childrenArr[i]) {
-        shellAdoption(i, pid);
-        if (!families[pid].numberOfChildren) {
-          break;
-        }
+        kill(i);
       }
     }
   }

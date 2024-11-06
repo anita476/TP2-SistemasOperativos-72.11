@@ -60,10 +60,10 @@ void myProcessInc(int argc, char *argv[]) {
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem) {
-      fprintf(STDOUT,"PID ");
-      itoa(getpid(), buffer, 10);
-      fprintf(STDOUT,buffer);
-      fprintf(STDOUT,": Waiting on semaphore\n");
+      // fprintf(STDOUT,"PID ");
+      // itoa(getpid(), buffer, 10);
+      // fprintf(STDOUT,buffer);
+      // fprintf(STDOUT,": Waiting on semaphore\n");
       sem_wait(sem);
     }
     int64_t before = global;
@@ -148,11 +148,20 @@ void testSync(int argc, char *argv[]) {
   }
 
   waitForChildren();  // this makes it wait until ALL children are dead
+  fprintf(STDOUT, "------------------------------------------------------------\n");
   fprintf(STDOUT,"Final value:");
   char buffer[300];
   itoa(global, buffer, 10);
   fprintf(STDOUT, buffer);
   fprintf(STDOUT,"\n");
+
+  if (global == 0) {
+    fprintf(STDERR,"Test passed\n");
+  } else {
+    fprintf(STDERR,"Test failed\n");
+  }
+  fprintf(STDOUT, "------------------------------------------------------------\n");
+  fprintf(STDOUT,"caOS>");
 
   return;
 }

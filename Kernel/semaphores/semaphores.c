@@ -2,6 +2,7 @@
 #include <scheduler.h>
 #include <semaphores.h>
 #include <sys/types.h>
+#include <lib.h>
 #include <videoDriver.h>
 
 /* for critical region entering */
@@ -15,11 +16,10 @@ typedef struct Semaphore {
   sem_name name;
   int sem_value;
   uint8_t lock;
-  pid interestedProcesses[MAX_PROCESSES];
-  /*
-  not necesary to use queues because max quantity of processes is 10,
-  maybe we can chaange it later tho */
-  int numberInterestedProcesses;
+  pid interestedProcesses[MAX_PROCESSES];   /* not necesary to use queues because max quantity of processes is 10, maybe we can chaange it later tho */
+  int numberInterestedProcesses; 
+  pid waitingProcesses[MAX_PROCESSES];
+  int numberWaitingProcesses;
 } Semaphore;
 
 Semaphore semaphoreList[MAX_SEMAPHORES] = {{0}};
@@ -37,57 +37,90 @@ static int grabSemaphore(sem sem) {
   return 0;
 }
 
-int sem_open(sem_name semName, int initValue) {
-  pid currentPid = getpid();
-  sem semId = sem_get(semName);
+static int isInterested(sem sem, pid pid) {
+    for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
+        if (semaphoreList[sem].interestedProcesses[i] == pid) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
-  if (semId == -1) {  // need to create sem
-    print(STDERR, "Didnt find name\n");
-    if (active == MAX_PROCESSES) {
-      return MAX_SEMS_ERROR;
+int sem_open(sem_name semName, int initValue) {
+    if (semName == NULL) {
+        print(STDERR, "Invalid semaphore name\n");
+        return INVALID_VALUE_ERROR;
     }
-    if (initValue < 0) {
-      return INVALID_VALUE_ERROR;
-    }
-    // i traverse the array to find the first available spot
-    for (int i = 0; i < MAX_SEMAPHORES; i++) {
-      if (semaphoreList[i].numberInterestedProcesses ==
-          0) {  // if all processes have closed the semaphore, w can step on the name and reuse the id
-        semaphoreList[i].name = malloc(strlen(semName) + 1);
-        if (semaphoreList[i].name == NULL) {
-          return -1;
+
+    pid currentPid = getpid();
+    sem semId = sem_get(semName);
+
+    if (semId == -1) {  // need to create sem
+        acquire(&lock);  // Get global lock for creation
+
+        print(STDERR, "Creating semaphore ");
+        print(STDERR, semName);
+        print(STDERR, "\n");
+
+        if (active >= MAX_PROCESSES) {
+            print(STDERR, "Error: Maximum semaphores reached\n");
+            release(&lock);
+            return MAX_SEMS_ERROR;
         }
-        if (strcpy(semaphoreList[i].name, semName) == NULL) {
-          return -1;
+        if (initValue < 0) {
+            release(&lock);
+            return INVALID_VALUE_ERROR;
         }
-        semaphoreList[i].sem_value = initValue;
-        semaphoreList[i].interestedProcesses[0] = currentPid;
-        semaphoreList[i].numberInterestedProcesses++;
-        semaphoreList[i].lock = 1;
-        active++;
-        return i;
-      }
+
+        for (int i = 0; i < MAX_SEMAPHORES; i++) {
+            if (semaphoreList[i].numberInterestedProcesses == 0) {
+                semaphoreList[i].name = malloc(strlen(semName) + 1);
+                if (semaphoreList[i].name == NULL) {
+                    release(&lock);
+                    return -1;
+                }
+                if (strcpy(semaphoreList[i].name, semName) == NULL) {
+                    free(semaphoreList[i].name);
+                    release(&lock);
+                    return -1;
+                }
+                semaphoreList[i].sem_value = initValue;
+                semaphoreList[i].interestedProcesses[0] = currentPid;
+                semaphoreList[i].numberInterestedProcesses = 1;
+                semaphoreList[i].lock = 1;
+                active++;
+                release(&lock);
+                return i;
+            }
+        }
+        release(&lock);
+        print(STDERR, "Error: No available semaphore slots\n");
+        return -1;
     }
-  } else {
-    print(STDERR, "Sem already exists\n");
-    // sem already exists -> init value is ignored because the sem was NOT really created and it has its own value;
+
+    if (grabSemaphore(semId) != 0) {
+        return -1;
+    }
+
     for (int i = 0; i < semaphoreList[semId].numberInterestedProcesses; i++) {
-      if (semaphoreList[semId].interestedProcesses[i] == currentPid) {
-        return 0;  // pid has already opened the semaphore and not closed it
-      }
+        if (semaphoreList[semId].interestedProcesses[i] == currentPid) {
+            release(&(semaphoreList[semId].lock));
+            return semId;
+        }
     }
-    semaphoreList[semId].interestedProcesses[semaphoreList[semId].numberInterestedProcesses] = currentPid;
-    semaphoreList[semId].numberInterestedProcesses++;
-  }
-  return semId;
+
+    if (semaphoreList[semId].numberInterestedProcesses < MAX_PROCESSES) {
+        semaphoreList[semId].interestedProcesses[semaphoreList[semId].numberInterestedProcesses++] = currentPid;
+        release(&(semaphoreList[semId].lock));
+        return semId;
+    }
+
+    release(&(semaphoreList[semId].lock));
+    print(STDERR, "Error: Maximum interested processes reached for semaphore\n");
+    return -1;
 }
 
 int sem_close(sem sem) {
-  if (sem < 0 || sem >= MAX_SEMAPHORES) {
-    return INVALID_VALUE_ERROR;
-  }
-
-  // Protect access to semaphore
   if (grabSemaphore(sem) != 0) {
     return INVALID_VALUE_ERROR;
   }
@@ -98,104 +131,107 @@ int sem_close(sem sem) {
   for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
     if (semaphoreList[sem].interestedProcesses[i] == currentPid) {
       found = 1;
+      
+      int currentCount = semaphoreList[sem].numberInterestedProcesses;
 
-      // Decrease number of interested processes
-      semaphoreList[sem].numberInterestedProcesses--;
-
-      // If this was the last process using the semaphore
-      if (semaphoreList[sem].numberInterestedProcesses == 0) {
-        print(STDOUT, "Freeing semaphore resources\n");
-
-        // Get global lock before modifying active count
+      
+      if (currentCount == 1) {
         acquire(&lock);
-
-        // Complete cleanup of semaphore
         free(semaphoreList[sem].name);
         semaphoreList[sem].name = NULL;
         semaphoreList[sem].sem_value = 0;
-        memset(semaphoreList[sem].interestedProcesses, 0, sizeof(pid) * MAX_PROCESSES);
         semaphoreList[sem].numberInterestedProcesses = 0;
-
-        // Decrease active semaphores count
+        memset(semaphoreList[sem].interestedProcesses, 0, sizeof(pid) * MAX_PROCESSES);
         active--;
-
         release(&lock);
       } else {
-        // agrego esto:
-        int originalSize = semaphoreList[sem].numberInterestedProcesses;
-        semaphoreList[sem].numberInterestedProcesses--;
-        // Shift remaining processes left, avoiding overflow
-        for (int j = i; j < originalSize - 1; j++) {
+        // Shift remaining processes left
+        for (int j = i; j < semaphoreList[sem].numberInterestedProcesses - 1; j++) {
           semaphoreList[sem].interestedProcesses[j] = semaphoreList[sem].interestedProcesses[j + 1];
         }
-        // Clear the last slot
-        semaphoreList[sem].interestedProcesses[originalSize - 1] = 0;
+        semaphoreList[sem].numberInterestedProcesses--;
       }
       break;
     }
   }
 
   release(&(semaphoreList[sem].lock));
-
-  if (!found) {
-    return -1;  // Process wasn't found in interested processes
-  }
-
-  return 0;
+  return found ? 0 : -1;
 }
 
-int sem_post(sem sem) {
-  if (grabSemaphore(sem) != 0) {
-    return -1;
-  }
-  semaphoreList[sem].sem_value++;
-  if (semaphoreList[sem].numberInterestedProcesses > 0) {
-    pid toUnblock = semaphoreList[sem].interestedProcesses[0];  // lo muevo para aca pq si no, no se desbloquea el
-                                                                // proceso que estaba esperando por mayor tiempo
-    for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses - 1; i++) {  // agrego -1 para que no se desborde
-      semaphoreList[sem].interestedProcesses[i] = semaphoreList[sem].interestedProcesses[i + 1];
-    }
-    semaphoreList[sem].numberInterestedProcesses--;  // importante!!
 
-    // semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses - 1] = currentProc;
-    unblock(toUnblock);
-  }
+int sem_wait(sem sem) {    
+    if (grabSemaphore(sem) != 0)
+        return -1;
 
-  release(&semaphoreList[sem].lock);
-  return 0;
-}
+    pid currentPid = getpid();
 
-int sem_wait(sem sem) {
-  if (grabSemaphore(sem) != 0)
-    return -1;
-
-  pid currentPid = getpid();
-
-  while (semaphoreList[sem].sem_value <= 0) {
-
-    int found = 0;
-    for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
-      if (semaphoreList[sem].interestedProcesses[i] == currentPid) {
-        found = 1;
-        break;
-      }
-    }
+    int found = isInterested(sem, currentPid);
 
     if (!found) {
-      semaphoreList[sem].interestedProcesses[semaphoreList[sem].numberInterestedProcesses++] = currentPid;
+        release(&(semaphoreList[sem].lock));
+        print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot wait\n");
+        return INVALID_VALUE_ERROR; 
     }
 
+    while (semaphoreList[sem].sem_value <= 0) {
+        semaphoreList[sem].waitingProcesses[semaphoreList[sem].numberWaitingProcesses++] = currentPid;
+        release(&(semaphoreList[sem].lock));
+        block(currentPid);
+        yield();
+        
+        if (grabSemaphore(sem) != 0)
+            return -1;
+    }
+    semaphoreList[sem].sem_value--;
+    
     release(&(semaphoreList[sem].lock));
-    block(currentPid);
-    yield();
+    return 0;
+}
 
-    // when we wake up, reacquire lock and check again!!!
-    if (grabSemaphore(sem) != 0)
-      return -1;
-  }
-  semaphoreList[sem].sem_value--;
-  release(&(semaphoreList[sem].lock));
-  return 0;
+
+int sem_post(sem sem) {
+    if (grabSemaphore(sem) != 0) {
+        return -1;
+    }
+
+    pid currentPid = getpid();
+
+    int found = isInterested(sem, currentPid);
+
+    if (!found) {
+        release(&(semaphoreList[sem].lock));
+        print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot post\n");
+        return INVALID_VALUE_ERROR; 
+    }
+
+    semaphoreList[sem].sem_value++;
+    
+    if (semaphoreList[sem].numberWaitingProcesses > 0) {
+        // print(STDERR, "Posting semaphore\n");
+        // Unblock first process in the list
+        pid toUnblock = semaphoreList[sem].waitingProcesses[0];
+        
+        // Shift remaining processes
+        for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses - 1; i++) {
+            semaphoreList[sem].waitingProcesses[i] = semaphoreList[sem].waitingProcesses[i + 1];
+        }
+        semaphoreList[sem].numberWaitingProcesses--;
+        char buffer[20];
+        print(STDERR, "Processes waiting:");
+        for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses; i++) {
+            print(STDERR, "PID ");
+            intToStr(semaphoreList[sem].waitingProcesses[i], buffer,10);
+            print(STDERR, buffer);
+            print(STDERR, " ");
+        }
+        print(STDOUT, "\n");
+        
+        unblock(toUnblock);
+    }
+
+    release(&semaphoreList[sem].lock);
+    return 0;
 }
 
 int sem_value(sem sem) {

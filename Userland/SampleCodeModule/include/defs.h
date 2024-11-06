@@ -1,8 +1,8 @@
 #ifndef _DEFS_
 #define _DEFS_
 
-#define MAX_PRIORITY 5
-#define DEFAULT_PRIORITY 1
+#define MAX_PRIORITY 10
+#define DEFAULT_PRIORITY 3
 #define MIN_PRIORITY 0
 #define NO_PROC -1
 

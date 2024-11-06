@@ -55,7 +55,7 @@ void *initializeKernelBinary() {
 void init_shell() {
   createProcessInfo shellInfo = {.name = "shell",
                                  .fg_flag = 1,
-                                 .priority = DEFAULT_PRIORITY,
+                                 .priority = MAX_PRIORITY,
                                  .start = (ProcessStart) sampleCodeModuleAddress,
                                  .argc = 0,
                                  .argv = (const char *const *) NULL};

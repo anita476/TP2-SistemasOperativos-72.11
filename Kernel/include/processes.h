@@ -44,6 +44,8 @@ typedef struct{
     priority priority;
     status status;
     pid parent;
+    unsigned int input;
+    unsigned int output;
 } ProcessInfo;
 
 /*what is needed in order to create a process*/ 

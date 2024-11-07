@@ -273,6 +273,8 @@ int listProcessesInfo(ProcessInfo *processes, int maxProcesses) {
       info->stackStart = process->stackStart;
       info->fg_flag = process->fg_flag;
       info->parent = process->parent;
+      info->input = process->input;
+      info->output = process->output;
       getProcessInfo(i, info);
     }
   }
@@ -287,8 +289,7 @@ static int findPID(pid pid, ProcessS **pr) {
   return 1;
 }
 
-
-int get_process_input(pid pid){
+int get_process_input(pid pid) {
   ProcessS *p;
   if (!findPID(pid, &p)) {
     return -1;
@@ -296,7 +297,7 @@ int get_process_input(pid pid){
   return p->input;
 }
 
-int get_process_output(pid pid){
+int get_process_output(pid pid) {
   ProcessS *p;
   if (!findPID(pid, &p)) {
     return -1;

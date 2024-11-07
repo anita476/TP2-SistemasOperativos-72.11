@@ -86,6 +86,12 @@ int nice(pid pid, priority newPrio);
 void waitForChildren();
 
 /* 
+    @brief Waits for a specific process
+    @param pid The PID of the process
+*/
+void waitForPID(pid pid);
+
+/* 
     @brief Kills the current process
     @returns 0 if successful, -1 if error
 */

@@ -57,11 +57,20 @@ int processWasKilled(pid pid) {
   }
   return 0;
 }
-/* make current proc wait for all children */
+
 void waitForChildren() {
   block(currentPID);
   yield();
 }
+
+void waitForPID(pid pid) {
+  PCB *pcb;
+  while (getState(pid, &pcb) == 0 && pcb->processStatus != KILLED) {
+    block(getpid());
+    yield();
+  }
+}
+
 void yield() {
   currentQuantum = 0;
   int81();

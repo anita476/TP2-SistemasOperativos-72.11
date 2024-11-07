@@ -12,9 +12,10 @@
 #include "test_processes.h"
 #include "test_sync.h"
 #include "test_util.h"
+#include <test_pipe.h>
 #include <_loader.h>
 #define BUFFER_SIZE   1024
-#define COMMANDS_SIZE 21
+#define COMMANDS_SIZE 22
 #define MAXMEMORY     (0x2000000 - 0xF00000)
 
 extern void haltcpu();
@@ -37,7 +38,7 @@ void *memcpy(void *destination, const void *source, uint64_t length) {
 
 static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
                            "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync",  "testnosync",
-                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate"};
+                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate", "testpipe"};
 
 int isCommand(char *str, int command) {
   if (command >= COMMANDS_SIZE)
@@ -221,6 +222,19 @@ void executeCommand(char *str, int argc, char *argv[]) {
   case 20: 
     memory_manager_state();
     break;
+  case 21:
+  {
+    createProcessInfo pipetestInfo = {.name = "pipe_test",
+                                  .fg_flag = !in_bg,
+                                  .priority = DEFAULT_PRIORITY,
+                                  .start = (ProcessStart) test_pipe,
+                                  .argc = argc,
+                                  .argv = (const char *const *) argv,
+                                  .input = STDIN,
+                                  .output = STDOUT};
+    createProcess(&pipetestInfo);
+  }
+  break;
   default:
   {
     fprintf(STDERR, "Unrecognized command\n");

@@ -34,6 +34,7 @@ void help() {
           "\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
   fprintf(STDOUT, "\n * testsync: Run synchronization test using semaphores");
   fprintf(STDOUT, "\n * testnosync: Run synchronization test without semaphores");
+  fprintf(STDOUT, "\n * testpipe: Run a pipe usage test. No parameters needed");
   fprintf(STDOUT, "\n");
 }
 

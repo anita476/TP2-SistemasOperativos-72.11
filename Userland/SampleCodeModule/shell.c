@@ -276,12 +276,6 @@ void insertCommand() {
 void shell() {
   help();
   fprintf(STDOUT,"caOS>");
-  fprintf(STDOUT, "Hello\n");
-  char buffer[20];
-  readBuffer(buffer,20);
-  fprintf(STDOUT, "The buffer i got was: ");
-  fprintf(STDOUT, buffer);
-  fprintf(STDOUT, "\n");
   while (1) {
     insertCommand();
   }

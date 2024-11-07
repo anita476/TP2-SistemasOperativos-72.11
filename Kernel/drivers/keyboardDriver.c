@@ -138,8 +138,9 @@ void cleanRead() { readIndex = 0; }
 char getFromBuffer() {
   if (readIndex == writeIndex)
     return 0;
-  if (readIndex >= BUFFER_SIZE)
+  if (readIndex >= BUFFER_SIZE){
     readIndex = 0;
+  }
   return buffer[readIndex++];
 }
 

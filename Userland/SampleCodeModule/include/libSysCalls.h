@@ -7,7 +7,7 @@
     @param buffer The buffer
     @param length The length
 */
-uint64_t readBuffer(char* buffer, uint64_t length);
+uint64_t readBuffer(int fileDes, char* buffer, uint64_t length);
 
 /*
     @brief Gets a character from the buffer

@@ -58,4 +58,16 @@ typedef char *sem_name;
 
 typedef int fd;
 
+/* Pipe related constants */
+#define INVALID_PIPE (-1)
+#define NO_SPACE (-2)
+#define PIPE_ERROR (-3) /* For when theres a read or write error, but i havent reached EOF ! */
+
+typedef struct pipeInfo {
+    unsigned int id;
+	unsigned int amount;
+	uint8_t eof;
+	//smth else
+}pipeInfo;
+
 #endif

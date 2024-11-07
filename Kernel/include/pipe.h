@@ -48,7 +48,6 @@ int open_pipe(unsigned int pipe_id);
 */
 int close_pipe(unsigned int pipe_id);
 
-void pipe_close(unsigned int pipe_id); //not necessary methinks
 /*
 	@brief Reads from a certain pipe if available to read, otherwise blocks process. Reads until bytes is up 
 		or pipe sends EOF.

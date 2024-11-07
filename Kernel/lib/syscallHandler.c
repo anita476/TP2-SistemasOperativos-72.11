@@ -259,6 +259,16 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
   case 41: 
     memory_manager_state(); 
     break;
+  case 42: 
+    return open_pipe(rdi);
+  case 43: 
+    return close_pipe( rdi);
+  case 44:
+    return read_from_pipe(rdi, rsi, rdx);
+  case 45: 
+    return write_to_pipe(rdi,rsi,rdx);
+  case 46:
+    return get_pipe_info(rdi,rsi);
   default:
     return 1;
   }

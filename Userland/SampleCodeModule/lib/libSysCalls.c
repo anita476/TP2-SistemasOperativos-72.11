@@ -95,3 +95,12 @@ int sem_post(sem sem) { return syscall(39, (uint64_t) sem, 0, 0, 0, 0); }
 int sem_wait(sem sem) { return syscall(40, (uint64_t) sem, 0, 0, 0, 0); }
 
 void memory_manager_state() { syscall(41, 0, 0, 0, 0, 0); }
+
+int open_pipe(unsigned int pipe_id){ return syscall(42, (uint64_t) pipe_id, 0, 0, 0, 0);}
+int close_pip(unsigned int pipe_id){ return syscall(43, (uint64_t) pipe_id, 0, 0, 0, 0);}
+
+int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){ 
+  return syscall(44,(uint64_t) pipe_id, (uint64_t) dest, (uint64_t) bytes, 0, 0);}
+int write_to_pipe(unsigned int pipe_id, char * src, unsigned int bytes){ 
+  return syscall(45,(uint64_t) pipe_id, (uint64_t) src, (uint64_t) bytes, 0, 0);}
+int get_pipe_info(unsigned int pipe_id, pipeInfo * info){ return syscall(46, (uint64_t) pipe_id, (uint64_t) info, 0, 0, 0);}

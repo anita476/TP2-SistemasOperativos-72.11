@@ -1,4 +1,5 @@
 #include <pipe.h>
+#include <videoDriver.h>
 
 #define START_ID 4 //not the cleanest but its to simplify the code since a pipe is "another file"
 
@@ -39,7 +40,15 @@ static int find_available_pipe(){
 	}
 	for(int i = 0 ; i< MAX_PIPES; i++){
 		if( pipeList[i].pipeID == 0){
-			return i + START_ID;
+			print(STDOUT, "Found one\n");
+			int answer = i + START_ID;
+			pipeList[i].pipeID = answer;
+			char buf[10];
+			intToStr(pipeList[i].pipeID, buf,10);
+			print(STDOUT, "Id is: ");
+			print(STDOUT, buf);
+
+			return answer;
 		}
 	}
 	return NO_SPACE;
@@ -47,9 +56,19 @@ static int find_available_pipe(){
 
 /* Returns the position of the pipe id, or -1 if it isnt found (or the id isnt in use atm) */ 
 static int find_pipe(unsigned int id){
+	print(STDOUT, "I want pipe with id: ");
+	char bu3f[10];
+	intToStr(id, bu3f,10);
+	print(STDOUT, bu3f);
 	if(id <= 3 || (pipeList[id - START_ID].pipeID != id)){
+		print(STDOUT, "PipeID was wrong\n");
 		return INVALID_PIPE;
 	}
+			print(STDOUT,"Found the pipe: Id  ");
+			char buf[4];
+			intToStr(id, buf, 10);
+			print(STDOUT, buf);
+			print(STDOUT, "\n");
 	return (id - START_ID);
 }
 
@@ -83,7 +102,7 @@ int open_pipe(unsigned int pipe_id){
 	if(pipe_id == 0){ // no pipe_id
 		//find pos
 		int id = find_available_pipe();
-		pos = find_pipe(pipe_id);
+		pos = find_pipe(id);
 		if(id < 0 || pos < 0){
 			return -1;
 		}

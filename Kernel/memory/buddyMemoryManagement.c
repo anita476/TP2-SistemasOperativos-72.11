@@ -60,9 +60,8 @@ static block_t* get_buddy(block_t* block) {
 }
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
-    char buffer[32];
+    //char buffer[32];
 
-    print(STDOUT, "Initialized with memory manager = BUDDY\n\n");
     // intToStr(totalSize, buffer, 10);
     // print(STDOUT, buffer);
     // print(STDOUT, " bytes\n");
@@ -86,14 +85,14 @@ void init_memory_manager(void *startHeapAddress, size_t totalSize) {
     initial->next = NULL;
     buddy.free_lists[order] = initial;
 
-    print(STDOUT, "Initial block size: ");
+/*     print(STDOUT, "Initial block size: ");
     intToStr(block_size, buffer, 10);
     print(STDOUT, buffer);
 
     print(STDOUT, "     Initialized with order: ");
     intToStr(order, buffer, 10);
     print(STDOUT, buffer);
-    print(STDOUT, "\n");
+    print(STDOUT, "\n"); */
 }
 
 void *malloc(size_t size) {

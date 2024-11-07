@@ -113,4 +113,10 @@ int isForeground(pid pid);
 */
 int listProcessesInfo(ProcessInfo * processes, int maxProcesses);
 
+
+
+int get_process_input(pid pid);
+
+int get_process_output(pid pid);
+
 #endif

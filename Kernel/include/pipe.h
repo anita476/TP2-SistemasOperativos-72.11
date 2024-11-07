@@ -5,10 +5,10 @@
 #include <stdlib.h>
 #include <semaphores.h>
 
-#define INVALID_PIPE -1
-#define NO_SPACE -2
-#define PIPE_ERROR -3 /* For when theres a read or write error, but i havent reached EOF ! */
-#define EOF -1
+#define INVALID_PIPE (-1)
+#define NO_SPACE (-2)
+#define PIPE_ERROR (-3) /* For when theres a read or write error, but i havent reached EOF ! */
+#define EOF (-1)
 #define MAX_PIPES 20
 #define PIPE_SIZE 1024
 
@@ -31,7 +31,7 @@ int get_pipe_info(unsigned int pipe_id, pipeInfo * info);
 	@brief Send an EOF signal to a pipe. If pipe does not exist, does nothing
 	@param pipe_id The pipe in question
 */
-void signal_eof(unsigned int pipe_id); 
+int signal_eof(unsigned int pipe_id); 
 
 /*
 	@brief Opens a pipe, or creates one if NULL is passed as parameter
@@ -39,7 +39,7 @@ void signal_eof(unsigned int pipe_id);
 	@returns pipe_id if succesful, -1 if error has occurred
 	@warning Does not create pipe if pipe_id is not null
 */
-int pipe(unsigned int pipe_id);
+int open_pipe(unsigned int pipe_id);
 
 /*
 	@brief Closes a pipe

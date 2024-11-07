@@ -286,3 +286,20 @@ static int findPID(pid pid, ProcessS **pr) {
   *pr = &processArr[pid];
   return 1;
 }
+
+
+int get_process_input(pid pid){
+  ProcessS *p;
+  if (!findPID(pid, &p)) {
+    return -1;
+  }
+  return p->input;
+}
+
+int get_process_output(pid pid){
+  ProcessS *p;
+  if (!findPID(pid, &p)) {
+    return -1;
+  }
+  return p->output;
+}

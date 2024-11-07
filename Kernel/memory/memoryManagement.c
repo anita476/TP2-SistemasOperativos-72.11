@@ -16,7 +16,6 @@ struct block {
 static struct block *freeList;
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
-  print(STDOUT, "Initialized with memory manager = FREE LIST \n\n");
   freeList = (struct block *) startHeapAddress;
   // Set the size of the first block
   freeList->size = totalSize - BLOCK_SIZE;  // Subtract size of the block header

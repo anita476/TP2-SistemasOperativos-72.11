@@ -62,23 +62,25 @@ int get_pipe_info(unsigned int pipe_id, pipeInfo * info){
 	info->amount = pipeList[pos].amount;
 	info->id = pipeList[pos].pipeID;
 	info->eof = pipeList[pos].eof;
+	return 0;
 }
 
 /* When a process is killed or dies, it should signal before exiting if its output was a pipe, 
 	to send eof so that the other processes
    dont try to keep reading
 */
-void signal_eof(unsigned int pipe_id){
+int signal_eof(unsigned int pipe_id){
 	int pos = find_pipe(pipe_id);
 	if(pos < 0){
 		return INVALID_PIPE;
 	}
 	pipeList[pos].eof = 1; 
+	return 0;
 }
 
-int pipe(unsigned int pipe_id){
+int open_pipe(unsigned int pipe_id){
 	int pos;
-	if(pipe_id == NULL){
+	if(pipe_id == 0){ // no pipe_id
 		//find pos
 		int id = find_available_pipe();
 		pos = find_pipe(pipe_id);
@@ -94,6 +96,8 @@ int pipe(unsigned int pipe_id){
 			free(bufW);
 			return -1;
 		}
+		createSemName(id,bufW, "semwrite");
+		createSemName(id,bufR, "semread");
 		// create semaphores
 		int sem_write = sem_open(bufW,1);
 		int sem_read = sem_open(bufR,1);
@@ -186,8 +190,8 @@ int close_pipe(unsigned int pipe_id){
 	if(pos == INVALID_PIPE){
 		return INVALID_PIPE;
 	}
-	sem_close(pipeList[pos].read_sem_name);
-	sem_close(pipeList[pos].write_sem_name);
+	sem_close(pipeList[pos].read_sem);
+	sem_close(pipeList[pos].write_sem);
 
 	pipeList[pos].interested_processes --;
 

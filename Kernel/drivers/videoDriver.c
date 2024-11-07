@@ -1,12 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-
+#include <videoDriver.h>
 #include <font.h>
 #include <lib.h>
+#include <pipe.h>
 #include <processes.h>
 #include <scheduler.h>
-#include <videoDriver.h>
-
 #define WHITE 0xFFFFFF
 #define RED 0xFF0000
 
@@ -194,15 +193,24 @@ int putCharCursor(char c) {
 }
 
 void print(fd fileDes, char *str) {
-  if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
+  int pid = getpid();
+  int whereTo = get_process_output(pid);
+
+  if(whereTo != STDOUT){
+    write_to_pipe(whereTo,str, strlen(str));
+  }
+  else{
+
     if(fileDes == STDERR){
       setColor(RED);
     }
     else{
       setColor(WHITE);
     }
-    for (; *str != '\0'; str++){
-      putCharCursor(*str);
+    if (isForeground(pid) || fileDes == STDERR) { //if im printing an error always write to screen
+      for (; *str != '\0'; str++){
+        putCharCursor(*str);
+      }
     }
   }
 }

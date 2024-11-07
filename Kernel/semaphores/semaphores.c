@@ -160,11 +160,20 @@ int sem_close(sem sem) {
 }
 
 
-int sem_wait(sem sem) {    
-    if (grabSemaphore(sem) != 0)
-        return -1;
+int sem_wait(sem sem) {   
+
+    if (grabSemaphore(sem) != 0){
+      print(STDERR, "COULDNT GRAB SEMAPHORE\n");
+      return -1;
+    }
+        
 
     pid currentPid = getpid();
+    char buf2[10];
+    intToStr(currentPid, buf2, 10);
+    print(STDERR, "PID: ");
+    print(STDERR,buf2);
+     print(STDERR, "Releasing sem\n"); 
 
     int found = isInterested(sem, currentPid);
 
@@ -191,11 +200,19 @@ int sem_wait(sem sem) {
 
 
 int sem_post(sem sem) {
+
+   
+
     if (grabSemaphore(sem) != 0) {
         return -1;
     }
 
     pid currentPid = getpid();
+    char buf[10];
+    intToStr(currentPid, buf, 10);
+    print(STDERR, "PID: ");
+    print(STDERR, buf);
+     print(STDERR, "Releasing sem\n"); 
 
     int found = isInterested(sem, currentPid);
 

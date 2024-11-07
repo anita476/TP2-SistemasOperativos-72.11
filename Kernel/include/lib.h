@@ -70,4 +70,7 @@ char *cpuVendor(char *result);
 */
 void intToStr(int num, char* str, int base);
 
+
+char * strcat(char *dest, const char *src);
+
 #endif

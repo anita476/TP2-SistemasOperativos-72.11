@@ -3,10 +3,9 @@
 #include <videoDriver.h>
 #include <font.h>
 #include <lib.h>
-#include <pipe.h>
 #include <processes.h>
 #include <scheduler.h>
-#define WHITE 0xFFFFFF
+#define OFFWHITE 0xdbdbdb
 #define RED 0xFF0000
 
 struct vbe_mode_info_structure {
@@ -58,7 +57,7 @@ uint8_t scale = 1;
 uint16_t cursorX = 0;
 uint16_t cursorY = 0;
 
-uint32_t textColor = WHITE;
+uint32_t textColor = OFFWHITE;
 
 uint8_t getScale() { return scale; }
 
@@ -193,26 +192,17 @@ int putCharCursor(char c) {
 }
 
 void print(fd fileDes, char *str) {
-  int pid = getpid();
-  int whereTo = get_process_output(pid);
-
-  if(whereTo != STDOUT){
-    write_to_pipe(whereTo,str, strlen(str));
-  }
-  else{
-
     if(fileDes == STDERR){
       setColor(RED);
     }
     else{
-      setColor(WHITE);
+      setColor(OFFWHITE);
     }
-    if (isForeground(pid) || fileDes == STDERR) { //if im printing an error always write to screen
+    if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
       for (; *str != '\0'; str++){
         putCharCursor(*str);
       }
     }
-  }
 }
 
 void println(char *str) { //unused

@@ -12,6 +12,7 @@
 #include <sound.h>
 #include <stdint.h>
 #include <time.h>
+#include <pipe.h>
 #include <videoDriver.h>
 
 #include <syscallHandler.h>
@@ -35,24 +36,40 @@ void exit_process() {
 }
 
 uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
-  if (fileDescriptor != STDIN)
-    return 0;
-  char *bufferPosition = (char *) buffer;
-  int i = 0;
-  char readCharacter;
-  cleanRead();
-  while (i < length && (readCharacter = getFromBuffer()) != '\0') {
-    if (readCharacter == EOF_CHAR) {
+  int pid = getpid();
+  int whereFrom = get_process_input(pid);
+  if (fileDescriptor != STDIN){
+    return 0; // we dont support reading directly from a pipe in read ! 
+  }
+  if( whereFrom != STDIN){
+    return read_from_pipe(whereFrom, (char*) buffer,length);
+  }
+  else{
+    char *bufferPosition = (char *) buffer;
+    int i = 0;
+    char readCharacter;
+    cleanRead();
+    while (i < length && (readCharacter = getFromBuffer()) != '\0') {
+      if (readCharacter == EOF_CHAR) {
       bufferPosition[i] = '\0';
       return i;
+      }
     }
-  }
-  bufferPosition[i] = '\0';
-  return i;
+    bufferPosition[i] = '\0';
+    return i;
+  } 
 }
 
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
+  int pid = getpid();
+  int whereTo = get_process_output(pid); 
+  // Check if writing to pipe or to screen here !!
+  if(whereTo != STDOUT){
+    return write_to_pipe(whereTo, (char *) buffer, length);
+  }
+  else{
     print(fileDescriptor, (char *) buffer);
+  }
     return 0;
 }
 

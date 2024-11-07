@@ -30,6 +30,8 @@ typedef struct {
     void **memory;
     pid parent;
     unsigned int memoryCount, memoryBufSize;
+    unsigned int input;
+    unsigned int output;
 } ProcessS;
 
 /* what is shown when requested*/
@@ -44,7 +46,7 @@ typedef struct{
     pid parent;
 } ProcessInfo;
 
-/*what is needed in order to create a process -> maybe it would be better passed as only args idk*/ 
+/*what is needed in order to create a process*/ 
 typedef struct{
     const char *name;
     ProcessStart start;
@@ -52,6 +54,8 @@ typedef struct{
     priority priority;
     int argc;
     const char *const *argv;
+    unsigned int input;
+    unsigned int output;
 } createProcessInfo;
 
 typedef struct{ /* not good if number of processes increases, but i think its fine for this project*/

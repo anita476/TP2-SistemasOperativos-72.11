@@ -26,7 +26,7 @@ typedef struct{
     pid parent;
 } ProcessInfo;
 
-/*what is needed in order to create a process -> maybe it would be better passed as only args idk*/ 
+/*what is needed in order to create a process*/ 
 typedef struct{
     const char *name;
     ProcessStart start;
@@ -34,6 +34,8 @@ typedef struct{
     priority priority;
     int argc;
     const char *const *argv;
+    unsigned int input;
+    unsigned int output;
 } createProcessInfo;
 
 
@@ -55,7 +57,6 @@ typedef char * sem_name;
 #define STDERR 2
 #define KBDIN  3
 
-#define EOF_CHAR 4
 
 typedef int fd;
 

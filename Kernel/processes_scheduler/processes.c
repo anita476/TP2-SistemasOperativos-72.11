@@ -113,6 +113,10 @@ pid createProcess(createProcessInfo *info) {
   process->name = nameCopy;
   process->argv = argvCopy;
   process->argc = info->argc;
+
+  process->input = info->input;
+  process->output = info->output;
+
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
     addChild(parent, pid);
     process->parent = parent;

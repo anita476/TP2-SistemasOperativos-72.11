@@ -30,7 +30,9 @@ void test_prio() {
                                    .priority = DEFAULT_PRIORITY,
                                    .start = (ProcessStart) endless_loop_print,
                                    .argc = 0,
-                                   .argv = (const char *const *) argv};
+                                   .argv = (const char *const *) argv,
+                                   .input = STDIN,
+                                   .output = STDOUT};
   fprintf(STDOUT,"\n");
   fprintf(STDOUT,"CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++) {

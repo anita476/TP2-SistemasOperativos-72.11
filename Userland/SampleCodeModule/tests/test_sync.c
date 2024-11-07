@@ -120,14 +120,18 @@ void testSync(int argc, char *argv[]) {
                                .priority = DEFAULT_PRIORITY,
                                .start = (ProcessStart) myProcessInc,
                                .argc = 3,
-                               .argv = (const char *const *) argvDec};
+                               .argv = (const char *const *) argvDec,
+                               .input = STDIN,
+                               .output = STDOUT};
 
   createProcessInfo incInfo = {.name = "processInc",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
                                .start = (ProcessStart) myProcessInc,
                                .argc = 3,
-                               .argv = (const char *const *) argvInc};
+                               .argv = (const char *const *) argvInc,
+                               .input = STDIN,
+                               .output = STDOUT};
 
   global = 0;
 
@@ -193,14 +197,18 @@ void testNoSync(int argc, char *argv[]) {
                                .priority = DEFAULT_PRIORITY,
                                .start = (ProcessStart) myProcessInc,
                                .argc = 3,
-                               .argv = (const char *const *) argvDec};
+                               .argv = (const char *const *) argvDec,
+                               .input = STDIN,
+                               .output = STDOUT};
 
   createProcessInfo incInfo = {.name = "processInc",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
                                .start = (ProcessStart) myProcessInc,
                                .argc = 3,
-                               .argv = (const char *const *) argvInc};
+                               .argv = (const char *const *) argvInc,
+                               .input = STDIN,
+                               .output = STDOUT};
 
   global = 0;
 

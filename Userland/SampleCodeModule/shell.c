@@ -103,7 +103,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                 .priority = DEFAULT_PRIORITY,
                                 .start = (ProcessStart) test_mm,
                                 .argc = argc,
-                                .argv = (const char *const *) argv};
+                                .argv = (const char *const *) argv,
+                                .input = STDIN,
+                                .output = STDOUT};
+                              
     createProcess(&testmm);
   }
     break;
@@ -114,7 +117,9 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) test_processes,
                                   .argc = argc,
-                                  .argv = (const char *const *) argv};
+                                  .argv = (const char *const *) argv,
+                                  .input = STDIN,
+                                  .output = STDOUT};
     createProcess(&testproc);
   }
     break;
@@ -125,7 +130,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) test_prio,
                                   .argc = argc,
-                                  .argv = (const char *const *) argv};
+                                  .argv = (const char *const *) argv,
+                                  .input = STDIN,
+                                  .output = STDOUT
+                                  };
     createProcess(&testprio);
   }
     break;
@@ -135,7 +143,9 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) testSync,
                                  .argc = argc,
-                                 .argv = (const char *const *) argv};
+                                 .argv = (const char *const *) argv,
+                                 .input = STDIN,
+                                 .output = STDOUT};
     createProcess(&decInfo);
   } break;
   case 13: {
@@ -144,7 +154,9 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                  .priority = DEFAULT_PRIORITY,
                                  .start = (ProcessStart) testNoSync,
                                  .argc = argc,
-                                 .argv = (const char *const *) argv};
+                                 .argv = (const char *const *) argv,
+                                 .input = STDIN,
+                                 .output = STDOUT};
     createProcess(&decInfo);
   } break;
   case 14:
@@ -157,7 +169,9 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) loop,
                                   .argc = argc,
-                                  .argv = (const char *const *) argv};
+                                  .argv = (const char *const *) argv,
+                                  .input = STDIN,
+                                  .output = STDOUT};
     createProcess(&loopInfo);
   }
     break;

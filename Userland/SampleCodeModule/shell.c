@@ -16,7 +16,6 @@
 #include <_loader.h>
 #define BUFFER_SIZE   1024
 #define COMMANDS_SIZE 21
-#define MAXMEMORY     (0x2000000 - 0xF00000) /* change this later ! should use memstate function*/
 
 static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
                            "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync", "ps",
@@ -158,7 +157,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argv = (const char *const *) argv,
                                   .input = STDIN,
                                   .output = STDOUT};
-    createProcess(&loopInfo);
+    PID = createProcess(&loopInfo);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   }
     break;
   case 15:

@@ -69,9 +69,9 @@ void keyboardHandler() {
       for (int i = 1; i < MAX_PROCESSES; i++) {
         if (isForeground(i)) {
           killWithChildren(i);
-          print(STDOUT,"^C\n");
+          print(STDOUT, "^C\n");
           cleanBuffer();
-          print(STDOUT,"caOS>");
+          print(STDOUT, "caOS>");
           return;
         }
       }
@@ -81,7 +81,7 @@ void keyboardHandler() {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
       // cleanBuffer();
-      print(STDOUT,"caOS>");
+      print(STDOUT, "caOS>");
       return;
     }
   }
@@ -138,7 +138,7 @@ void cleanRead() { readIndex = 0; }
 char getFromBuffer() {
   if (readIndex == writeIndex)
     return 0;
-  if (readIndex >= BUFFER_SIZE){
+  if (readIndex >= BUFFER_SIZE) {
     readIndex = 0;
   }
   return buffer[readIndex++];

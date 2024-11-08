@@ -57,14 +57,13 @@ char *strcat(char *dst, const char *src) {
   return rdest;
 }
 
-int strncmp(const char * s1, const char * s2, int n) {
-        for(int i=0; i<n && s1[i] !=0 && s2[i] != 0; i++){
-            if(s1[i] != s2[i])
-                return s1[i] - s2[i];        
-        }
-        return 0;
+int strncmp(const char *s1, const char *s2, int n) {
+  for (int i = 0; i < n && s1[i] != 0 && s2[i] != 0; i++) {
+    if (s1[i] != s2[i])
+      return s1[i] - s2[i];
+  }
+  return 0;
 }
-
 
 void *memcpy(void *destination, const void *source, uint64_t length) {
   uint64_t i;

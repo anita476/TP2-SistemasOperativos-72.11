@@ -214,12 +214,12 @@ void loop() {
   }
 }
 
-void scaleDownCommand(){
+void scaleDownCommand() {
   scaleDown();
   clearScreen();
 }
-void scaleUpCommand(){
+
+void scaleUpCommand() {
   scaleUp();
   clearScreen();
 }
-    

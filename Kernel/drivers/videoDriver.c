@@ -1,12 +1,12 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <videoDriver.h>
 #include <font.h>
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
+#include <videoDriver.h>
 #define OFFWHITE 0xdbdbdb
-#define RED 0xFF0000
+#define RED      0xFF0000
 
 struct vbe_mode_info_structure {
   uint16_t attributes;   // deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a
@@ -192,23 +192,22 @@ int putCharCursor(char c) {
 }
 
 void print(fd fileDes, char *str) {
-    if(fileDes == STDERR){
-      setColor(RED);
+  if (fileDes == STDERR) {
+    setColor(RED);
+  } else {
+    setColor(OFFWHITE);
+  }
+  if (isForeground(getpid()) || fileDes == STDERR) {  // if im printing an error always write to screen
+
+    for (; *str != '\0'; str++) {
+      putCharCursor(*str);
     }
-    else{
-      setColor(OFFWHITE);
-    }
-    if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
-      
-      for (; *str != '\0'; str++){
-        putCharCursor(*str);
-      }
-    }
+  }
 }
 
-void println(char *str) { //unused
+void println(char *str) {  // unused
   if (isForeground(getpid())) {
-    print( STDOUT, str);
+    print(STDOUT, str);
     newLine();
   }
 }

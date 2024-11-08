@@ -3,12 +3,12 @@
 
 #include <exceptions.h>
 #include <lib.h>
+#include <processes.h>
+#include <scheduler.h>
 #include <stdint.h>
 #include <syscallHandler.h>
 #include <time.h>
 #include <videoDriver.h>
-#include <processes.h>
-#include <scheduler.h>
 
 #define ZERO_EXCEPTION_CODE   0
 #define WRONG_OPCODE_EXC_CODE 6
@@ -31,13 +31,13 @@ void exceptionDispatcher(int exception, uint64_t registers[17]) {
   intToStr(exception, buffer, 10);
   print(STDERR, "Code: ");
   print(STDERR, buffer);
-  print(STDERR,"\n");
+  print(STDERR, "\n");
   if (exception == ZERO_EXCEPTION_CODE) {
     zero_division();
   } else if (exception == WRONG_OPCODE_EXC_CODE) {
     wrong_opcode();
   } else {
-    print(STDERR,"Unknown");
+    print(STDERR, "Unknown");
     print(STDERR, "\n");
   }
   for (int i = 0; i < 18; i++) {
@@ -49,7 +49,7 @@ void exceptionDispatcher(int exception, uint64_t registers[17]) {
       print(STDERR, ", ");
   }
   timer_wait(18 * 5);  // Time to see the registers
-  print(STDERR,"\n");
+  print(STDERR, "\n");
   print(STDOUT, waiting);
   timer_wait(18 * 2);
   clearScreen();
@@ -63,6 +63,6 @@ static void zero_division() {
 }
 
 static void wrong_opcode() {
-  print(STDERR,"Wrong opcode");
-  print(STDERR,"\n");
+  print(STDERR, "Wrong opcode");
+  print(STDERR, "\n");
 }

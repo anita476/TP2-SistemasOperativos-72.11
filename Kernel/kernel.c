@@ -69,11 +69,11 @@ void welcomeSequence() {
     scale_down();
   scale_up();
   setCursorLine(8);
-  print(STDOUT,"                        Welcome to caOS!\n");
+  print(STDOUT, "                        Welcome to caOS!\n");
   putSaul(450, 300, 125, 125);
   playBetterCallSaul();
   setCursorLine(23);
-  print(STDOUT , " Starting...");
+  print(STDOUT, " Starting...");
   wait(1000);
   scale_down();
   clear_screen();

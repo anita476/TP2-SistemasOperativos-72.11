@@ -6,17 +6,16 @@
 #include <keyboardDriver.h>
 #include <lib.h>
 #include <memoryManagement.h>
+#include <pipe.h>
 #include <processes.h>
 #include <scheduler.h>
 #include <semaphores.h>
 #include <sound.h>
 #include <stdint.h>
 #include <time.h>
-#include <pipe.h>
 #include <videoDriver.h>
 
 #include <syscallHandler.h>
-
 
 // from interruptions we get the register array to read it
 extern const uint64_t show_registers_dump[17];
@@ -38,40 +37,38 @@ void exit_process() {
 uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   int pid = getpid();
   int whereFrom = get_process_input(pid);
-  if (fileDescriptor != STDIN){
-    return 0; // we dont support reading directly from a pipe in read ! 
+  if (fileDescriptor != STDIN) {
+    return 0;  // we dont support reading directly from a pipe in read !
   }
-  if( whereFrom != STDIN){
-    return read_from_pipe(whereFrom, (char*) buffer,length);
-  }
-  else{
-    //we probs wont use this but its wrong at the moment
+  if (whereFrom != STDIN) {
+    return read_from_pipe(whereFrom, (char *) buffer, length);
+  } else {
+    // we probs wont use this but its wrong at the moment
     char *bufferPosition = (char *) buffer;
     int i = 0;
     char readCharacter;
     cleanRead();
     while (i < length && (readCharacter = getFromBuffer()) != '\0') {
       if (readCharacter == EOF_CHAR) {
-      bufferPosition[i] = '\0';
-      return i;
+        bufferPosition[i] = '\0';
+        return i;
       }
     }
     bufferPosition[i] = '\0';
     return i;
-  } 
+  }
 }
 
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   int pid = getpid();
-  int whereTo = get_process_output(pid); 
+  int whereTo = get_process_output(pid);
   // Check if writing to pipe or to screen here !!
-  if(whereTo != STDOUT){
+  if (whereTo != STDOUT) {
     return write_to_pipe(whereTo, (char *) buffer, length);
-  }
-  else{
+  } else {
     print(fileDescriptor, (char *) buffer);
   }
-    return 0;
+  return 0;
 }
 
 uint64_t get_current_time() {
@@ -256,19 +253,19 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
     return sem_post(rdi);
   case 40:
     return sem_wait(rdi);
-  case 41: 
-    memory_manager_state(); 
+  case 41:
+    memory_manager_state();
     break;
-  case 42: 
+  case 42:
     return open_pipe(rdi);
-  case 43: 
-    return close_pipe( rdi);
+  case 43:
+    return close_pipe(rdi);
   case 44:
-    return read_from_pipe(rdi, (char *)rsi, rdx);
-  case 45: 
-    return write_to_pipe(rdi, (char *) rsi,rdx);
+    return read_from_pipe(rdi, (char *) rsi, rdx);
+  case 45:
+    return write_to_pipe(rdi, (char *) rsi, rdx);
   case 46:
-    return get_pipe_info(rdi,(void *) rsi);
+    return get_pipe_info(rdi, (void *) rsi);
   case 47:
     waitForPID(rdi);
     break;

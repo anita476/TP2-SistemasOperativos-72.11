@@ -189,16 +189,15 @@ int kill(pid pid) {  // if it had children, shell adopts them
     free(process->argv[i]);
   }
 
-  // send eof signal if it was a producer 
-  if(process->output != STDOUT){
-      print(STDERR, "Sent EOF to process");
-      signal_eof(process->output);
+  // send eof signal if it was a producer
+  if (process->output != STDOUT) {
+    print(STDERR, "Sent EOF to process");
+    signal_eof(process->output);
   }
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));
   lastPID--;
-
 
   return 0;
 }

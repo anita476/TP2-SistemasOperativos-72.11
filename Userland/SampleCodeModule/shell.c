@@ -101,32 +101,15 @@ int interpret(char **args, int argc) {
       auxArgc--;
     }
     if (strcmp(args[i], "-") == 0) { /* QEMU doesnt let me put "|" */
-      fprintf(STDERR, "PIPE detected\n");
-      char buff[4];
-
       int argc1 = i;
       int argc2 = auxArgc - (i + 1);
-      fprintf(STDERR, "Number of args before pipe: ");
-      itoa(argc1, buff, 10);
-      fprintf(STDERR, buff);
-      fprintf(STDERR, "\n");
-      fprintf(STDERR, "Number of args after pipe: ");
-      itoa(argc2, buff, 10);
-      fprintf(STDERR, buff);
-      fprintf(STDERR, "\n");
       char *argv1[argc1];
       char *argv2[argc2];
-      fprintf(STDERR, "Arguments before pipes:\n");
       for (int j = 0; j < argc1; j++) {
         argv1[j] = args[j];
-        fprintf(STDERR, argv1[j]);
-        fprintf(STDERR, "\n");
       }
-      fprintf(STDERR, "Arguments after pipes:\n");
       for (int j = 0; j < argc2; j++) {
         argv2[j] = args[i + j + 1];
-        fprintf(STDERR, argv2[j]);
-        fprintf(STDERR, "\n");
       }
       int res = handle_piped_process(argc1, argv1, argc2, argv2);
       return res;
@@ -162,10 +145,6 @@ int interpret(char **args, int argc) {
                                    .priority = DEFAULT_PRIORITY,
                                    .start = commandList[pos].start};
   int pid = createProcess(&commandProc);
-  if (isForeground(pid)) {
-    fprintf(STDERR, "PROCESS IS IN FOREGROUND\n");
-  }
-  ps();
   if (!bg_flag) {
     waitForPID(pid);
   }

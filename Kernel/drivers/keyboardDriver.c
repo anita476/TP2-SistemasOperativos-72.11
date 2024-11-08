@@ -81,7 +81,7 @@ void keyboardHandler() {
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
-      print(STDOUT, "^D\n");
+      print(STDOUT, "^D\ncaOS>");
       return;
     }
   }

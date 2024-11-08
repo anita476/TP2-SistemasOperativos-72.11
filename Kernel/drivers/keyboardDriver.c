@@ -3,10 +3,7 @@
 
 #include <interrupts.h>
 #include <keyboardDriver.h>
-#include <lib.h>
-#include <processes.h>
-#include <scheduler.h>
-#include <videoDriver.h>
+
 
 #define BUFFER_SIZE 1024
 #define EOF_CHAR    -1
@@ -37,12 +34,36 @@ char isAlpha(char c) { return (c >= 'a' && c <= 'z'); }
 
 char isKeyAvailable() { return (buffer[readIndex] != '\0'); }
 
+// Waiting queue
+pid waitingToRead[MAX_PROCESSES] = {0};
+int waitingToReadCounter = 0;
+
+void addToBlockingQueueRead(pid pid) {
+  waitingToRead[waitingToReadCounter] = pid;
+  waitingToReadCounter++;
+  block(pid);
+  yield();
+}
+
+void removeFromBlockingQueue() {
+  if (waitingToReadCounter == 0) {
+    return;
+  }
+  pid toUnblock = waitingToRead[0];
+  for (int i = 0; i < waitingToReadCounter; i++){
+    waitingToRead[i] = waitingToRead[i+1];
+  }
+  unblock(toUnblock);
+}
+
 void addToBuffer(char c) {
   // Resets the index if the buffer is full
   if (writeIndex >= BUFFER_SIZE)
     writeIndex = 0;
   buffer[writeIndex++] = c;
   lastIndexFlag = 1;
+  // Here we check if there are processes waiting for read
+  removeFromBlockingQueue();
 }
 
 void keyboardHandler() {
@@ -68,7 +89,7 @@ void keyboardHandler() {
   if (ctrlFlag) {
     // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
-      print(STDOUT, "^C\ncaOS>");
+      print(STDOUT, "^C\n");
       cleanBuffer();
       for (int i = 1; i < MAX_PROCESSES; i++) {
         if (isForeground(i) > 0) {
@@ -76,12 +97,13 @@ void keyboardHandler() {
           return;
         }
       }
+      yield();
       return;
     }
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
-      print(STDOUT, "^D\ncaOS>");
+      print(STDOUT, "^D\n");
       return;
     }
   }
@@ -133,7 +155,7 @@ void cleanBuffer() {
   readIndex = 0;
 }
 
-void cleanRead() { readIndex = 0; }
+void cleanRead() { readIndex = writeIndex; }
 
 char getKeyFromBuffer() {
   if (!isKeyAvailable())

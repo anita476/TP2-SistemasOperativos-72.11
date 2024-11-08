@@ -1,4 +1,8 @@
 #include <stdint.h>
+#include <lib.h>
+#include <processes.h>
+#include <scheduler.h>
+#include <videoDriver.h>
 
 /*
     @brief Checks if a key is available
@@ -48,3 +52,8 @@ char getLastChar();
     @brief Cleans the read
 */
 void cleanRead();
+
+
+void addToBlockingQueueRead(pid pid);
+
+void removeFromBlockingQueue();

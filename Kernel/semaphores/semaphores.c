@@ -222,8 +222,9 @@ int sem_post(sem sem) {
             semaphoreList[sem].waitingProcesses[i] = semaphoreList[sem].waitingProcesses[i + 1];
         }
         semaphoreList[sem].numberWaitingProcesses--;
+         /*
         char buffer[20];
-        /* print(STDERR, "Processes waiting:");
+        print(STDERR, "Processes waiting:");
         for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses; i++) {
             print(STDERR, "PID ");
             intToStr(semaphoreList[sem].waitingProcesses[i], buffer,10);

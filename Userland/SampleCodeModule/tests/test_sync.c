@@ -165,7 +165,6 @@ void testSync(int argc, char *argv[]) {
     fprintf(STDERR,"Test failed\n");
   }
   fprintf(STDOUT, "------------------------------------------------------------\n");
-  fprintf(STDOUT,"caOS>");
 
   return;
 }

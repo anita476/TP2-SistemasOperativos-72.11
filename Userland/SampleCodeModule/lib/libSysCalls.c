@@ -104,3 +104,6 @@ int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){
 int write_to_pipe(unsigned int pipe_id, char * src, unsigned int bytes){ 
   return syscall(45,(uint64_t) pipe_id, (uint64_t) src, (uint64_t) bytes, 0, 0);}
 int get_pipe_info(unsigned int pipe_id, pipeInfo * info){ return syscall(46, (uint64_t) pipe_id, (uint64_t) info, 0, 0, 0);}
+
+void waitForPID(pid pid){ syscall(47, (uint64_t) pid, 0, 0, 0, 0);}
+

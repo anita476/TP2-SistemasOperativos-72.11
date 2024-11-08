@@ -15,30 +15,12 @@
 #include <test_pipe.h>
 #include <_loader.h>
 #define BUFFER_SIZE   1024
-#define COMMANDS_SIZE 22
-#define MAXMEMORY     (0x2000000 - 0xF00000)
-
-extern void haltcpu();
-void *memcpy(void *destination, const void *source, uint64_t length) {
-  uint64_t i;
-  if ((uint64_t) destination % sizeof(uint32_t) == 0 && (uint64_t) source % sizeof(uint32_t) == 0 &&
-      length % sizeof(uint32_t) == 0) {
-    uint32_t *d = (uint32_t *) destination;
-    const uint32_t *s = (const uint32_t *) source;
-    for (i = 0; i < length / sizeof(uint32_t); i++)
-      d[i] = s[i];
-  } else {
-    uint8_t *d = (uint8_t *) destination;
-    const uint8_t *s = (const uint8_t *) source;
-    for (i = 0; i < length; i++)
-      d[i] = s[i];
-  }
-  return destination;
-}
+#define COMMANDS_SIZE 21
+#define MAXMEMORY     (0x2000000 - 0xF00000) /* change this later ! should use memstate function*/
 
 static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
-                           "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync",  "testnosync",
-                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate", "testpipe"};
+                           "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync", "ps",
+                           "loop",          "kill",       "block",    "unblock",  "nice", "mmstate", "testpipe"};
 
 int isCommand(char *str, int command) {
   if (command >= COMMANDS_SIZE)
@@ -60,6 +42,7 @@ int findCommand(char *str) {
 }
 
 void executeCommand(char *str, int argc, char *argv[]) {
+  int PID;
   int in_bg = 0;
   if (argc > 0 && strcmp(argv[0], "-b") == 0) {
     in_bg = 1;
@@ -108,7 +91,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                 .input = STDIN,
                                 .output = STDOUT};
                               
-    createProcess(&testmm);
+    PID = createProcess(&testmm);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   }
     break;
   case 10:
@@ -121,7 +107,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argv = (const char *const *) argv,
                                   .input = STDIN,
                                   .output = STDOUT};
-    createProcess(&testproc);
+    PID = createProcess(&testproc);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   }
     break;
   case 11:
@@ -136,6 +125,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .output = STDOUT
                                   };
     createProcess(&testprio);
+    PID = createProcess(&testprio);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   }
     break;
   case 12: {
@@ -147,23 +140,15 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                  .argv = (const char *const *) argv,
                                  .input = STDIN,
                                  .output = STDOUT};
-    createProcess(&decInfo);
+    PID = createProcess(&decInfo);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   } break;
-  case 13: {
-    createProcessInfo decInfo = {.name = "processNoSynchro",
-                                 .fg_flag = !in_bg,
-                                 .priority = DEFAULT_PRIORITY,
-                                 .start = (ProcessStart) testNoSync,
-                                 .argc = argc,
-                                 .argv = (const char *const *) argv,
-                                 .input = STDIN,
-                                 .output = STDOUT};
-    createProcess(&decInfo);
-  } break;
-  case 14:
+  case 13:
     ps();
     break;
-  case 15:
+  case 14:
   {
     createProcessInfo loopInfo = {.name = "loop",
                                   .fg_flag = !in_bg,
@@ -176,7 +161,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     createProcess(&loopInfo);
   }
     break;
-  case 16:
+  case 15:
   {
     if (argc != 1) {
       fprintf(STDERR,"Usage: kill <pid>\n");
@@ -192,7 +177,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     }
   }
     break;
-  case 17:
+  case 16:
   {
     if (argc != 1) {
       fprintf(STDERR, "Usage: block <pid>\n");
@@ -201,7 +186,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     block(satoi(argv[0]));
   }
     break;
-  case 18:
+  case 17:
   {
     if (argc != 1) {
       fprintf(STDERR,"Usage: unblock <pid>\n");
@@ -210,7 +195,7 @@ void executeCommand(char *str, int argc, char *argv[]) {
     unblock(satoi(argv[0]));
   }
     break;
-  case 19:
+  case 18:
   {
     if (argc != 2) {
       fprintf(STDERR, "Usage: nice <pid> <new_priority>\n");
@@ -219,10 +204,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
     nice(satoi(argv[0]), satoi(argv[1]));
   }
     break;
-  case 20: 
+  case 19: 
     memory_manager_state();
     break;
-  case 21:
+  case 20:
   {
     createProcessInfo pipetestInfo = {.name = "pipe_test",
                                   .fg_flag = !in_bg,
@@ -232,7 +217,10 @@ void executeCommand(char *str, int argc, char *argv[]) {
                                   .argv = (const char *const *) argv,
                                   .input = STDIN,
                                   .output = STDOUT};
-    createProcess(&pipetestInfo);
+    PID = createProcess(&pipetestInfo);
+    if(!in_bg){
+      waitForPID(PID);
+    }
   }
   break;
   default:
@@ -265,7 +253,6 @@ void insertCommand() {
   char *args[BUFFER_SIZE] = {NULL};
   int argc = 0;
   char *current = buffer;
-
   args[argc++] = current;
 
   while (*current) {
@@ -284,13 +271,12 @@ void insertCommand() {
     executeCommand(args[0], argc - 1, args + 1);
   }
 
-  fprintf(STDOUT, "caOS>");
 }
 
 void shell() {
   help();
-  fprintf(STDOUT,"caOS>");
   while (1) {
+    fprintf(STDOUT, "caOS>");
     insertCommand();
   }
 }

@@ -27,7 +27,7 @@ void help() {
   fprintf(STDOUT, "\n * block: Block a process by its PID");
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
-  fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
+  fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
   fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
   fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");

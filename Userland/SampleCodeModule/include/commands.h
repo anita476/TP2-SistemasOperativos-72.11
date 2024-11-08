@@ -54,3 +54,8 @@ void scaleUpCommand();
     @brief Filters the input
 */
 int filter();
+
+/*
+    @brief Counts the number of lines
+*/
+int wc();

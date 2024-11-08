@@ -29,6 +29,7 @@ void help() {
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
   fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
+  fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
   fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
@@ -234,6 +235,34 @@ void scaleDownCommand() {
 void scaleUpCommand() {
   scaleUp();
   clearScreen();
+}
+
+int wc() {
+  char buffer[BUFFER_SIZE];
+  int bytesRead;
+  int lineCount = 0;
+  char lastWasNewline = 1;
+
+  while ((bytesRead = readBuffer(STDIN, buffer, 1)) > 0) {
+    if (buffer[0] == '\n') {
+      lineCount++;
+      lastWasNewline = 1;
+    } else if (buffer[0] == -1) {
+      if (!lastWasNewline) {
+        lineCount++;
+      }
+      break;
+    } else {
+      lastWasNewline = 0;
+    }
+  }
+
+  char result[20];
+  itoa(lineCount, result, 10);
+  fprintf(STDOUT, result);
+  fprintf(STDOUT, "\n");
+
+  return 0;
 }
 
 int isVowel(char c) {

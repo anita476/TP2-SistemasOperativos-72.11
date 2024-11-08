@@ -14,7 +14,7 @@
 #include <test_pipe.h>
 #include <_loader.h>
 
-#define COMMANDS_SIZE 21
+#define COMMANDS_SIZE 22
 #define BUFFER_SIZE   1024
 
 /* 

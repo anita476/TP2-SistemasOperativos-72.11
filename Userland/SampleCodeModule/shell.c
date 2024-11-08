@@ -3,8 +3,6 @@
 
 #include "shell.h"
 
-#define COMMANDS_SIZE 21
-
 int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc, char **consumerArgv);
 
 int bg_flag = 0;
@@ -77,7 +75,8 @@ static Command commandList[COMMANDS_SIZE] = {
      .isPipeable = 0,
      .numberArgs = 0,
      .start = (ProcessStart) test_pipe,
-     .usage = "Usage: testpipe"}};
+     .usage = "Usage: testpipe"},
+    {.name = "cat", .isPipeable = 1, .numberArgs = 0, .start = (ProcessStart) cat, .usage = "Usage: cat"}};
 
 int findCommand(char *command) {
   for (int i = 0; i < COMMANDS_SIZE; i++) {

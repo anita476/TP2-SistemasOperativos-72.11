@@ -43,19 +43,7 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   if (whereFrom != STDIN) {
     return read_from_pipe(whereFrom, (char *) buffer, length);
   } else {
-    // we probs wont use this but its wrong at the moment
-    char *bufferPosition = (char *) buffer;
-    int i = 0;
-    char readCharacter;
-    cleanRead();
-    while (i < length && (readCharacter = getFromBuffer()) != '\0') {
-      if (readCharacter == EOF_CHAR) {
-        bufferPosition[i] = '\0';
-        return i;
-      }
-    }
-    bufferPosition[i] = '\0';
-    return i;
+    return getBuffer((char *) buffer, length);
   }
 }
 

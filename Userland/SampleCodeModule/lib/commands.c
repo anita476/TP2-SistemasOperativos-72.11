@@ -27,13 +27,13 @@ void help() {
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
   fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
+  fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");
-  fprintf(STDOUT,
-          "\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
+  fprintf(STDOUT, "\n * testproc: Run a process management test in an endless loop");
   fprintf(STDOUT, "\n * testsync: Run synchronization test using semaphores");
-  fprintf(STDOUT, "\n * testpipe: Run a pipe usage test. No parameters needed");
+  fprintf(STDOUT, "\n * testpipe: Run a pipe usage test");
   fprintf(STDOUT, "\n");
 }
 
@@ -211,6 +211,19 @@ void loop() {
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, "!\n");
     wait(2000);
+  }
+}
+
+void cat() {
+  char buffer[BUFFER_SIZE] = {0};
+  int len;
+
+  while (1) {
+    len = readBuffer(STDIN, buffer, BUFFER_SIZE);
+    if (len == EOF_CHAR)
+      return;
+    fprintf(STDOUT, buffer);
+    memset(buffer, 0, BUFFER_SIZE);
   }
 }
 

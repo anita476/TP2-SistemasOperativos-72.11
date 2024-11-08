@@ -35,6 +35,8 @@ char capsLockFlag = 0;
 
 char isAlpha(char c) { return (c >= 'a' && c <= 'z'); }
 
+char isKeyAvailable() { return (buffer[readIndex] != '\0'); }
+
 void addToBuffer(char c) {
   // Resets the index if the buffer is full
   if (writeIndex >= BUFFER_SIZE)
@@ -80,7 +82,6 @@ void keyboardHandler() {
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
-      // cleanBuffer();
       print(STDOUT, "caOS>");
       return;
     }
@@ -135,12 +136,28 @@ void cleanBuffer() {
 
 void cleanRead() { readIndex = 0; }
 
-char getFromBuffer() {
-  if (readIndex == writeIndex)
+char getKeyFromBuffer() {
+  if (!isKeyAvailable())
     return 0;
+
+  char c = buffer[readIndex];
+  buffer[readIndex] = '\0';
+
   if (readIndex >= BUFFER_SIZE)
     readIndex = 0;
-  return buffer[readIndex++];
+  else
+    readIndex++;
+
+  return c;
+}
+
+unsigned int getBuffer(char *dest, unsigned int size) {
+  int i = 0;
+  while (isKeyAvailable() && i < size) {
+    char c = getKeyFromBuffer();
+    dest[i++] = c;
+  }
+  return i;
 }
 
 char getLastChar() {

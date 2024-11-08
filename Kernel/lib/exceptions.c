@@ -7,6 +7,8 @@
 #include <syscallHandler.h>
 #include <time.h>
 #include <videoDriver.h>
+#include <processes.h>
+#include <scheduler.h>
 
 #define ZERO_EXCEPTION_CODE   0
 #define WRONG_OPCODE_EXC_CODE 6

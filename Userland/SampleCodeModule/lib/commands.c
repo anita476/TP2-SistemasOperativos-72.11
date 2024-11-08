@@ -213,3 +213,13 @@ void loop() {
     wait(2000);
   }
 }
+
+void scaleDownCommand(){
+  scaleDown();
+  clearScreen();
+}
+void scaleUpCommand(){
+  scaleUp();
+  clearScreen();
+}
+    

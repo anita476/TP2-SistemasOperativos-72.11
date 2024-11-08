@@ -32,3 +32,7 @@ int ps();
     @brief Starts an endless loop
 */
 void loop();
+
+void scaleDownCommand();
+
+void scaleUpCommand();

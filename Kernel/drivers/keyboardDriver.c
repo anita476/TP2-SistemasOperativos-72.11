@@ -137,10 +137,10 @@ void cleanRead() { readIndex = 0; }
 
 char getKeyFromBuffer() {
   if (!isKeyAvailable())
-    return -1;
+    return 0;
 
   char c = buffer[readIndex];
-  buffer[readIndex] = '\0';
+  buffer[readIndex] = 0;
 
   readIndex = (readIndex + 1) % BUFFER_SIZE;
 

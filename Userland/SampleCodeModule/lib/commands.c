@@ -4,6 +4,7 @@
 #include <_loader.h>
 #include <commands.h>
 #include <eliminator.h>
+#include <defs.h>
 
 #define TIME_LENGTH 9
 
@@ -218,7 +219,7 @@ void cat() {
   char buffer[BUFFER_SIZE] = {0};
   int len;
 
-  while ((len = readBuffer(STDIN, buffer, BUFFER_SIZE)) != EOF_CHAR) {
+  while ((len = readBuffer(STDIN, buffer, BUFFER_SIZE)) != EOF) {
     if (len > 0) {
       fprintf(STDOUT, buffer);
     }

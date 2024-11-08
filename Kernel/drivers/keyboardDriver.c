@@ -68,14 +68,15 @@ void keyboardHandler() {
   if (ctrlFlag) {
     // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
+      print(STDOUT, "^C\ncaOS>");
+      cleanBuffer();
       for (int i = 1; i < MAX_PROCESSES; i++) {
-        if (isForeground(i)) {
+        if (isForeground(i) > 0) {
           killWithChildren(i);
-          cleanBuffer();
-          print(STDOUT, "^C\n");
           return;
         }
       }
+      return;
     }
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {

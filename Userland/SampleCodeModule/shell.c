@@ -170,7 +170,7 @@ void insertCommand() {
   fprintf(STDOUT, "\n");
   char *args[BUFFER_SIZE] = {NULL};
   int argc = tokenize(buffer, args);
-  if (argc > 0) {  // if at least one command
+  if (argc > 0) {
     interpret(args, argc);
   }
 }

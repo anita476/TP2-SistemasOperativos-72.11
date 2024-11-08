@@ -53,6 +53,7 @@ void removeFromBlockingQueue() {
   for (int i = 0; i < waitingToReadCounter; i++){
     waitingToRead[i] = waitingToRead[i+1];
   }
+  waitingToReadCounter--;
   unblock(toUnblock);
 }
 

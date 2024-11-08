@@ -217,15 +217,14 @@ void loop() {
 
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
-  int len;
-
-  while ((len = readBuffer(STDIN, buffer, BUFFER_SIZE)) != EOF) {
-    if (len > 0) {
-      fprintf(STDOUT, buffer);
+  while(1){
+		readBuffer(STDIN, buffer, 1);
+		fprintf(STDOUT, buffer);
+    if(buffer[0] == (-1)){ //this is wrong -> maybe fix -> should send EOF !!
+      return;
     }
-  }
 }
-
+}
 void scaleDownCommand() {
   scaleDown();
   clearScreen();

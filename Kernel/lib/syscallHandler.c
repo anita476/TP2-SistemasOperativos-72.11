@@ -43,10 +43,11 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   if (whereFrom != STDIN) {
     return read_from_pipe(whereFrom, (char *) buffer, length);
   } else {
+    cleanRead();
     while(!isKeyAvailable()){
       addToBlockingQueueRead(pid); // block and yield while adding to queue
     }
-    cleanRead();
+   
     return getBuffer((char *) buffer, length);
   }
 }

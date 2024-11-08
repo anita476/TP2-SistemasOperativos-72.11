@@ -269,6 +269,9 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
     return write_to_pipe(rdi, (char *) rsi,rdx);
   case 46:
     return get_pipe_info(rdi,(void *) rsi);
+  case 47:
+    waitForPID(rdi);
+    break;
   default:
     return 1;
   }

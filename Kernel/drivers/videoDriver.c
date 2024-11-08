@@ -199,6 +199,7 @@ void print(fd fileDes, char *str) {
       setColor(OFFWHITE);
     }
     if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
+      
       for (; *str != '\0'; str++){
         putCharCursor(*str);
       }

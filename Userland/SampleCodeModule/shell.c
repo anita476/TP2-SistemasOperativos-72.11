@@ -2,246 +2,135 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "shell.h"
-#include "commands.h"
-#include "eliminator.h"
-#include "libSysCalls.h"
-#include "music.h"
-#include "test_mm.h"
-#include "test_no_sync.h"
-#include "test_prio.h"
-#include "test_processes.h"
-#include "test_sync.h"
-#include "test_util.h"
-#include <test_pipe.h>
-#include <_loader.h>
-#define BUFFER_SIZE   1024
-#define COMMANDS_SIZE 22
-#define MAXMEMORY     (0x2000000 - 0xF00000)
 
-extern void haltcpu();
-void *memcpy(void *destination, const void *source, uint64_t length) {
-  uint64_t i;
-  if ((uint64_t) destination % sizeof(uint32_t) == 0 && (uint64_t) source % sizeof(uint32_t) == 0 &&
-      length % sizeof(uint32_t) == 0) {
-    uint32_t *d = (uint32_t *) destination;
-    const uint32_t *s = (const uint32_t *) source;
-    for (i = 0; i < length / sizeof(uint32_t); i++)
-      d[i] = s[i];
-  } else {
-    uint8_t *d = (uint8_t *) destination;
-    const uint8_t *s = (const uint8_t *) source;
-    for (i = 0; i < length; i++)
-      d[i] = s[i];
-  }
-  return destination;
-}
+#define COMMANDS_SIZE 21
 
-static char *commands[] = {"help",    "time",          "eliminator", "regs",     "clear",    "scaledown", "scaleup",
-                           "divzero", "invalidopcode", "testmm",     "testproc", "testprio", "testsync",  "testnosync",
-                           "ps",      "loop",          "kill",       "block",    "unblock",  "nice", "mmstate", "testpipe"};
+int handle_piped_process(int producerArgc, char ** producerArgv, int consumerArgc, char** consumerArgv);
 
-int isCommand(char *str, int command) {
-  if (command >= COMMANDS_SIZE)
-    return -1;
 
-  int i = 0;
-  for (; str[i] != '\0' && commands[command][i] != '\0'; i++)
-    if (str[i] != commands[command][i])
-      return 0;
+int bg_flag = 0;
+static Command commandList[COMMANDS_SIZE] = {
+    {.name = "help", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)help, .usage = "Usage: help"},
+    {.name = "time", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)time, .usage = "Usage: time"},
+    {.name = "eliminator", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)eliminator , .usage = "Usage: eliminator"},
+    {.name = "regs", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)regs, .usage = "Usage: regs"},
+    {.name = "clear", .isPipeable = 0 , .numberArgs = 0, .start = (ProcessStart)clearScreen, .usage = "Usage: clear"},
+    {.name = "scaledown", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)scaleDownCommand , .usage= "Usage: scaledown"},
+    {.name = "scaleup", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)scaleUpCommand, .usage = "Usage: scaleup"},
+    {.name = "divzero", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)divzero, .usage = "Usage: divzero"},
+    {.name = "invalidopcode", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)invalidOpCode, .usage = "Usage: invalidopcode"},
+    {.name = "testmm", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart)test_mm, .usage = "Usage: testmm [max_mem]"},
+    {.name = "testproc", .isPipeable = 0, .numberArgs = 1, .start= (ProcessStart)test_processes , .usage = "Usage: testproc [max_procs]"},
+    {.name = "testprio", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)test_prio, .usage = "Usage: testprio"},
+    {.name = "testsync", .isPipeable = 0, .numberArgs = 2, .start = (ProcessStart)testSync, .usage = "Usage: testsync [n_value] [use_sem]"},
+    {.name = "ps", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)ps, .usage = "Usage: ps"},
+    {.name = "loop", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)loop, .usage = "Usage: loop"},
+    {.name = "kill", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart)kill, .usage = "Usage: kill [pid]"},
+    {.name = "block", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart)block, .usage = "Usage: block [pid]"},
+    {.name = "unblock", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart)unblock, .usage = "Usage: unblock [pid]"},
+    {.name = "nice", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart)nice, .usage = "Usage: nice [pid] [new_prio]"},
+    {.name = "mmstate", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)memory_manager_state, .usage = "Usage: mmstate"},
+    {.name = "testpipe", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart)test_pipe, .usage = "Usage: testpipe"}
+};
 
-  return str[i] == commands[command][i];
-}
 
-int findCommand(char *str) {
-  for (int i = 0; i < COMMANDS_SIZE; i++)
-    if (isCommand(str, i))
+
+int findCommand(char *command) {
+  for(int i = 0; i < COMMANDS_SIZE; i++){
+    if(strcmp(commandList[i].name, command)==0){
       return i;
+    }
+  }
   return -1;
 }
 
-void executeCommand(char *str, int argc, char *argv[]) {
-  int in_bg = 0;
-  if (argc > 0 && strcmp(argv[0], "-b") == 0) {
-    in_bg = 1;
-    argv++;
-    argc--;
-  }
+int interpret(char ** args, int argc){
+  int auxArgc = argc;
 
-  switch (findCommand(str)) {
-  case 0:
-    help();
-    break;
-  case 1:
-    time();
-    break;
-  case 2:
-    eliminator();
-    break;
-  case 3:
-    regs();
-    break;
-  case 4:
-    clearScreen();
-    break;
-  case 5:
-    scaleDown();
-    clearScreen();
-    break;
-  case 6:
-    scaleUp();
-    clearScreen();
-    break;
-  case 7:
-    divzero();
-    break;
-  case 8:
-    invalidOpCode();
-    break;
-  case 9:
-  {
-    createProcessInfo testmm = {.name = "memory",
-                                .fg_flag = !in_bg,
-                                .priority = DEFAULT_PRIORITY,
-                                .start = (ProcessStart) test_mm,
-                                .argc = argc,
-                                .argv = (const char *const *) argv,
-                                .input = STDIN,
-                                .output = STDOUT};
-                              
-    createProcess(&testmm);
-  }
-    break;
-  case 10:
-  {
-    createProcessInfo testproc = {.name = "processes",
-                                  .fg_flag = !in_bg,
-                                  .priority = DEFAULT_PRIORITY,
-                                  .start = (ProcessStart) test_processes,
-                                  .argc = argc,
-                                  .argv = (const char *const *) argv,
-                                  .input = STDIN,
-                                  .output = STDOUT};
-    createProcess(&testproc);
-  }
-    break;
-  case 11:
-  {
-    createProcessInfo testprio = {.name = "priority",
-                                  .fg_flag = !in_bg,
-                                  .priority = DEFAULT_PRIORITY,
-                                  .start = (ProcessStart) test_prio,
-                                  .argc = argc,
-                                  .argv = (const char *const *) argv,
-                                  .input = STDIN,
-                                  .output = STDOUT
-                                  };
-    createProcess(&testprio);
-  }
-    break;
-  case 12: {
-    createProcessInfo decInfo = {.name = "processSynchro",
-                                 .fg_flag = !in_bg,
-                                 .priority = DEFAULT_PRIORITY,
-                                 .start = (ProcessStart) testSync,
-                                 .argc = argc,
-                                 .argv = (const char *const *) argv,
-                                 .input = STDIN,
-                                 .output = STDOUT};
-    createProcess(&decInfo);
-  } break;
-  case 13: {
-    createProcessInfo decInfo = {.name = "processNoSynchro",
-                                 .fg_flag = !in_bg,
-                                 .priority = DEFAULT_PRIORITY,
-                                 .start = (ProcessStart) testNoSync,
-                                 .argc = argc,
-                                 .argv = (const char *const *) argv,
-                                 .input = STDIN,
-                                 .output = STDOUT};
-    createProcess(&decInfo);
-  } break;
-  case 14:
-    ps();
-    break;
-  case 15:
-  {
-    createProcessInfo loopInfo = {.name = "loop",
-                                  .fg_flag = !in_bg,
-                                  .priority = DEFAULT_PRIORITY,
-                                  .start = (ProcessStart) loop,
-                                  .argc = argc,
-                                  .argv = (const char *const *) argv,
-                                  .input = STDIN,
-                                  .output = STDOUT};
-    createProcess(&loopInfo);
-  }
-    break;
-  case 16:
-  {
-    if (argc != 1) {
-      fprintf(STDERR,"Usage: kill <pid>\n");
-      break;
+  for(int i = 0; i < auxArgc; i++){
+    if(strcmp(args[i],"-b") == 0){
+      fprintf(STDERR, "Found -b\n");
+      bg_flag = 1;
+      for(int j = i; j < auxArgc - 1 ; j++){
+        args[j] = args[j+1];
+      }
+      auxArgc--;
     }
-    pid pid_to_kill = satoi(argv[0]);
-    if (pid_to_kill <= 0) {
-      fprintf(STDERR, "Invalid PID\n");
-      break;
-    }
-    if (kill(pid_to_kill) != 0) {
-      fprintf(STDERR,"Error killing process\n");
+    if(strcmp(args[i],"-")==0){ /* QEMU doesnt let me put "|" */
+      fprintf(STDERR, "PIPE detected\n");
+      char buff[4];
+      
+      int argc1 = i ;
+      int argc2 = auxArgc - (i +1);
+      fprintf(STDERR, "Number of args before pipe: ");
+      itoa(argc1,buff,10);
+      fprintf(STDERR,buff);
+      fprintf(STDERR,"\n");
+      fprintf(STDERR, "Number of args after pipe: ");
+      itoa(argc2,buff,10);
+      fprintf(STDERR,buff);
+      fprintf(STDERR,"\n");
+      char * argv1[argc1]; 
+      char * argv2[argc2];
+      fprintf(STDERR, "Arguments before pipes:\n");
+      for(int j = 0; j < argc1; j++){
+        argv1[j] = args[j]; 
+        fprintf(STDERR, argv1[j]);
+        fprintf(STDERR, "\n");
+
+      }
+      fprintf(STDERR, "Arguments after pipes:\n");
+      for(int j = 0; j< argc2; j++){
+        argv2[j] = args[i+j+1];
+        fprintf(STDERR, argv2[j]);
+        fprintf(STDERR, "\n");
+      }
+      int res = handle_piped_process(argc1, argv1, argc2, argv2);
+      return res;
     }
   }
-    break;
-  case 17:
-  {
-    if (argc != 1) {
-      fprintf(STDERR, "Usage: block <pid>\n");
-      break;
-    }
-    block(satoi(argv[0]));
+  
+  //single process handler;
+
+  int pos = findCommand(args[0]);
+  if(pos < 0){
+    fprintf(STDERR, "Unknown command \"");
+    fprintf(STDERR, args[0]);
+    fprintf(STDERR, "\"\n");
+    return 1;
   }
-    break;
-  case 18:
-  {
-    if (argc != 1) {
-      fprintf(STDERR,"Usage: unblock <pid>\n");
-      break;
-    }
-    unblock(satoi(argv[0]));
+  int l;
+  for(l = 0; l < auxArgc - 1 ; l++){
+        args[l] = args[l+1];
   }
-    break;
-  case 19:
-  {
-    if (argc != 2) {
-      fprintf(STDERR, "Usage: nice <pid> <new_priority>\n");
-      break;
-    }
-    nice(satoi(argv[0]), satoi(argv[1]));
+  args[l] = NULL;
+  auxArgc--;
+  if( (auxArgc) != commandList[pos].numberArgs){
+    fprintf(STDERR, commandList[pos].usage);
+    fprintf(STDERR, "\n");
+    return 1;
   }
-    break;
-  case 20: 
-    memory_manager_state();
-    break;
-  case 21:
-  {
-    createProcessInfo pipetestInfo = {.name = "pipe_test",
-                                  .fg_flag = !in_bg,
-                                  .priority = DEFAULT_PRIORITY,
-                                  .start = (ProcessStart) test_pipe,
-                                  .argc = argc,
-                                  .argv = (const char *const *) argv,
-                                  .input = STDIN,
-                                  .output = STDOUT};
-    createProcess(&pipetestInfo);
+  createProcessInfo commandProc = {
+    .name = commandList[pos].name,
+    .argc = auxArgc,
+    .argv = (const char * const *)args,
+    .fg_flag = !bg_flag,
+    .input = STDIN,
+    .output = STDOUT,
+    .priority = DEFAULT_PRIORITY,
+    .start = commandList[pos].start
+  };
+  int pid = createProcess(&commandProc);
+  if(isForeground(pid)){
+    fprintf(STDERR, "PROCESS IS IN FOREGROUND\n");
   }
-  break;
-  default:
-  {
-    fprintf(STDERR, "Unrecognized command\n");
-    errorSound();
+  ps();
+  if(!bg_flag){
+    waitForPID(pid);
   }
-    break;
-  }
+  bg_flag = 0;
+  return 0;
+
 }
 
 void insertCommand() {
@@ -261,36 +150,85 @@ void insertCommand() {
     }
   }
   fprintf(STDOUT,"\n");
-
   char *args[BUFFER_SIZE] = {NULL};
-  int argc = 0;
-  char *current = buffer;
-
-  args[argc++] = current;
-
-  while (*current) {
-    if (*current == ' ') {
-      *current = '\0';
-      current++;
-      if (*current && argc < BUFFER_SIZE) {
-        args[argc++] = current;
-      }
-    } else {
-      current++;
-    }
+  int argc = tokenize(buffer, args);
+  if (argc > 0) { //if at least one command
+    interpret(args, argc);
   }
-
-  if (argc > 0) {
-    executeCommand(args[0], argc - 1, args + 1);
-  }
-
-  fprintf(STDOUT, "caOS>");
 }
 
 void shell() {
   help();
-  fprintf(STDOUT,"caOS>");
   while (1) {
+    fprintf(STDOUT, "caOS>");
     insertCommand();
   }
+}
+
+
+
+int handle_piped_process(int producerArgc, char ** producerArgv, int consumerArgc, char** consumerArgv){
+    if(producerArgc < 1 || consumerArgc < 1){
+        return -1;
+    }
+    int pos1 = findCommand(producerArgv[0]);
+    int pos2 = findCommand(consumerArgv[0]);
+    if(pos1 < 0 || pos2 < 0){
+        fprintf(STDERR, "Unknown commands\n");
+        return -1;
+    }
+    int l;
+    for(l = 0 ; l < producerArgc-1; l++){
+        producerArgv[l] = producerArgv[l+1];
+    }
+    producerArgv[l] = NULL;
+    for(l = 0; l < consumerArgc -1; l++){
+        consumerArgv[l] = consumerArgv[l+1];
+    }
+    producerArgv[l] = NULL;
+
+    if(!commandList[pos2].isPipeable){
+      fprintf(STDERR, "Command is not pipeable\n");
+      return -1;
+    }
+
+    int pipeFD = open_pipe(0);
+    if(pipeFD < 0){
+        fprintf(STDERR, "Error opening pipe\n");
+        return -1;
+    }
+    createProcessInfo producerInfo = {
+        .argc = producerArgc,
+        .argv = (const char * const *) producerArgv,
+        .name = commandList[pos1].name,
+        .fg_flag = !bg_flag,
+        .input = STDIN,
+        .output = pipeFD,
+        .priority = DEFAULT_PRIORITY,
+        .start = commandList[pos1].start
+    };
+    createProcessInfo consumerInfo = {
+        .argc = consumerArgc,
+        .argv = (const char * const *) consumerArgv,
+        .name = commandList[pos2].name,
+        .fg_flag = !bg_flag,
+        .input = pipeFD,
+        .output = STDOUT,
+        .priority = DEFAULT_PRIORITY,
+        .start = commandList[pos2].start
+    };
+    int pid1 = createProcess(&producerInfo);
+    if(pid1 < 0){
+      fprintf(STDERR,"Error creating producer process\n");
+      return -1;
+    }
+    int pid2 = createProcess(&consumerInfo);
+    if(pid2<0){
+      fprintf(STDERR, "Error creating consumer process\n");
+      return -1;
+    }
+    if(!bg_flag){
+      waitForPID(pid2);
+    }
+    return 0;
 }

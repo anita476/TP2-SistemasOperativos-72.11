@@ -35,6 +35,8 @@ typedef struct Command{
     char * usage;
 }Command;
 
+int findCommand(char *command);
+
 /*
     @brief Starts the shell
 */	

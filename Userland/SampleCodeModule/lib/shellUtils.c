@@ -1,4 +1,5 @@
 #include <shellUtils.h>
+#include <shell.h>
 
 
 int tokenize(char * buffer, char * * args){

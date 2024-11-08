@@ -188,13 +188,18 @@ int kill(pid pid) {  // if it had children, shell adopts them
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
   }
-  //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
-  // free(process->argv);
 
+  // send eof signal if it was a producer 
+  if(process->output != STDOUT){
+      print(STDERR, "Sent EOF to process");
+      signal_eof(process->output);
+  }
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));
   lastPID--;
+
+
   return 0;
 }
 

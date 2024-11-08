@@ -40,14 +40,8 @@ static int find_available_pipe(){
 	}
 	for(int i = 0 ; i< MAX_PIPES; i++){
 		if( pipeList[i].pipeID == 0){
-			print(STDOUT, "Found one\n");
 			int answer = i + START_ID;
 			pipeList[i].pipeID = answer;
-			char buf[10];
-			intToStr(pipeList[i].pipeID, buf,10);
-			print(STDOUT, "Id is: ");
-			print(STDOUT, buf);
-
 			return answer;
 		}
 	}
@@ -56,19 +50,9 @@ static int find_available_pipe(){
 
 /* Returns the position of the pipe id, or -1 if it isnt found (or the id isnt in use atm) */ 
 static int find_pipe(unsigned int id){
-	print(STDOUT, "I want pipe with id: ");
-	char bu3f[10];
-	intToStr(id, bu3f,10);
-	print(STDOUT, bu3f);
 	if(id <= 3 || (pipeList[id - START_ID].pipeID != id)){
-		print(STDOUT, "PipeID was wrong\n");
 		return INVALID_PIPE;
 	}
-			print(STDOUT,"Found the pipe: Id  ");
-			char buf[4];
-			intToStr(id, buf, 10);
-			print(STDOUT, buf);
-			print(STDOUT, "\n");
 	return (id - START_ID);
 }
 
@@ -118,8 +102,8 @@ int open_pipe(unsigned int pipe_id){
 		createSemName(id,bufW, "semwrite");
 		createSemName(id,bufR, "semread");
 		// create semaphores
-		int sem_write = sem_open(bufW,1);
-		int sem_read = sem_open(bufR,1);
+		int sem_write = sem_open(bufW,PIPE_SIZE);
+		int sem_read = sem_open(bufR,0);
 		if(sem_write < 0 || sem_read < 0){
 			return -1;
 		}
@@ -171,18 +155,22 @@ int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){
 
 	// Nothing to read and pipe has finished -> send EOF
 	if(pipeList[pos].eof && pipeList[pos].amount == 0){
+		print(STDERR, "NOTHING MORE TO READ\n");
 		return EOF;
 	}
-	int i;	
+	int i;
+			
 	for(i = 0; i<bytes && !(pipeList[pos].eof && pipeList[pos].amount == 0); i++){
-		sem_wait(pipeList[pos].read_sem);
+
+		sem_wait(pipeList[pos].read_sem);	
 
 		dest[i] = pipeList[pos].pipe[pipeList[pos].read_pos];
-		(pipeList[pos].read_pos) = ((pipeList[pos].read_pos) + 1) % PIPE_SIZE;
+		pipeList[pos].read_pos = ((pipeList[pos].read_pos) + 1) % 1024;
 		pipeList[pos].amount--;
-	
+
 		sem_post(pipeList[pos].write_sem);
 	}
+			
 	return i;
 }
 
@@ -191,17 +179,16 @@ int write_to_pipe(unsigned int pipe_id, const char * src, unsigned int bytes){
 	if(pos == INVALID_PIPE)
 		return PIPE_ERROR; //if didnt find pipe the id is wrong
 	
-	int i;
-	for(i=0; i<bytes; i++){
+	for(int i=0; i<bytes; i++){
 		sem_wait(pipeList[pos].write_sem);
 
 		pipeList[pos].pipe[pipeList[pos].write_pos] = src[i];
-		(pipeList[pos].write_pos) = ((pipeList[pos].write_pos) + 1) % PIPE_SIZE;		
+		pipeList[pos].write_pos = ((pipeList[pos].write_pos) + 1) % 1024;
 		pipeList[pos].amount++; // to read
-
-		sem_post(pipeList[pos].write_sem);
+		sem_post(pipeList[pos].read_sem);
 	}
-	return i;
+				
+	return bytes;
 }
 
 int close_pipe(unsigned int pipe_id){

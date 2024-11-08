@@ -4,9 +4,9 @@
 IDEA FOR A PIPE TEST */
 
 
-static char * string = "This is a super long string and is supposed to test pipes. Write will write parts of the string to the pipe and read will read and check that its correct. All the while, we will be using busy waiting to make this process longer...";
-#define STRING_LENGTH 230
-#define AMOUNT 10
+static char * string = "abcdefghijklmnopqrstwxyzabcdefghijklmnopqrstuvwyz";
+#define STRING_LENGTH 50
+#define AMOUNT 1
 int pipe_id;
 
 void read_pipe(){
@@ -25,10 +25,13 @@ void read_pipe(){
 			fprintf(STDERR, "Error in pipe: text doesnt match source\n");
 		}
 		i += AMOUNT;
+		fprintf(STDOUT, buffer);
+		
 	}
+	fprintf(STDOUT, "\n");
 
 	close_pipe(pipe_id);
-	fprintf(STDOUT,"Finished writing to pipe\n");
+	fprintf(STDOUT,"\nFinished reading from pipe\n");
 }
 
 void write_pipe(){
@@ -41,11 +44,11 @@ void write_pipe(){
 	for(int i=0; i<STRING_LENGTH; ){
 		write_to_pipe(pipe_id, string + i, AMOUNT);
 		i += AMOUNT;
-		bussy_wait(50000000);
+		bussy_wait(5000000);
 	}
 
 	close_pipe(pipe_id);
-	fprintf(STDOUT,"Finished writing to pipe\n");
+	fprintf(STDOUT,"\nFinished writing to pipe\n");
 }
 
 
@@ -69,9 +72,7 @@ void test_pipe(){
                                   .argv = (const char *const *) NULL,
                                   .input = STDIN,
                                   .output = STDOUT};
-    createProcess(&readProcessInfo);
-
-	createProcessInfo writeProcessInfo = {.name = "read",
+	createProcessInfo writeProcessInfo = {.name = "write",
                                   .fg_flag = 1,
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) &write_pipe,
@@ -79,9 +80,10 @@ void test_pipe(){
                                   .argv = (const char *const *) NULL,
                                   .input = STDIN,
                                   .output = STDOUT};
+
     createProcess(&writeProcessInfo);
-
+	createProcess(&readProcessInfo);
 	waitForChildren();
-
+	fprintf(STDOUT,"Finished pipe test!\n");
 	close_pipe(pipe_id);
 } 

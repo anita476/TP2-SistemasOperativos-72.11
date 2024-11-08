@@ -58,9 +58,9 @@ int sem_open(sem_name semName, int initValue) {
     if (semId == -1) {  // need to create sem
         acquire(&lock);  // Get global lock for creation
 
-        print(STDERR, "Creating semaphore ");
+/*         print(STDERR, "Creating semaphore ");
         print(STDERR, semName);
-        print(STDERR, "\n");
+        print(STDERR, "\n"); */
 
         if (active >= MAX_PROCESSES) {
             print(STDERR, "Error: Maximum semaphores reached\n");
@@ -169,12 +169,6 @@ int sem_wait(sem sem) {
         
 
     pid currentPid = getpid();
-    char buf2[10];
-    intToStr(currentPid, buf2, 10);
-    print(STDERR, "PID: ");
-    print(STDERR,buf2);
-     print(STDERR, "Releasing sem\n"); 
-
     int found = isInterested(sem, currentPid);
 
     if (!found) {
@@ -208,12 +202,6 @@ int sem_post(sem sem) {
     }
 
     pid currentPid = getpid();
-    char buf[10];
-    intToStr(currentPid, buf, 10);
-    print(STDERR, "PID: ");
-    print(STDERR, buf);
-     print(STDERR, "Releasing sem\n"); 
-
     int found = isInterested(sem, currentPid);
 
     if (!found) {
@@ -235,14 +223,14 @@ int sem_post(sem sem) {
         }
         semaphoreList[sem].numberWaitingProcesses--;
         char buffer[20];
-        print(STDERR, "Processes waiting:");
+        /* print(STDERR, "Processes waiting:");
         for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses; i++) {
             print(STDERR, "PID ");
             intToStr(semaphoreList[sem].waitingProcesses[i], buffer,10);
             print(STDERR, buffer);
             print(STDERR, " ");
         }
-        print(STDOUT, "\n");
+        print(STDOUT, "\n"); */
         
         unblock(toUnblock);
     }

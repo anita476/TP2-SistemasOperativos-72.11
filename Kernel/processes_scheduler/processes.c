@@ -113,6 +113,10 @@ pid createProcess(createProcessInfo *info) {
   process->name = nameCopy;
   process->argv = argvCopy;
   process->argc = info->argc;
+
+  process->input = info->input;
+  process->output = info->output;
+
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
     addChild(parent, pid);
     process->parent = parent;
@@ -184,13 +188,18 @@ int kill(pid pid) {  // if it had children, shell adopts them
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
   }
-  //  I dont think its necessary to free, but idk, IF MEMORY LEAKS LOOK HERE
-  // free(process->argv);
 
+  // send eof signal if it was a producer 
+  if(process->output != STDOUT){
+      print(STDERR, "Sent EOF to process");
+      signal_eof(process->output);
+  }
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));
   lastPID--;
+
+
   return 0;
 }
 
@@ -269,6 +278,8 @@ int listProcessesInfo(ProcessInfo *processes, int maxProcesses) {
       info->stackStart = process->stackStart;
       info->fg_flag = process->fg_flag;
       info->parent = process->parent;
+      info->input = process->input;
+      info->output = process->output;
       getProcessInfo(i, info);
     }
   }
@@ -281,4 +292,20 @@ static int findPID(pid pid, ProcessS **pr) {
   }
   *pr = &processArr[pid];
   return 1;
+}
+
+int get_process_input(pid pid) {
+  ProcessS *p;
+  if (!findPID(pid, &p)) {
+    return -1;
+  }
+  return p->input;
+}
+
+int get_process_output(pid pid) {
+  ProcessS *p;
+  if (!findPID(pid, &p)) {
+    return -1;
+  }
+  return p->output;
 }

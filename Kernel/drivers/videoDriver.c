@@ -1,13 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-
+#include <videoDriver.h>
 #include <font.h>
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
-#include <videoDriver.h>
-
-#define WHITE 0xFFFFFF
+#define OFFWHITE 0xdbdbdb
 #define RED 0xFF0000
 
 struct vbe_mode_info_structure {
@@ -59,7 +57,7 @@ uint8_t scale = 1;
 uint16_t cursorX = 0;
 uint16_t cursorY = 0;
 
-uint32_t textColor = WHITE;
+uint32_t textColor = OFFWHITE;
 
 uint8_t getScale() { return scale; }
 
@@ -194,17 +192,17 @@ int putCharCursor(char c) {
 }
 
 void print(fd fileDes, char *str) {
-  if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
     if(fileDes == STDERR){
       setColor(RED);
     }
     else{
-      setColor(WHITE);
+      setColor(OFFWHITE);
     }
-    for (; *str != '\0'; str++){
-      putCharCursor(*str);
+    if (isForeground(getpid()) || fileDes == STDERR) { //if im printing an error always write to screen
+      for (; *str != '\0'; str++){
+        putCharCursor(*str);
+      }
     }
-  }
 }
 
 void println(char *str) { //unused

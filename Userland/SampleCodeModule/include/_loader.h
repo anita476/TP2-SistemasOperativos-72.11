@@ -35,3 +35,7 @@ int strcmp(const char* s1, const char* s2);
     @param source The source
 */
 char * strcat(char *destination, const char *source);
+
+
+
+int strncmp(const char * s1, const char * s2, int n);

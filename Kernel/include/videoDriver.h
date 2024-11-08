@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "lib.h"
+#include <pipe.h>
 
 /*
     @brief Gets the width of the screen in pixels

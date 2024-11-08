@@ -58,7 +58,9 @@ void init_shell() {
                                  .priority = MAX_PRIORITY,
                                  .start = (ProcessStart) sampleCodeModuleAddress,
                                  .argc = 0,
-                                 .argv = (const char *const *) NULL};
+                                 .argv = (const char *const *) NULL,
+                                 .input = STDIN,
+                                 .output = STDOUT};
   createProcess(&shellInfo);
 }
 

@@ -39,7 +39,9 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
                                   .priority = DEFAULT_PRIORITY,
                                   .start = (ProcessStart) endless_loop,
                                   .argc = 0,
-                                  .argv = (const char *const *) argvAux};
+                                  .argv = (const char *const *) argvAux,
+                                  .input = STDIN,
+                                  .output = STDOUT};
 
     // Create max_processes processes
     for (rq = 0; rq < MAX_PROC; rq++) {

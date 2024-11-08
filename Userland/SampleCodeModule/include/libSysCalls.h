@@ -7,7 +7,7 @@
     @param buffer The buffer
     @param length The length
 */
-uint64_t readBuffer(char* buffer, uint64_t length);
+uint64_t readBuffer(int fileDes, char* buffer, uint64_t length);
 
 /*
     @brief Gets a character from the buffer
@@ -251,3 +251,11 @@ int sem_wait(sem sem);
 */
 
 void memory_manager_state(); 
+
+
+int open_pipe(unsigned int pipe_id);
+int close_pipe(unsigned int pipe_id);
+
+int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes);
+int write_to_pipe(unsigned int pipe_id, char * src, unsigned int bytes);
+int get_pipe_info(unsigned int pipe_id, pipeInfo * info);

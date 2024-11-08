@@ -131,7 +131,9 @@ pid createProcess(createProcessInfo *info) {
     print(STDERR, "NAME POINTER IS NULL\n");
   }
   lastPID++;
-
+  print(STDERR, "Created process with name: ");
+  print(STDERR, process->name);
+  print(STDERR, "\n");
   return pid;
 }
 
@@ -193,7 +195,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   if (process->output != STDOUT) {
     print(STDERR, "Sent EOF to process");
     signal_eof(process->output);
-  }
+  } 
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));

@@ -155,7 +155,7 @@ int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){
 
 	// Nothing to read and pipe has finished -> send EOF
 	if(pipeList[pos].eof && pipeList[pos].amount == 0){
-		print(STDERR, "NOTHING MORE TO READ\n");
+		//print(STDERR, "NOTHING MORE TO READ\n");
 		return EOF;
 	}
 	int i;

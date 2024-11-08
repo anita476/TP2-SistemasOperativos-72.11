@@ -3,8 +3,8 @@
 
 #include <_loader.h>
 #include <commands.h>
-#include <eliminator.h>
 #include <defs.h>
+#include <eliminator.h>
 
 #define TIME_LENGTH 9
 
@@ -29,6 +29,7 @@ void help() {
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
   fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
+  fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");
@@ -217,13 +218,13 @@ void loop() {
 
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
-  while(1){
-		readBuffer(STDIN, buffer, 1);
-		fprintf(STDOUT, buffer);
-    if(buffer[0] == (-1)){ //this is wrong -> maybe fix -> should send EOF !!
+  while (1) {
+    readBuffer(STDIN, buffer, 1);
+    fprintf(STDOUT, buffer);
+    if (buffer[0] == (-1)) {  // this is wrong -> maybe fix -> should send EOF !!
       return;
     }
-}
+  }
 }
 void scaleDownCommand() {
   scaleDown();
@@ -233,4 +234,41 @@ void scaleDownCommand() {
 void scaleUpCommand() {
   scaleUp();
   clearScreen();
+}
+
+int isVowel(char c) {
+  char vowels[] = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'};
+  for (int i = 0; i < 10; i++) {
+    if (c == vowels[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int filter() {
+  char buffer[BUFFER_SIZE];
+  char output[BUFFER_SIZE];
+  int bytesRead;
+
+  while (1) {
+    bytesRead = readBuffer(STDIN, buffer, BUFFER_SIZE);
+    if (bytesRead <= 0) {
+      break;
+    }
+
+    int outIndex = 0;
+    for (int i = 0; i < bytesRead; i++) {
+      if (!isVowel(buffer[i])) {
+        output[outIndex++] = buffer[i];
+      }
+    }
+
+    if (outIndex > 0) {
+      output[outIndex] = '\0';
+      fprintf(STDOUT, output);
+    }
+  }
+
+  return 0;
 }

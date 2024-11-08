@@ -49,3 +49,8 @@ void scaleDownCommand();
     @brief Scales up the screen
 */
 void scaleUpCommand();
+
+/*
+    @brief Filters the input
+*/
+int filter();

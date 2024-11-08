@@ -12,7 +12,7 @@
 #define STDERR 2
 #define KBDIN  3
 
-#define EOF_CHAR 4
+#define EOF_CHAR -1
 
 typedef int fd;
 

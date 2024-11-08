@@ -218,12 +218,10 @@ void cat() {
   char buffer[BUFFER_SIZE] = {0};
   int len;
 
-  while (1) {
-    len = readBuffer(STDIN, buffer, BUFFER_SIZE);
-    if (len == EOF_CHAR)
-      return;
-    fprintf(STDOUT, buffer);
-    memset(buffer, 0, BUFFER_SIZE);
+  while ((len = readBuffer(STDIN, buffer, BUFFER_SIZE)) != EOF_CHAR) {
+    if (len > 0) {
+      fprintf(STDOUT, buffer);
+    }
   }
 }
 

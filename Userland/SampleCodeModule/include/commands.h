@@ -1,7 +1,7 @@
 #include "libSysCalls.h"
 
 #define BUFFER_SIZE 1024
-#define EOF_CHAR 4
+#define EOF_CHAR -1
 
 /*
     @brief Prints all the commands available

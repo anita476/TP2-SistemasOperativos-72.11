@@ -9,7 +9,7 @@
 #include <videoDriver.h>
 
 #define BUFFER_SIZE 1024
-#define EOF_CHAR    4
+#define EOF_CHAR    -1
 
 // Assembly function
 extern int getKey();
@@ -71,9 +71,8 @@ void keyboardHandler() {
       for (int i = 1; i < MAX_PROCESSES; i++) {
         if (isForeground(i)) {
           killWithChildren(i);
-          print(STDOUT, "^C\n");
           cleanBuffer();
-          print(STDOUT, "caOS>");
+          print(STDOUT, "^C\n");
           return;
         }
       }
@@ -82,7 +81,6 @@ void keyboardHandler() {
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
-      print(STDOUT, "caOS>");
       return;
     }
   }
@@ -138,15 +136,12 @@ void cleanRead() { readIndex = 0; }
 
 char getKeyFromBuffer() {
   if (!isKeyAvailable())
-    return 0;
+    return -1;
 
   char c = buffer[readIndex];
   buffer[readIndex] = '\0';
 
-  if (readIndex >= BUFFER_SIZE)
-    readIndex = 0;
-  else
-    readIndex++;
+  readIndex = (readIndex + 1) % BUFFER_SIZE;
 
   return c;
 }

@@ -256,9 +256,9 @@ int wc() {
       lastWasNewline = 0;
     }
   }
-
   char result[20];
   itoa(lineCount, result, 10);
+  fprintf(STDOUT, "Number of lines written: ");
   fprintf(STDOUT, result);
   fprintf(STDOUT, "\n");
 
@@ -288,6 +288,9 @@ int filter() {
 
     int outIndex = 0;
     for (int i = 0; i < bytesRead; i++) {
+      if (buffer[i] == EOF) {
+        return 0;
+      }
       if (!isVowel(buffer[i])) {
         output[outIndex++] = buffer[i];
       }

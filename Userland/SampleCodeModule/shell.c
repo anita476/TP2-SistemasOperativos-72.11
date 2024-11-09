@@ -99,7 +99,6 @@ int interpret(char **args, int argc) {
 
   for (int i = 0; i < auxArgc; i++) {
     if (strcmp(args[i], "-b") == 0) {
-      fprintf(STDERR, "Found -b\n");
       bg_flag = 1;
       for (int j = i; j < auxArgc - 1; j++) {
         args[j] = args[j + 1];

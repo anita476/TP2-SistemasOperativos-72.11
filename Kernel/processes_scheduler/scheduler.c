@@ -120,10 +120,6 @@ int block(pid pid) {
   if (get_state(pid, &pcb)) {
     char buffer[10];
     int_to_str(pid, buffer, 10);
-    print(STDERR, "For pid: ");
-    print(STDERR, buffer);
-
-    print(STDERR, " Get state failed\n");
     return -1;
   }
   processTable[pid].processStatus = BLOCKED;

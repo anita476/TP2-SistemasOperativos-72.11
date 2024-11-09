@@ -112,7 +112,7 @@ int did_lose(int players) {
 void lose(int whoLost, int pts) {
   play_wah_wah_wah();
   sys_clear_screen();
-  sys_set_cursor(0, 15);
+  sys_set_cursor_to_line(15);
   switch (whoLost) {
   case 1:
     fprintf(
@@ -257,7 +257,7 @@ void eliminator() {
   for (int i = 0; i < 4; i++)
     sys_scale_down();
   sys_clear_screen();
-  sys_set_cursor(0, 15);
+  sys_set_cursor_to_line(15);
   fprintf(
       STDOUT,
       "\n                                      Please select the amount of players and press ENTER\n                 "

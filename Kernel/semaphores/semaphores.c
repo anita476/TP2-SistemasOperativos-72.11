@@ -170,7 +170,7 @@ int sem_wait(sem sem) {
 
   if (!found) {
     release(&(semaphoreList[sem].lock));
-    print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot wait\n");
+    //print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot wait\n");
     return INVALID_VALUE_ERROR;
   }
 
@@ -200,7 +200,7 @@ int sem_post(sem sem) {
 
   if (!found) {
     release(&(semaphoreList[sem].lock));
-    print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot post\n");
+    //print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot post\n");
     return INVALID_VALUE_ERROR;
   }
 

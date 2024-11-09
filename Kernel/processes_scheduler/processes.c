@@ -106,9 +106,6 @@ pid create_process(createProcessInfo *info) {
   }
 
   strcpy(nameCopy, info->name);
-  if (nameCopy == NULL) {
-    print(STDERR, "NAME COPY IS NULL\n");
-  }
 
   ProcessS *process = &processArr[pid];
 
@@ -143,9 +140,6 @@ pid create_process(createProcessInfo *info) {
   // Call scheduler so that it adds the process to its queue and blocks parent process
   process_was_created(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
                     process->stackStart);
-  if (process->name == NULL) {
-    print(STDERR, "NAME POINTER IS NULL\n");
-  }
   lastPID++;
   return pid;
 }
@@ -172,7 +166,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
   ProcessS *process;
   if (!find_pid(pid, &process)) {
-    print(STDERR, "Validation error\n");
+    //print(STDERR, "Validation error\n");
     return -1;
   }
   /* remove from parent list*/

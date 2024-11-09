@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include <libSysCalls.h>
+#include <_loader.h>
 
 extern uint64_t syscall(uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5, uint64_t arg6);
 
@@ -9,7 +10,7 @@ uint64_t readBuffer(int fileDes, char *buffer, uint64_t length) {
   return syscall(0, (uint64_t) fileDes, (uint64_t) buffer, length, 0, 0);
 }
 
-uint64_t fprintf(fd fileDes, char *buffer) { return syscall(1, fileDes, (uint64_t) buffer, 0, 0, 0); }
+uint64_t fprintf(fd fileDes, char *buffer) { return syscall(1, fileDes, (uint64_t) buffer, (uint64_t) strlen(buffer), 0, 0); }
 
 void putChar(char c) {
   char aux[2] = {c, 0};

@@ -5,6 +5,7 @@
 #include <processes.h>
 #include <scheduler.h>
 #include <videoDriver.h>
+#include <keyboardDriver.h>
 
 static int nameValidation(const char *name);
 static int findPID(pid pid, ProcessS **pr);
@@ -145,9 +146,6 @@ pid createProcess(createProcessInfo *info) {
     print(STDERR, "NAME POINTER IS NULL\n");
   }
   lastPID++;
-  print(STDERR, "Created process with name: ");
-  print(STDERR, process->name);
-  print(STDERR, "\n");
   return pid;
 }
 
@@ -206,8 +204,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
 
   // send eof signal if it was a producer
-  if (process->output != STDOUT) {
-    print(STDERR, "Sent EOF to process");
+  if (process->output != STDOUT && (get_process_output(process->parent)== STDOUT)) {
     signal_eof(process->output);
   } 
   free(process->stackEnd);

@@ -24,8 +24,7 @@ typedef int sem_t;
 
 #define MAX_PHILOSOPHERS 10
 #define MIN_PHILOSOPHERS 3
-#define THINK_TIME       1000
-#define EAT_TIME         800
+#define MAX_TIME       1000
 
 #define MUTEX "phylo_mutex"
 
@@ -267,7 +266,7 @@ static int philosopher_action(int argc, char *argv[]) {
 
   while (running) {
 
-    sys_wait(THINK_TIME);
+    sys_wait(get_uniform(THINK_TIME));
 
     // get hungry --> take forks
     sys_sem_wait(mutex);
@@ -280,7 +279,7 @@ static int philosopher_action(int argc, char *argv[]) {
     sys_sem_wait(philosophers[phil_id].sem);
     // permission granted, therefore can eat yum yum :p
 
-    sys_wait(EAT_TIME);
+    sys_wait(get_uniform(MAX_TIME));
 
     // done eating, back to thinking
     sys_sem_wait(mutex);
@@ -341,7 +340,7 @@ static int add_philosopher(int id) {
     return -1;
   }
   num_philosophers++;
-  sys_wait(THINK_TIME);
+  sys_wait(get_uniform(MAX_TIME));
   display_table();
   sys_sem_post(mutex);
   return 0;

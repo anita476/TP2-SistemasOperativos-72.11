@@ -1,5 +1,5 @@
 #include "test_util.h"
-#include <commands.h>
+#include <utils.h>
 #include <defs.h>
 #include <libSysCalls.h>
 

@@ -5,6 +5,7 @@
 #include <commands.h>
 #include <defs.h>
 #include <eliminator.h>
+#include <utils.h>
 
 #define TIME_LENGTH 9
 
@@ -59,49 +60,6 @@ void time() {
   fprintf(STDOUT, toReturn);
   fprintf(STDOUT, "\n");
   return;
-}
-
-char *itoa(int num, char *str, int base) {
-  int i = 0;
-  char isNegative = 0;
-
-  // If the number is zero...
-  if (num == 0) {
-    str[i++] = '0';
-    str[i] = '\0';
-    return str;
-  }
-
-  // If the number is negative...
-  if (num < 0 && base == 10) {
-    isNegative = 1;
-    num = -num;
-  }
-
-  while (num != 0) {
-    int rem = num % base;
-    str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-    num = num / base;
-  }
-
-  // If the number is negative...
-  if (isNegative)
-    str[i++] = '-';
-
-  str[i] = '\0';
-
-  // Reverse the string
-  int start = 0;
-  int end = i - 1;
-  while (start < end) {
-    char temp = str[start];
-    str[start] = str[end];
-    str[end] = temp;
-    start++;
-    end--;
-  }
-
-  return str;
 }
 
 void regs() {

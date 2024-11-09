@@ -380,15 +380,17 @@ static int remove_philosopher(int running_check) {
   }
 
   if (sys_kill(pid_to_kill) < 0) {
+    sys_sem_post(mutex);
     fprintf(STDERR, "ERROR: Failed to kill philosopher\n");
     return -1;
   }
 
-  if (sys_sem_close(philosophers[id].sem) < 0) {
-    fprintf(STDERR, "ERROR: Failed to close semaphore\n");
-    return -1;
-  }  // im curious whether any process will be able to sem_close a sempahore that it didnt create
-
+  if (philosophers[id].sem > 0) {
+    if (sys_sem_close(philosophers[id].sem) < 0) {
+      fprintf(STDERR, "WARNING: Failed to close semaphore\n");
+      return -1;
+    }  // im curious whether any process will be able to sem_close a sempahore that it didnt create
+  }
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;
   philosophers[id].pid = -1;

@@ -243,9 +243,10 @@ int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc
     return -1;
   }
   if (!bg_flag) {
-    //waitForPID(pid2);
+    waitForPID(pid2);
     waitForPID(pid1);
   }
+  close_pipe(pipeFD);
   bg_flag = 0;
   return 0;
 }

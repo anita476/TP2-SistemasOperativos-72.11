@@ -1,10 +1,12 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include <font.h>
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
 #include <videoDriver.h>
+
 #define OFFWHITE 0xdbdbdb
 #define RED      0xFF0000
 
@@ -59,31 +61,31 @@ uint16_t cursorY = 0;
 
 uint32_t textColor = OFFWHITE;
 
-uint8_t getScale() { return scale; }
+uint8_t get_scale() { return scale; }
 
-uint16_t getWidthPixels() { return VBE_mode_info->width; }
+uint16_t get_width_pixels() { return VBE_mode_info->width; }
 
-uint16_t getHeightPixels() { return VBE_mode_info->height; }
+uint16_t get_height_pixels() { return VBE_mode_info->height; }
 
-uint16_t getWidthChars() { return getWidthPixels() / (CHAR_WIDTH * scale); }
+uint16_t get_width_chars() { return get_width_pixels() / (CHAR_WIDTH * scale); }
 
-uint16_t getHeightChars() { return getHeightPixels() / (CHAR_HEIGHT * scale); }
+uint16_t get_height_chars() { return get_height_pixels() / (CHAR_HEIGHT * scale); }
 
 // Returns 0 if successful
-int setScale(uint8_t newScale) {
+int set_scale(uint8_t newScale) {
   if (newScale > 4 || newScale < 1)
     return 1;
   scale = newScale;
   return 0;
 }
 
-int scaleUp() { return setScale(scale + 1); }
+int scale_up() { return set_scale(scale + 1); }
 
-int scaleDown() { return setScale(scale - 1); }
+int scale_down() { return set_scale(scale - 1); }
 
 // Returns 0 if successful
-int putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
-  if (x >= getWidthPixels() || y >= getHeightPixels())
+int put_pixel(uint64_t hexColor, uint64_t x, uint64_t y) {
+  if (x >= get_width_pixels() || y >= get_height_pixels())
     return 1;
   uint8_t *framebuffer = (uint8_t *) (uintptr_t) VBE_mode_info->framebuffer;
   uint64_t offset = (x * ((VBE_mode_info->bpp) / 8)) + (y * VBE_mode_info->pitch);
@@ -94,25 +96,25 @@ int putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
 }
 
 // Returns 0 if successful
-int drawRectangle(uint32_t hexColor, uint64_t x, uint64_t y, int width, int height) {
-  if (x + width > getWidthPixels() || y + height > getHeightPixels())
+int draw_rectangle(uint32_t hexColor, uint64_t x, uint64_t y, int width, int height) {
+  if (x + width > get_width_pixels() || y + height > get_height_pixels())
     return 1;
   for (int i = x; i < x + width; i++)
     for (int j = y; j < y + height; j++)
-      putPixel(hexColor, i, j);
+      put_pixel(hexColor, i, j);
   return 0;
 }
 
-void clearScreen() {
-  for (int i = 0; i < getWidthPixels(); i++)
-    for (int j = 0; j < getHeightPixels(); j++)
-      putPixel(0x00000000, i, j);
+void clear_screen() {
+  for (int i = 0; i < get_width_pixels(); i++)
+    for (int j = 0; j < get_height_pixels(); j++)
+      put_pixel(0x00000000, i, j);
   cursorX = 0;
   cursorY = 0;
 }
 
 // Returns the color in hex
-uint32_t getPixelColor(uint64_t x, uint64_t y) {
+uint32_t get_pixel_color(uint64_t x, uint64_t y) {
   uint8_t *framebuffer = (uint8_t *) (uintptr_t) VBE_mode_info->framebuffer;
   uint64_t offset = (x * (VBE_mode_info->bpp / 8)) + (y * VBE_mode_info->pitch);
   uint32_t hexColor = 0;
@@ -123,9 +125,9 @@ uint32_t getPixelColor(uint64_t x, uint64_t y) {
 }
 
 // Sets the cursor position
-void setCursor(uint16_t x, uint16_t y) {
-  uint16_t maxX = getWidthPixels() - CHAR_WIDTH * scale;
-  uint16_t maxY = getHeightPixels() - CHAR_HEIGHT * scale;
+void set_cursor(uint16_t x, uint16_t y) {
+  uint16_t maxX = get_width_pixels() - CHAR_WIDTH * scale;
+  uint16_t maxY = get_height_pixels() - CHAR_HEIGHT * scale;
   if (x < maxX)
     cursorX = x;
   else
@@ -136,19 +138,19 @@ void setCursor(uint16_t x, uint16_t y) {
     cursorY = maxY;
 }
 
-uint16_t lineToHeight(unsigned int line) { return line * (CHAR_HEIGHT * scale); }
+uint16_t line_to_height(unsigned int line) { return line * (CHAR_HEIGHT * scale); }
 
-int heightToLine(uint16_t height) { return height / (CHAR_HEIGHT * scale); }
+int height_to_line(uint16_t height) { return height / (CHAR_HEIGHT * scale); }
 
-int setCursorLine(unsigned int line) {
-  if (line >= heightToLine(getHeightPixels()))
+int set_cursor_line(unsigned int line) {
+  if (line >= height_to_line(get_height_pixels()))
     return 1;
-  setCursor(cursorX, lineToHeight(line));
+  set_cursor(cursorX, line_to_height(line));
   return 0;
 }
 
 // Returns 0 if successful
-int putChar(char c, uint64_t x, uint64_t y) {
+int put_char(char c, uint64_t x, uint64_t y) {
   if (c < FIRST_CHAR || c > LAST_CHAR)
     return 1;
   const uint8_t *charGlyph = IBM_VGA_8x16_glyph_bitmap + 16 * (c - FIRST_CHAR);
@@ -157,7 +159,7 @@ int putChar(char c, uint64_t x, uint64_t y) {
       uint32_t color = charGlyph[i] & (1 << (CHAR_WIDTH - 1 - j)) ? textColor : 0x000000;
       for (int scaleX = 0; scaleX < scale; scaleX++) {
         for (int scaleY = 0; scaleY < scale; scaleY++) {
-          putPixel(color, x + j * scale + scaleX, y + i * scale + scaleY);
+          put_pixel(color, x + j * scale + scaleX, y + i * scale + scaleY);
         }
       }
     }
@@ -166,68 +168,68 @@ int putChar(char c, uint64_t x, uint64_t y) {
 }
 
 // Puts a char in the current cursor position. Returns 0 if successful
-int putCharCursor(char c) {
+int put_char_cursor(char c) {
   if (c == '\n') {
-    newLine();
+    new_line();
     return 0;
   }
   if (c == '\b') {
     if (cursorX >= CHAR_WIDTH * scale) {
       cursorX -= CHAR_WIDTH * scale;
-      putCharCursor(' ');
+      put_char_cursor(' ');
       cursorX -= CHAR_WIDTH * scale;
       return 0;
     }
     return 1;
   }
   // Flag to indicate if the char was added successfully
-  int successFlag = putChar(c, cursorX, cursorY);
+  int successFlag = put_char(c, cursorX, cursorY);
   // Operation successful
   if (successFlag == 0) {
     cursorX += CHAR_WIDTH * scale;
-    if (cursorX >= getWidthPixels() - CHAR_WIDTH * scale)
-      newLine();
+    if (cursorX >= get_width_pixels() - CHAR_WIDTH * scale)
+      new_line();
   }
   return successFlag;
 }
 
 void print(fd fileDes, char *str) {
   if (fileDes == STDERR) {
-    setColor(RED);
+    set_color(RED);
   } else {
-    setColor(OFFWHITE);
+    set_color(OFFWHITE);
   }
-  if (isForeground(getpid()) || fileDes == STDERR) {  // if im printing an error always write to screen
+  if (is_foreground(get_pid()) || fileDes == STDERR) {  // if im printing an error always write to screen
 
     for (; *str != '\0'; str++) {
-      putCharCursor(*str);
+      put_char_cursor(*str);
     }
   }
 }
 
 void println(char *str) {  // unused
-  if (isForeground(getpid())) {
+  if (is_foreground(get_pid())) {
     print(STDOUT, str);
-    newLine();
+    new_line();
   }
 }
 
-void setColor(uint32_t newColor) { textColor = newColor; }
+void set_color(uint32_t newColor) { textColor = newColor; }
 
-void newLine() {
+void new_line() {
   cursorX = 0;
-  if (cursorY + 2 * CHAR_HEIGHT * scale <= getHeightPixels())
+  if (cursorY + 2 * CHAR_HEIGHT * scale <= get_height_pixels())
     cursorY += CHAR_HEIGHT * scale;
   else {
     // Pointer to framebuffer
     void *dst = (void *) ((uint64_t) VBE_mode_info->framebuffer);
     // Pointer to framebuffer + offset (one line down)
-    void *src = (void *) (dst + 3 * (CHAR_HEIGHT * scale * (uint64_t) getWidthPixels()));
+    void *src = (void *) (dst + 3 * (CHAR_HEIGHT * scale * (uint64_t) get_width_pixels()));
     // Number of bytes to copy (multiplied by 3 because of RGB). Copies all but the first line
-    uint64_t len = 3 * ((uint64_t) getWidthPixels() * (getHeightPixels() - CHAR_HEIGHT * scale));
+    uint64_t len = 3 * ((uint64_t) get_width_pixels() * (get_height_pixels() - CHAR_HEIGHT * scale));
     // Copies len bytes of data from src to dst
     memcpy(dst, src, len);
     // Sets the rest to zero
-    memset(dst + len, 0, 3 * (uint64_t) getWidthPixels() * CHAR_HEIGHT * scale);
+    memset(dst + len, 0, 3 * (uint64_t) get_width_pixels() * CHAR_HEIGHT * scale);
   }
 }

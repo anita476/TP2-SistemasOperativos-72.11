@@ -24,20 +24,20 @@ static void setup_IDT_entry(int index, uint64_t offset);
 
 void load_IDT() {
   // Divide by zero exception
-  setup_IDT_entry(0x00, (uint64_t) &_exception0Handler);
+  setup_IDT_entry(0x00, (uint64_t) &_exception0_handler);
   // Invalid opcode exception
-  setup_IDT_entry(0x06, (uint64_t) &_exception6Handler);
+  setup_IDT_entry(0x06, (uint64_t) &_exception6_handler);
   // Timer interruption
-  setup_IDT_entry(0x20, (uint64_t) &_irq00Handler);
+  setup_IDT_entry(0x20, (uint64_t) &_irq00_handler);
   // Keyboard interruption
-  setup_IDT_entry(0x21, (uint64_t) &_irq01Handler);
+  setup_IDT_entry(0x21, (uint64_t) &_irq01_handler);
   // Syscalls interruption
-  setup_IDT_entry(0x80, (uint64_t) &_int80Handler);
+  setup_IDT_entry(0x80, (uint64_t) &_int80_handler);
   // scheduler
   setup_IDT_entry(0x81, (uint64_t) &_schedule);
   // Keyboard and timer interruptions enabled
-  picMasterMask(0xFC);
-  picSlaveMask(0xFF);
+  pic_master_mask(0xFC);
+  pic_slave_mask(0xFF);
   //_sti();
 }
 

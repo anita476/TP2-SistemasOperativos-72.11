@@ -1,14 +1,14 @@
 /*
     @brief Plays an error sound
 */
-void errorSound();
+void error_sound();
 
 /*
     @brief Plays the famous dragon melody
 */
-void playDragonMelody();
+void play_dragon_melody();
 
 /*
     @brief Plays the losing theme
 */
-void playWahWahWah();
+void play_wah_wah_wah();

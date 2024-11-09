@@ -1,33 +1,33 @@
 GLOBAL _cli
 GLOBAL _sti
 GLOBAL _hlt
-GLOBAL haltcpu
+GLOBAL halt_cpu
 GLOBAL int81
 GLOBAL _schedule
 
-GLOBAL picMasterMask
-GLOBAL picSlaveMask
+GLOBAL pic_master_mask
+GLOBAL pic_slave_mask
 
-GLOBAL _irq00Handler
-GLOBAL _irq01Handler
-GLOBAL _int80Handler
+GLOBAL _irq00_handler
+GLOBAL _irq01_handler
+GLOBAL _int80_handler
 
-GLOBAL _exception0Handler
-GLOBAL _exception6Handler
+GLOBAL _exception0_handler
+GLOBAL _exception6_handler
 
 GLOBAL show_registers_dump
 GLOBAL has_regs
 GLOBAL show_registers
-EXTERN exceptionDispatcher
-EXTERN syscallHandler
-EXTERN irqDispatcher
+EXTERN exception_dispatcher
+EXTERN syscall_handler
+EXTERN irq_dispatcher
 
 EXTERN print
-EXTERN switchP
+EXTERN switch_process
 
 SECTION .text
 
-%macro pushState 0
+%macro push_state 0
 	push rbx
 	push rcx
 	push rdx
@@ -46,7 +46,7 @@ SECTION .text
 
 %endmacro
 
-%macro popState 0
+%macro pop_state 0
 	pop rax
 	pop r15
 	pop r14
@@ -65,20 +65,20 @@ SECTION .text
 %endmacro
 
 %macro irqHandlerMaster 1
-	pushState
+	push_state
 
 	mov rdi, %1 
-	call irqDispatcher
+	call irq_dispatcher
 
 	; Signal pic EOI (End of Interrupt)
 	mov al, 20h
 	out 20h, al
 
-	popState
+	pop_state
 	iretq
 %endmacro
 
-%macro  exceptionHandler 1
+%macro  exception_handler 1
 	; Save registers in data 
 	; Order: RIP RAX RBX RCX RDX RSI RDI RBP RSP R8 R9 R10 R11 R12 R13 R14 R15 
     mov [show_registers + (1*8)] , rax
@@ -109,7 +109,7 @@ SECTION .text
     ; Load parameters to pass to exceptions handler
     mov rdi, %1 
     mov rsi, show_registers ; "pointer to string"
-    call exceptionDispatcher
+    call exception_dispatcher
 
     iretq
 %endmacro
@@ -127,7 +127,7 @@ _sti:
 	sti
 	ret
 
-picMasterMask:
+pic_master_mask:
 	push rbp
     mov rbp, rsp
     mov ax, di
@@ -135,7 +135,7 @@ picMasterMask:
     pop rbp
     retn
 
-picSlaveMask:
+pic_slave_mask:
 	push rbp
     mov rbp, rsp
     mov ax, di
@@ -144,25 +144,25 @@ picSlaveMask:
     retn
 
 ; 8254 Timer (Timer Tick)
-_irq00Handler:
-	pushState
+_irq00_handler:
+	push_state
 
 	mov rdi, 0
-	call irqDispatcher
+	call irq_dispatcher
 	
 	mov rdi, rsp
-	call switchP
+	call switch_process
 	mov rsp, rax
 
 	mov al, 20h
 	out 20h, al
 	
-	popState
+	pop_state
 	iretq
 
 ; Keyboard
-_irq01Handler:
-	pushState
+_irq01_handler:
+	push_state
     in al, 0x60 ; readKey
     cmp al, 0x1D ; check if left CTRL is pressed (used to save registers)
     jne .continue
@@ -193,24 +193,24 @@ _irq01Handler:
 
 .continue:
     mov rdi, 1 ; param for dispatcher
-    call irqDispatcher
+    call irq_dispatcher
         
     ; EOI
     mov al, 20h
     out 20h, al
 
-    popState
+    pop_state
     iretq
 
 ; Zero Division Exception
-_exception0Handler:
-	exceptionHandler 0
+_exception0_handler:
+	exception_handler 0
 
 ; Invalid Opcode Exception
-_exception6Handler:
-	exceptionHandler 6
+_exception6_handler:
+	exception_handler 6
 
-_int80Handler:
+_int80_handler:
   	push rbx
 	push rcx
 	push rdx
@@ -227,7 +227,7 @@ _int80Handler:
 	push r15
 
 	; mov rdi, rax
-    call syscallHandler
+    call syscall_handler
 	pop r15
 	pop r14
 	pop r13
@@ -244,7 +244,7 @@ _int80Handler:
 	pop rbx
 	iretq
 
-haltcpu:
+halt_cpu:
 	cli
 	hlt
 	ret
@@ -252,15 +252,16 @@ haltcpu:
 int81:
 	int 81h
 	ret
+
 _schedule: 
-	pushState
+	push_state
 	
 	mov rdi, rsp
 	;mov rsp, rdi
-	call switchP
+	call switch_process
 	mov rsp, rax
 
-	popState
+	pop_state
 	iretq
 
 SECTION .bss

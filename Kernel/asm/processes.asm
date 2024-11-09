@@ -1,4 +1,4 @@
-GLOBAL createProcessStack
+GLOBAL create_process_stack
 GLOBAL start
 
 start:
@@ -6,7 +6,7 @@ start:
     mov rdi, 0x1E ; code designated as exit function
     int 80h
 
-createProcessStack:
+create_process_stack:
     push rbp
     mov rbp, rsp
     

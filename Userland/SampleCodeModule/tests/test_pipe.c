@@ -12,14 +12,14 @@ int pipe_id;
 void read_pipe() {
 
   fprintf(STDOUT, "Starting to read from pipe\n");
-  int id = open_pipe(pipe_id);
+  int id = sys_open_pipe(pipe_id);
   if (id != pipe_id) {
     fprintf(STDERR, "Error opening pipe from read end\n");
   }
   char buffer[20] = {0};
 
   for (int i = 0; i < STRING_LENGTH;) {
-    read_from_pipe(pipe_id, buffer, AMOUNT);
+    sys_read_from_pipe(pipe_id, buffer, AMOUNT);
 
     if (strncmp(buffer, string + i, AMOUNT)) {
       fprintf(STDERR, "Error in pipe: text doesnt match source\n");
@@ -29,30 +29,30 @@ void read_pipe() {
   }
   fprintf(STDOUT, "\n");
 
-  close_pipe(pipe_id);
+  sys_close_pipe(pipe_id);
   fprintf(STDOUT, "\nFinished reading from pipe\n");
 }
 
 void write_pipe() {
   fprintf(STDOUT, "Starting to write to pipe\n");
-  int id = open_pipe(pipe_id);
+  int id = sys_open_pipe(pipe_id);
   if (id != pipe_id) {
     fprintf(STDERR, "Error opening pipe from write end\n");
   }
 
   for (int i = 0; i < STRING_LENGTH;) {
-    write_to_pipe(pipe_id, string + i, AMOUNT);
+    sys_write_to_pipe(pipe_id, string + i, AMOUNT);
     i += AMOUNT;
     bussy_wait(5000000);
   }
 
-  close_pipe(pipe_id);
+  sys_close_pipe(pipe_id);
   fprintf(STDOUT, "\nFinished writing to pipe\n");
 }
 
 void test_pipe() {
 
-  int id = open_pipe(0);  // open a new pipe
+  int id = sys_open_pipe(0);  // open a new pipe
 
   if (id < 0) {
     fprintf(STDERR, "Error creating pipe in test!\n");
@@ -78,9 +78,9 @@ void test_pipe() {
                                         .input = STDIN,
                                         .output = STDOUT};
 
-  createProcess(&writeProcessInfo);
-  createProcess(&readProcessInfo);
-  waitForChildren();
+  sys_create_process(&writeProcessInfo);
+  sys_create_process(&readProcessInfo);
+  sys_wait_for_children();
   fprintf(STDOUT, "Finished pipe test!\n");
-  close_pipe(pipe_id);
+  sys_close_pipe(pipe_id);
 }

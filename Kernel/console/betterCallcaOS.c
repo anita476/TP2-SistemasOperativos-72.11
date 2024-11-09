@@ -1744,14 +1744,14 @@ const uint64_t saul[] = {
     0x00050201, 0x00060302, 0x00040301, 0x00030200, 0x00030200, 0x00030200, 0x00020100, 0x00010100, 0x00010100,
     0x00010100};
 
-void putSaul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage) {
-  if (xStart + widthImage > getWidthPixels() || yStart + heightImage > getHeightPixels())
+void put_saul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage) {
+  if (xStart + widthImage > get_width_pixels() || yStart + heightImage > get_height_pixels())
     return;
 
   for (uint64_t i = 0; i < widthImage; i++) {
     for (uint64_t j = 0; j < heightImage; j++) {
       uint32_t color = saul[j * widthImage + i];
-      putPixel(color, xStart + i, yStart + j);
+      put_pixel(color, xStart + i, yStart + j);
     }
   }
 }

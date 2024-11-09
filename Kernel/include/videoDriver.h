@@ -6,43 +6,43 @@
     @brief Gets the width of the screen in pixels
     @returns The width in pixels
 */
-uint16_t getWidthPixels();
+uint16_t get_width_pixels();
 
 /*
     @brief Gets the height of the screen in pixels
     @returns The height in pixels
 */
-uint16_t getHeightPixels();
+uint16_t get_height_pixels();
 
 /*
     @brief Gets the width of the screen in characters
     @returns The width in characters
 */
-uint16_t getWidthChars();
+uint16_t get_width_chars();
 
 /*
     @brief Gets the height of the screen in characters
     @returns The height in characters
 */
-uint16_t getHeightChars();
+uint16_t get_height_chars();
 
 /*
     @brief Scales the screen up
     @returns 0 if successful, 1 if error
 */
-int scaleUp();
+int scale_up();
 
 /*
     @brief Scales the screen down
     @returns 0 if successful, 1 if error
 */
-int scaleDown();
+int scale_down();
 
 /*
     @brief Gets the scale of the screen
     
 */
-uint8_t getScale();
+uint8_t get_scale();
 
 /*
     @brief Puts a pixel on the screen
@@ -51,7 +51,7 @@ uint8_t getScale();
     @param y The y coordinate
     @returns 0 if successful, 1 if error
 */
-int putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
+int put_pixel(uint64_t hexColor, uint64_t x, uint64_t y);
 
 /*
     @brief Puts a character on the screen
@@ -60,14 +60,14 @@ int putPixel(uint32_t hexColor, uint64_t x, uint64_t y);
     @param y The y coordinate
     @returns 0 if successful, 1 if error
 */
-int putChar(char c, uint64_t x, uint64_t y);
+int put_char(char c, uint64_t x, uint64_t y);
 
 /*
     @brief Puts a character on the screen at the cursor
     @param c The character
     @returns 0 if successful, 1 if error
 */
-int putCharCursor(char c);
+int put_char_cursor(char c);
 
 /*
     @brief Prints a string on the screen
@@ -80,37 +80,37 @@ void print(fd fileDes, char *str);
     @brief Prints a string on the screen and adds a new line
     @param str The string
 */
-void printlnchar(char *str);
+void println_char(char *str);
 
 /*
     @brief Adds a new line to the screen
 */
-void newLine();
+void new_line();
 
 /*
     @brief Clears the screen
 */
-void clearScreen();
+void clear_screen();
 
 /*
     @brief Sets the cursor to the specified line
     @param line The line to set the cursor to
     @returns 0 if successful, 1 if error
 */
-int setCursorLine(unsigned int line);
+int set_cursor_line(unsigned int line);
 
 /*
     @brief Sets the cursor to the specified coordinates
     @param x The x coordinate
     @param y The y coordinate
 */
-void setCursor(uint16_t x, uint16_t y);
+void set_cursor(uint16_t x, uint16_t y);
 
 /*
     @brief Sets the color of the screen
     @param newColor The new color
 */
-void setColor(uint32_t newColor);
+void set_color(uint32_t newColor);
 
 /*
     @brief Gets the color of the pixel at the specified coordinates
@@ -118,7 +118,7 @@ void setColor(uint32_t newColor);
     @param y The y coordinate
     @returns The color of the pixel
 */
-uint32_t getPixelColor(uint64_t x, uint64_t y);
+uint32_t get_pixel_color(uint64_t x, uint64_t y);
 
 /*
     @brief Draws a rectangle on the screen
@@ -129,18 +129,18 @@ uint32_t getPixelColor(uint64_t x, uint64_t y);
     @param height The height of the rectangle
     @returns 0 if successful, 1 if error
 */
-int drawRectangle(uint32_t hexColor, uint64_t x, uint64_t y, int width, int height);
+int draw_rectangle(uint32_t hexColor, uint64_t x, uint64_t y, int width, int height);
 
 /*
     @brief Converts a line to a height
     @param line The line
     @returns The height
 */
-uint16_t lineToHeight(unsigned int line);
+uint16_t line_to_height(unsigned int line);
 
 /*
     @brief Converts a height to a line
     @param height The height
     @returns The line
 */
-int heightToLine(uint16_t height);
+int height_to_line(uint16_t height);

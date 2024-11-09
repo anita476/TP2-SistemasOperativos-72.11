@@ -10,12 +10,12 @@
 
 #include <idtLoader.h>
 
-void _irq00Handler(void);
-void _irq01Handler(void);
-void _int80Handler(void);
+void _irq00_handler(void);
+void _irq01_handler(void);
+void _int80_handler(void);
 
-void _exception0Handler(void);
-void _exception6Handler(void);
+void _exception0_handler(void);
+void _exception6_handler(void);
 void _schedule(void);
 
 void _cli(void);
@@ -24,10 +24,10 @@ void _sti(void);
 
 void _hlt(void);
 
-void picMasterMask(uint8_t mask);
+void pic_master_mask(uint8_t mask);
 
-void picSlaveMask(uint8_t mask);
+void pic_slave_mask(uint8_t mask);
 
-void haltcpu(void);
+void halt_cpu(void);
 
 #endif /* INTERRUPS_H_ */

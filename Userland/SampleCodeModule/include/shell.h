@@ -7,7 +7,6 @@
 #include "phylo.h"
 #include "shellUtils.h"
 #include "test_mm.h"
-#include "test_no_sync.h"
 #include "test_prio.h"
 #include "test_processes.h"
 #include "test_sync.h"
@@ -21,12 +20,12 @@
 /*
     @brief Invalid opcode exception
 */
-extern void invalidOpCode();
+extern void invalid_opcode();
 
 /*
     @brief Division by zero exception
 */
-extern void divzero();
+extern void div_zero();
 
 typedef struct Command {
   char *name;
@@ -36,7 +35,7 @@ typedef struct Command {
   char *usage;
 } Command;
 
-int findCommand(char *command);
+int find_command(char *command);
 
 /*
     @brief Starts the shell

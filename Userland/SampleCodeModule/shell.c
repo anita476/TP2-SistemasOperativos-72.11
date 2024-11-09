@@ -15,22 +15,22 @@ static Command commandList[COMMANDS_SIZE] = {
      .start = (ProcessStart) eliminator,
      .usage = "Usage: eliminator"},
     {.name = "regs", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) regs, .usage = "Usage: regs"},
-    {.name = "clear", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) clearScreen, .usage = "Usage: clear"},
+    {.name = "clear", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) sys_clear_screen, .usage = "Usage: clear"},
     {.name = "scaledown",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) scaleDownCommand,
+     .start = (ProcessStart) scale_down_command,
      .usage = "Usage: scaledown"},
     {.name = "scaleup",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) scaleUpCommand,
+     .start = (ProcessStart) scale_up_command,
      .usage = "Usage: scaleup"},
-    {.name = "divzero", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) divzero, .usage = "Usage: divzero"},
+    {.name = "divzero", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) div_zero, .usage = "Usage: divzero"},
     {.name = "invalidopcode",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) invalidOpCode,
+     .start = (ProcessStart) invalid_opcode,
      .usage = "Usage: invalidopcode"},
     {.name = "testmm",
      .isPipeable = 0,
@@ -50,26 +50,26 @@ static Command commandList[COMMANDS_SIZE] = {
     {.name = "testsync",
      .isPipeable = 0,
      .numberArgs = 2,
-     .start = (ProcessStart) testSync,
+     .start = (ProcessStart) test_sync,
      .usage = "Usage: testsync [n_value] [use_sem]"},
     {.name = "ps", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) ps, .usage = "Usage: ps"},
     {.name = "loop", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) loop, .usage = "Usage: loop"},
-    {.name = "kill", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) kill, .usage = "Usage: kill [pid]"},
-    {.name = "block", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) block, .usage = "Usage: block [pid]"},
+    {.name = "kill", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) sys_kill, .usage = "Usage: kill [pid]"},
+    {.name = "block", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) sys_block, .usage = "Usage: block [pid]"},
     {.name = "unblock",
      .isPipeable = 0,
      .numberArgs = 1,
-     .start = (ProcessStart) unblock,
+     .start = (ProcessStart) sys_unblock,
      .usage = "Usage: unblock [pid]"},
     {.name = "nice",
      .isPipeable = 0,
      .numberArgs = 1,
-     .start = (ProcessStart) nice,
+     .start = (ProcessStart) sys_nice,
      .usage = "Usage: nice [pid] [new_prio]"},
     {.name = "mem",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) memory_manager_state,
+     .start = (ProcessStart) sys_memory_manager_state,
      .usage = "Usage: mem"},
     {.name = "testpipe",
      .isPipeable = 0,
@@ -85,7 +85,7 @@ static Command commandList[COMMANDS_SIZE] = {
      .start = (ProcessStart) phylo,
      .usage = "Usage: phylo [number_of_philosophers]"}};
 
-int findCommand(char *command) {
+int find_command(char *command) {
   for (int i = 0; i < COMMANDS_SIZE; i++) {
     if (strcmp(commandList[i].name, command) == 0) {
       return i;
@@ -99,14 +99,13 @@ int interpret(char **args, int argc) {
 
   for (int i = 0; i < auxArgc; i++) {
     if (strcmp(args[i], "-b") == 0) {
-      fprintf(STDERR, "Found -b\n");
       bg_flag = 1;
       for (int j = i; j < auxArgc - 1; j++) {
         args[j] = args[j + 1];
       }
       auxArgc--;
     }
-    if (strcmp(args[i], "-") == 0) { /* QEMU doesnt let me put "|" */
+    if (strcmp(args[i], "|") == 0) { /* QEMU doesnt let me put "|" */
       int argc1 = i;
       int argc2 = auxArgc - (i + 1);
       char *argv1[argc1];
@@ -124,7 +123,7 @@ int interpret(char **args, int argc) {
 
   // single process handler;
 
-  int pos = findCommand(args[0]);
+  int pos = find_command(args[0]);
   if (pos < 0) {
     fprintf(STDERR, "Unknown command \"");
     fprintf(STDERR, args[0]);
@@ -150,27 +149,27 @@ int interpret(char **args, int argc) {
                                    .output = STDOUT,
                                    .priority = DEFAULT_PRIORITY,
                                    .start = commandList[pos].start};
-  int pid = createProcess(&commandProc);
+  int pid = sys_create_process(&commandProc);
   if (!bg_flag) {
-    waitForPID(pid);
+    sys_wait_for_pid(pid);
   }
   bg_flag = 0;
   return 0;
 }
 
-void insertCommand() {
+void insert_command() {
   char buffer[BUFFER_SIZE] = {'\0'};
   int bufferIndex = 0;
   char c = 0;
 
-  while ((c = getChar()) != '\n' && bufferIndex < BUFFER_SIZE) {
+  while ((c = sys_get_char()) != '\n' && bufferIndex < BUFFER_SIZE) {
     if (c != '\0') {
       if (c == '\b' && bufferIndex > 0) {
         buffer[--bufferIndex] = '\0';
-        putChar(c);
+        sys_put_char(c);
       } else if (c != '\b') {
         buffer[bufferIndex++] = c;
-        putChar(c);
+        sys_put_char(c);
       }
     }
   }
@@ -186,7 +185,7 @@ void shell() {
   help();
   while (1) {
     fprintf(STDOUT, "caOS>");
-    insertCommand();
+    insert_command();
   }
 }
 
@@ -194,8 +193,8 @@ int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc
   if (producerArgc < 1 || consumerArgc < 1) {
     return -1;
   }
-  int pos1 = findCommand(producerArgv[0]);
-  int pos2 = findCommand(consumerArgv[0]);
+  int pos1 = find_command(producerArgv[0]);
+  int pos2 = find_command(consumerArgv[0]);
   if (pos1 < 0 || pos2 < 0) {
     fprintf(STDERR, "Unknown commands\n");
     return -1;
@@ -215,7 +214,7 @@ int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc
     return -1;
   }
 
-  int pipeFD = open_pipe(0);
+  int pipeFD = sys_open_pipe(0);
   if (pipeFD < 0) {
     fprintf(STDERR, "Error opening pipe\n");
     return -1;
@@ -236,21 +235,21 @@ int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc
                                     .output = STDOUT,
                                     .priority = DEFAULT_PRIORITY,
                                     .start = commandList[pos2].start};
-  int pid1 = createProcess(&producerInfo);
+  int pid1 = sys_create_process(&producerInfo);
   if (pid1 < 0) {
     fprintf(STDERR, "Error creating producer process\n");
     return -1;
   }
-  int pid2 = createProcess(&consumerInfo);
+  int pid2 = sys_create_process(&consumerInfo);
   if (pid2 < 0) {
     fprintf(STDERR, "Error creating consumer process\n");
     return -1;
   }
   if (!bg_flag) {
-    waitForPID(pid2);
-    waitForPID(pid1);
+    sys_wait_for_pid(pid2);
+    sys_wait_for_pid(pid1);
   }
-  close_pipe(pipeFD);
+  sys_close_pipe(pipeFD);
   bg_flag = 0;
   return 0;
 }

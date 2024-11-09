@@ -48,7 +48,7 @@ void help() {
 }
 
 void time() {
-  uint64_t time = getTime();
+  uint64_t time = sys_get_time();
   char toReturn[TIME_LENGTH] = {'\0'};
 
   fprintf(STDOUT, "Current time is: ");
@@ -67,7 +67,7 @@ void time() {
 
 void regs() {
   uint64_t buffer[17];
-  char getRegsUnsuccessful = getRegisters(buffer);
+  char getRegsUnsuccessful = sys_get_registers(buffer);
   if (getRegsUnsuccessful) {
     fprintf(STDERR, "Press ctrl key to save registers\n");
     return;
@@ -87,7 +87,7 @@ void regs() {
   return;
 }
 
-char *getFDName(unsigned int fd) {
+char *get_fd_name(unsigned int fd) {
   switch (fd) {
   case STDIN:
     return "STDIN ";
@@ -104,7 +104,7 @@ char *getFDName(unsigned int fd) {
 
 int ps() {
   ProcessInfo array[MAX_PROCESSES];
-  int count = listProcessesInfo(array, MAX_PROCESSES);
+  int count = sys_list_processes_info(array, MAX_PROCESSES);
 
   // Print header with fixed column widths
   fprintf(STDOUT, "PID     Name           Status     Priority     Foreground     Parent     Input     Output\n");
@@ -155,11 +155,11 @@ int ps() {
     for (int j = strlen(parentStr); j < 11; j++)
       strcat(buffer, " ");  // Parent width: 11
 
-    strcat(buffer, getFDName(array[i].input));
-    for (int j = strlen(getFDName(array[i].input)); j < 10; j++)
+    strcat(buffer, get_fd_name(array[i].input));
+    for (int j = strlen(get_fd_name(array[i].input)); j < 10; j++)
       strcat(buffer, " ");  // Input width: 10
 
-    strcat(buffer, getFDName(array[i].output));
+    strcat(buffer, get_fd_name(array[i].output));
     strcat(buffer, "\n");
 
     fprintf(STDOUT, buffer);
@@ -169,7 +169,7 @@ int ps() {
 }
 
 void loop() {
-  pid_t pid = getpid();
+  pid_t pid = sys_get_pid();
   char buffer[10];
 
   while (1) {
@@ -177,14 +177,14 @@ void loop() {
     fprintf(STDOUT, "Hello from process ");
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, "!\n");
-    wait(2000);
+    sys_wait(2000);
   }
 }
 
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
   while (1) {
-    int res = readBuffer(STDIN, buffer, 10);
+    int res = sys_read(STDIN, buffer, 10);
     if (res < 0) {
       return;
     }
@@ -198,14 +198,15 @@ void cat() {
   }
   fprintf(STDOUT, "\n");
 }
-void scaleDownCommand() {
-  scaleDown();
-  clearScreen();
+
+void scale_down_command() {
+  sys_scale_down();
+  sys_clear_screen();
 }
 
-void scaleUpCommand() {
-  scaleUp();
-  clearScreen();
+void scale_up_command() {
+  sys_scale_up();
+  sys_clear_screen();
 }
 
 int wc() {
@@ -214,7 +215,7 @@ int wc() {
   int lineCount = 0;
   char lastWasNewline = 1;
 
-  while ((bytesRead = readBuffer(STDIN, buffer, 1)) > 0) {
+  while ((bytesRead = sys_read(STDIN, buffer, 1)) > 0) {
     if (buffer[0] == '\n') {
       lineCount++;
       lastWasNewline = 1;
@@ -236,7 +237,7 @@ int wc() {
   return 0;
 }
 
-int isVowel(char c) {
+int is_vowel(char c) {
   char vowels[] = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'};
   for (int i = 0; i < 10; i++) {
     if (c == vowels[i]) {
@@ -252,7 +253,7 @@ int filter() {
   int bytesRead;
 
   while (1) {
-    bytesRead = readBuffer(STDIN, buffer, BUFFER_SIZE);
+    bytesRead = sys_read(STDIN, buffer, BUFFER_SIZE);
     if (bytesRead <= 0) {
       break;
     }
@@ -262,7 +263,7 @@ int filter() {
       if (buffer[i] == EOF) {
         return 0;
       }
-      if (!isVowel(buffer[i])) {
+      if (!is_vowel(buffer[i])) {
         output[outIndex++] = buffer[i];
       }
     }

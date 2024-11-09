@@ -1,15 +1,15 @@
 GLOBAL loader
-GLOBAL resetMain
+GLOBAL reset_main
 extern main
-extern initializeKernelBinary
-extern getStackBase
+extern initialize_kernel_binary
+extern get_stack_base
 section .text
 
 loader:
-	call initializeKernelBinary	; Set up the kernel binary, and get thet stack address
+	call initialize_kernel_binary	; Set up the kernel binary, and get thet stack address
 	jmp continue
-resetMain: ; to reset after exceptions
-	call getStackBase
+reset_main: ; to reset after exceptions
+	call get_stack_base
 continue:
 	mov rsp, rax				; Set up the stack with the returned address
 	call main

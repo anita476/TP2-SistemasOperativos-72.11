@@ -86,7 +86,7 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  if ((mutex = sem_open(MUTEX, 1)) < 0) {
+  if ((mutex = sys_sem_open(MUTEX, 1)) < 0) {
     fprintf(STDERR, "ERROR: ERROR: Failed to create mutex\n");
     return -1;
   }
@@ -119,13 +119,13 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       while (--i >= 0) {
         remove_philosopher(0);
       }
-      sem_close(mutex);
+      sys_sem_close(mutex);
       return -1;
     }
   }
 
   char cmd = 0;
-  while (running && ((cmd = getChar()) != 'q')) {
+  while (running && ((cmd = sys_get_char()) != 'q')) {
     if (cmd == 'q') {
       running = 0;
       break;
@@ -141,15 +141,15 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       }
       break;
     case 's':
-      sem_wait(mutex);
+      sys_sem_wait(mutex);
       ps();
       fprintf(STDOUT, "\n");
-      sem_post(mutex);
+      sys_sem_post(mutex);
       break;
     case 'c':
-      sem_wait(mutex);
+      sys_sem_wait(mutex);
       display_table();
-      sem_post(mutex);
+      sys_sem_post(mutex);
       break;
     }
   }
@@ -160,7 +160,7 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   while (num_philosophers > 0) {
     remove_philosopher(0);
   }
-  sem_close(mutex);
+  sys_sem_close(mutex);
   fprintf(STDOUT, "Done\n");
 
   return 0;
@@ -216,11 +216,11 @@ static void try_to_eat(int phil_id) {
     philosophers[phil_id].state = EATING;
     display_table();
     // sem_post(philosophers[phil_id].sem);
-    if (sem_post(philosophers[phil_id].sem) < 0) {
+    if (sys_sem_post(philosophers[phil_id].sem) < 0) {
       char buffer[50];
       sprintf(buffer, "ERROR!!! Cannot post semaphore for philosopher %d\n", phil_id);
       fprintf(STDERR, buffer);
-      sprintf(buffer, "Current pid is: %d\n", getpid());
+      sprintf(buffer, "Current pid is: %d\n", sys_get_pid());
       fprintf(STDERR, buffer);
     }
   }
@@ -229,7 +229,7 @@ static void try_to_eat(int phil_id) {
 static int add_semaphore(int phil_id) {
   char sem_name[8];
   sprintf(sem_name, "phy_%d", phil_id);
-  if ((philosophers[phil_id].sem = sem_open(sem_name, 0)) < 0) {
+  if ((philosophers[phil_id].sem = sys_sem_open(sem_name, 0)) < 0) {
     fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
     return -1;
   }
@@ -245,12 +245,12 @@ static int philosopher_action(int argc, char *argv[]) {
 
   char sem_name[8];
   sprintf(sem_name, "phy_%d", phil_id);
-  if ((philosophers[phil_id].sem = sem_open(sem_name, 0)) < 0) {
+  if ((philosophers[phil_id].sem = sys_sem_open(sem_name, 0)) < 0) {
     fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
     return -1;
   }
 
-  if (sem_open(MUTEX, 1) != mutex) {
+  if (sys_sem_open(MUTEX, 1) != mutex) {
     fprintf(STDERR, "ERROR: Cannot open mutex semaphore\n");
     return -1;
   }
@@ -267,28 +267,28 @@ static int philosopher_action(int argc, char *argv[]) {
 
   while (running) {
 
-    wait(THINK_TIME);
+    sys_wait(THINK_TIME);
 
     // get hungry --> take forks
-    sem_wait(mutex);
+    sys_sem_wait(mutex);
     philosophers[phil_id].state = HUNGRY;
     display_table();
     try_to_eat(phil_id);
-    sem_post(mutex);
+    sys_sem_post(mutex);
 
     // get permission to eat
-    sem_wait(philosophers[phil_id].sem);
+    sys_sem_wait(philosophers[phil_id].sem);
     // permission granted, therefore can eat yum yum :p
 
-    wait(EAT_TIME);
+    sys_wait(EAT_TIME);
 
     // done eating, back to thinking
-    sem_wait(mutex);
+    sys_sem_wait(mutex);
     philosophers[phil_id].state = THINKING;
     display_table();
     try_to_eat(LEFT(phil_id));
     try_to_eat(RIGHT(phil_id));
-    sem_post(mutex);
+    sys_sem_post(mutex);
   }
   return 0;
 }
@@ -298,7 +298,7 @@ static int add_philosopher(int id) {
     fprintf(STDERR, "Maximum number of philosophers reached\n");
     return -1;
   }
-  sem_wait(mutex);
+  sys_sem_wait(mutex);
 
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;
@@ -309,7 +309,7 @@ static int add_philosopher(int id) {
 
   char sem_name[8];
   sprintf(sem_name, "phy_%d", id);
-  if ((philosophers[id].sem = sem_open(sem_name, 0)) < 0) {
+  if ((philosophers[id].sem = sys_sem_open(sem_name, 0)) < 0) {
     fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
     return -1;
   }
@@ -321,7 +321,7 @@ static int add_philosopher(int id) {
   char *args[] = {id_str, NULL};
   // Create philosopher process
 
-  int fg_flag = isForeground(getpid());
+  int fg_flag = sys_is_foreground(sys_get_pid());
 
   createProcessInfo info = {.name = name,
                             .fg_flag = fg_flag,
@@ -334,16 +334,16 @@ static int add_philosopher(int id) {
 
   print_welcome(id);
 
-  if ((philosophers[id].pid = createProcess(&info)) < 0) {
+  if ((philosophers[id].pid = sys_create_process(&info)) < 0) {
     // sem_close(philosophers[id].sem);
     fprintf(STDERR, "ERROR: Unable to create process\n");
-    sem_post(mutex);
+    sys_sem_post(mutex);
     return -1;
   }
   num_philosophers++;
-  wait(THINK_TIME);
+  sys_wait(THINK_TIME);
   display_table();
-  sem_post(mutex);
+  sys_sem_post(mutex);
   return 0;
 }
 
@@ -353,7 +353,7 @@ static int remove_philosopher(int running_check) {
     return -1;
   }
 
-  sem_wait(mutex);
+  sys_sem_wait(mutex);
   int id = num_philosophers - 1;
 
   // Add debug prints
@@ -367,7 +367,7 @@ static int remove_philosopher(int running_check) {
   // fprintf(STDOUT, buffer);
 
   if (philosophers[id].pid <= 0) {
-    sem_post(mutex);
+    sys_sem_post(mutex);
     fprintf(STDERR, "ERROR: Invalid philosopher PID\n");
     return -1;
   }
@@ -375,17 +375,17 @@ static int remove_philosopher(int running_check) {
   pid pid_to_kill = philosophers[id].pid;
 
   while (philosophers[LEFT(id)].state == EATING && philosophers[RIGHT(id)].state == EATING) {
-    sem_post(mutex);
-    sem_wait(philosophers[id].sem);
-    sem_wait(mutex);
+    sys_sem_post(mutex);
+    sys_sem_wait(philosophers[id].sem);
+    sys_sem_wait(mutex);
   }
 
-  if (kill(pid_to_kill) < 0) {
+  if (sys_kill(pid_to_kill) < 0) {
     fprintf(STDERR, "ERROR: Failed to kill philosopher\n");
     return -1;
   }
 
-  if (sem_close(philosophers[id].sem) < 0) {
+  if (sys_sem_close(philosophers[id].sem) < 0) {
     fprintf(STDERR, "ERROR: Failed to close semaphore\n");
     return -1;
   }  // im curious whether any process will be able to sem_close a sempahore that it didnt create
@@ -400,7 +400,7 @@ static int remove_philosopher(int running_check) {
 
   display_table();
 
-  sem_post(mutex);
+  sys_sem_post(mutex);
 
   return 0;
 }

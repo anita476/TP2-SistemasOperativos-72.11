@@ -29,7 +29,7 @@ typedef struct {
     @param start The start of the process
     @returns The process stack
 */
-extern void *createProcessStack(int argc, const char *const argv[], void *rsp, ProcessStart start);
+extern void *create_process_stack(int argc, const char *const argv[], void *rsp, ProcessStart start);
 
 /*
     @brief Initializes the scheduler
@@ -41,7 +41,7 @@ void init_scheduler();
     @param pid The PID of the process
     @returns 1 if the process was killed, 0 otherwise
 */
-int processWasKilled(pid pid);  // Scheduler actions when process is terminated
+int process_was_killed(pid pid);  // Scheduler actions when process is terminated
 
 /*
     @brief Checks if a process was created
@@ -52,7 +52,7 @@ int processWasKilled(pid pid);  // Scheduler actions when process is terminated
     @param entryPoint The entry point of the process
     @param currentRSP The current RSP
 */
-int processWasCreated(pid pid, int argc, const char *const argv[], priority priority, ProcessStart entryPoint,
+int process_was_created(pid pid, int argc, const char *const argv[], priority priority, ProcessStart entryPoint,
                       void *currentRSP);  // Scheduler actions when process is created
 
 /*
@@ -84,33 +84,33 @@ int nice(pid pid, priority newPrio);
 /*
     @brief Waits for children
 */
-void waitForChildren();
+void wait_for_children();
 
 /*
     @brief Waits for a specific process
     @param pid The PID of the process
 */
-void waitForPID(pid pid);
+void wait_for_pid(pid pid);
 
 /*
     @brief Kills the current process
     @returns 0 if successful, -1 if error
 */
-int killCurrent();
+int kill_current();
 
 /*
     @brief Sets the priority of a process
     @param pid The PID of the process
     @param newPrio The new priority of the process
 */
-int setPriority(pid pid, priority newPrio);
+int set_priority(pid pid, priority newPrio);
 
 /*
     @brief Switches the process
     @param cRSP The current RSP
     @returns The new RSP
 */
-void *switchP(void *cRSP);
+void *switch_process(void *cRSP);
 
 /*
     @brief Gets the process info
@@ -118,18 +118,18 @@ void *switchP(void *cRSP);
     @param processInfo The process info to be filled
     @returns 0 if successful, -1 if error
 */
-int getProcessInfo(pid pid, ProcessInfo *processInfo);
+int get_process_info(pid pid, ProcessInfo *processInfo);
 
 /*
     @brief Gets the current process
     @returns The current process
 */
-PCB *getCurrentProcess();
+PCB *get_current_process();
 
 /*
     @brief Gets the current process' PID
     @returns The current process' PID
 */
-pid getpid();
+pid get_pid();
 
 #endif

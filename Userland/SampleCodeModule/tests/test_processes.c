@@ -32,7 +32,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   while (1) {
     fprintf(STDOUT, "\n Starting loop\n");
 
-    int fg_flag = isForeground(getpid());
+    int fg_flag = sys_is_foreground(sys_get_pid());
 
     createProcessInfo loopInfo = {.name = "endless_loop",
                                   .fg_flag = fg_flag,
@@ -45,7 +45,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
 
     // Create max_processes processes
     for (rq = 0; rq < MAX_PROC; rq++) {
-      p_rqs[rq].pid = createProcess(&loopInfo);
+      p_rqs[rq].pid = sys_create_process(&loopInfo);
       if (p_rqs[rq].pid == -1) {
         fprintf(STDERR, "test_processes: ERROR creating process\n");
         return -1;
@@ -59,12 +59,12 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
     while (alive > 0) {
 
       for (rq = 0; rq < MAX_PROC; rq++) {
-        action = GetUniform(100) % 2;
+        action = get_uniform(100) % 2;
 
         switch (action) {
         case 0:
           if (p_rqs[rq].state == RUNNING || p_rqs[rq].state == BLOCKED) {
-            if (kill(p_rqs[rq].pid) != 0) {
+            if (sys_kill(p_rqs[rq].pid) != 0) {
               fprintf(STDERR, "test_processes: ERROR killing process\n");
               return -1;
             }
@@ -75,7 +75,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
 
         case 1:
           if (p_rqs[rq].state == RUNNING) {
-            if (block(p_rqs[rq].pid) != 0) {
+            if (sys_block(p_rqs[rq].pid) != 0) {
               fprintf(STDERR, "test_processes: ERROR blocking process\n");
 
               return -1;
@@ -87,8 +87,8 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
       }
       // Randomly unblocks processes
       for (rq = 0; rq < MAX_PROC; rq++) {
-        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2) {
-          if (unblock(p_rqs[rq].pid) != 0) {
+        if (p_rqs[rq].state == BLOCKED && get_uniform(100) % 2) {
+          if (sys_unblock(p_rqs[rq].pid) != 0) {
             fprintf(STDERR, "test_processes: ERROR unblocking process\n");
             return -1;
           }

@@ -33,7 +33,7 @@ void play_sound(uint32_t nFrequence);
 /*
     @brief Stops the sound
 */
-void nosound();
+void no_sound();
 
 /*
     @brief Plays a beep
@@ -46,16 +46,16 @@ void beep();
     @param duration The duration of the note
     @param waitAfter The time to wait after the note
 */
-void playNoteSound(int freq, int duration, int waitAfter);
+void play_note_sound(int freq, int duration, int waitAfter);
 
 /*
     @brief Plays a lovely melody
 */
-void playMelody();
+void play_melody();
 
 /*
     @brief Plays the Better Call Saul theme
 */
-void playBetterCallSaul();
+void play_better_call_saul();
 
 #endif /* SOUND_H */

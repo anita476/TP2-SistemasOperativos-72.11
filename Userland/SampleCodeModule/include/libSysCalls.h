@@ -7,18 +7,18 @@
     @param buffer The buffer
     @param length The length
 */
-uint64_t readBuffer(int fileDes, char *buffer, uint64_t length);
+uint64_t sys_read(int fileDes, char *buffer, uint64_t length);
 
 /*
     @brief Gets a character from the buffer
 */
-char getChar();
+char sys_get_char();
 
 /*
     @brief Puts a character to the buffer
     @param c The character
 */
-void putChar(char c);
+void sys_put_char(char c);
 
 /*
     @brief Prints a buffer
@@ -30,18 +30,18 @@ uint64_t fprintf(fd fileDes, char *buffer);
     @brief Gets the time
     @returns The time
 */
-uint64_t getTime();
+uint64_t sys_get_time();
 
 /*
     @brief Clears the screen
 */
-void clearScreen();
+void sys_clear_screen();
 
 /*
     @brief Clears a line
     @param line The line
 */
-void clearLine(uint64_t line);
+void sys_clear_line(uint64_t line);
 
 /*
     @brief Draws a rectangle
@@ -51,17 +51,17 @@ void clearLine(uint64_t line);
     @param width The width
     @param height The height
 */
-void drawRectangle(uint64_t color, uint64_t posX, uint64_t posY, uint64_t width, uint64_t height);
+void sys_draw_rectangle(uint64_t color, uint64_t posX, uint64_t posY, uint64_t width, uint64_t height);
 
 /*
     @brief Scales the font up
 */
-void scaleUp();
+void sys_scale_up();
 
 /*
     @brief Scales the fontdown
 */
-void scaleDown();
+void sys_scale_down();
 
 /*
     @brief Makes a sound
@@ -69,19 +69,19 @@ void scaleDown();
     @param duration The duration
     @param wait The wait
 */
-void make_sound(int note, int duration, int wait);
+void sys_make_sound(int note, int duration, int wait);
 
 /*
     @brief Gets the max height
     @returns The max height
 */
-uint64_t getMaxHeight();
+uint64_t sys_get_max_height();
 
 /*
     @brief Gets the max width
     @returns The max width
 */
-uint64_t getMaxWidth();
+uint64_t sys_get_max_width();
 
 /*
     @brief Gets the pixel color
@@ -89,79 +89,79 @@ uint64_t getMaxWidth();
     @param y The y coordinate
     @returns The pixel color
 */
-uint64_t getPixelColor(uint64_t x, uint64_t y);
+uint64_t sys_get_pixel_color(uint64_t x, uint64_t y);
 
 /*
     @brief Sets the cursor to a line
     @param line The line
 */
-void setCursorToLine(uint64_t line);
+void sys_set_cursor_to_line(uint64_t line);
 
 /*
     @brief Gets the registers
     @param buffer The buffer
     @returns The registers
 */
-char getRegisters(uint64_t *buffer);
+char sys_get_registers(uint64_t *buffer);
 
 /*
     @brief Sets the cursor
     @param posx The x coordinate
     @param line The line
 */
-void setCursor(uint64_t posx, uint64_t line);
+void sys_set_cursor(uint16_t posx, uint16_t line);
 
 /*
     @brief Allocates memory
     @param bytes The bytes to allocate
     @returns The pointer to the allocated memory
 */
-void *malloc(size_t bytes);
+void *sys_malloc(size_t bytes);
 
 /*
     @brief Frees memory
     @param ptr The pointer
 */
-void free(void *ptr);
+void sys_free(void *ptr);
 
 /*
     @brief Creates a process
     @param info The process info
     @returns The pid of the created process
 */
-pid createProcess(createProcessInfo *info);
+pid sys_create_process(createProcessInfo *info);
 
 /*
     @brief Gets the pid
     @returns The pid
 */
-pid getpid();
+pid sys_get_pid();
 
 /*
     @brief Kills a process
     @param pid The pid of the process
     @returns 0 if successful, -1 otherwise
 */
-int kill(pid pid);
+int sys_kill(pid pid);
 
 /*
     @brief Blocks a process
     @param pid The pid of the process
     @returns 0 if successful, -1 otherwise
 */
-int block(pid pid);
+int sys_block(pid pid);
 
 /*
     @brief Unblocks a process
     @param pid The pid of the process
     @returns 0 if successful, -1 otherwise
 */
-int unblock(pid pid);
+int sys_unblock(pid pid);
 
 /*
     @brief Makes the current process yield
 */
-void yield();
+void sys_yield();
 
 /*
     @brief Sets the priority of a process
@@ -169,7 +169,7 @@ void yield();
     @param priority The priority
     @returns 0 if successful, -1 otherwise
 */
-int setPriority(pid pid, priority priority);
+int sys_set_priority(pid pid, priority priority);
 
 /*
     @brief Lists the processes info
@@ -177,7 +177,7 @@ int setPriority(pid pid, priority priority);
     @param max_proc The max processes
     @returns The number of processes listed
 */
-int listProcessesInfo(ProcessInfo *processes, int max_proc);
+int sys_list_processes_info(ProcessInfo *processes, int max_proc);
 
 /*
     @brief Gets the process info
@@ -185,25 +185,25 @@ int listProcessesInfo(ProcessInfo *processes, int max_proc);
     @param processInfo The process info to fill
     @returns 0 if successful, -1 otherwise
 */
-int getProcessInfo(pid pid, ProcessInfo *processInfo);
+int sys_get_process_info(pid pid, ProcessInfo *processInfo);
 
 /*
     @brief Checks if a process is foreground
     @param pid The pid of the process
     @returns 1 if in foreground, 0 if not and -1 if error
 */
-int isForeground(pid pid);
+int sys_is_foreground(pid pid);
 
 /*
     @brief Exits the process
 */
-void exit_process();
+void sys_exit_process();
 
 /*
     @brief Waits for a certain amount of time
     @param ms The time to wait
 */
-void wait(uint64_t ms);
+void sys_wait(uint64_t ms);
 
 /*
     @brief Changes the priority of a process
@@ -211,12 +211,12 @@ void wait(uint64_t ms);
     @param newPrio The new priority
     @returns 0 if successful, -1 otherwise
 */
-int nice(pid pid, priority newPrio);
+int sys_nice(pid pid, priority newPrio);
 
 /*
     @brief Waits for the children
 */
-void waitForChildren();
+void sys_wait_for_children();
 
 /*
     @brief Opens a semaphore
@@ -224,47 +224,47 @@ void waitForChildren();
     @param initValue The initial value
     @returns The semaphore
 */
-sem sem_open(sem_name semName, int initValue);
+sem sys_sem_open(sem_name semName, int initValue);
 
 /*
     @brief Closes a semaphore
     @param sem The semaphore
     @returns 0 if successful, -1 otherwise
 */
-int sem_close(sem sem);
+int sys_sem_close(sem sem);
 
 /*
     @brief Posts a semaphore
     @param sem The semaphore
     @returns 0 if successful, -1 otherwise
 */
-int sem_post(sem sem);
+int sys_sem_post(sem sem);
 
 /*
     @brief Waits for a semaphore
     @param sem The semaphore
     @returns 0 if successful, -1 otherwise
 */
-int sem_wait(sem sem);
+int sys_sem_wait(sem sem);
 
 /*
     @brief Prints memory manager info
 */
-void memory_manager_state();
+void sys_memory_manager_state();
 
 /*
     @brief Opens a pipe
     @param pipe_id The id of the pipe
     @returns pipe_id if successful, -1 otherwise
 */
-int open_pipe(unsigned int pipe_id);
+int sys_open_pipe(unsigned int pipe_id);
 
 /*
     @brief Closes a pipe
     @param pipe_id The id of the pipe
     @returns 0 if successful, -1 otherwise
 */
-int close_pipe(unsigned int pipe_id);
+int sys_close_pipe(unsigned int pipe_id);
 
 /*
     @brief Reads from a pipe
@@ -273,7 +273,7 @@ int close_pipe(unsigned int pipe_id);
     @param bytes The number of bytes to read
     @returns bytes read if successful, -1 otherwise
 */
-int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes);
+int sys_read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes);
 
 /*
     @brief Writes to a pipe
@@ -282,7 +282,7 @@ int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes);
     @param bytes The number of bytes to write
     @returns bytes written if successful, -1 otherwise
 */
-int write_to_pipe(unsigned int pipe_id, char *src, unsigned int bytes);
+int sys_write_to_pipe(unsigned int pipe_id, char *src, unsigned int bytes);
 
 /*
     @brief Gets the pipe info
@@ -290,10 +290,10 @@ int write_to_pipe(unsigned int pipe_id, char *src, unsigned int bytes);
     @param info The info to fill
     @returns 0 if successful, -1 otherwise
 */
-int get_pipe_info(unsigned int pipe_id, pipeInfo *info);
+int sys_get_pipe_info(unsigned int pipe_id, pipeInfo *info);
 
 /*
     @brief Waits for a process
     @param pid The pid of the process
 */
-void waitForPID(pid pid);
+void sys_wait_for_pid(pid pid);

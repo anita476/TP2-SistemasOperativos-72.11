@@ -220,8 +220,8 @@ void loop() {
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
   while (1) {
-    readBuffer(STDIN, buffer, 1);
-    fprintf(STDOUT, buffer);
+    readBuffer(STDIN, buffer, 10);
+    fprintf(STDERR, buffer);
     if (buffer[0] == (-1)) {  // this is wrong -> maybe fix -> should send EOF !!
       return;
     }

@@ -7,7 +7,7 @@
     @param buffer The buffer
     @param length The length
 */
-uint64_t sys_read_buffer(int fileDes, char *buffer, uint64_t length);
+uint64_t sys_read(int fileDes, char *buffer, uint64_t length);
 
 /*
     @brief Gets a character from the buffer
@@ -24,7 +24,7 @@ void sys_put_char(char c);
     @brief Prints a buffer
     @param buffer The buffer
 */
-uint64_t sys_fprintf(fd fileDes, char *buffer);
+uint64_t fprintf(fd fileDes, char *buffer);
 
 /*
     @brief Gets the time

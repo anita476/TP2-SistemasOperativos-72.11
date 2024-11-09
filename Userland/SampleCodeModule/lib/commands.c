@@ -48,7 +48,7 @@ void help() {
 }
 
 void time() {
-  uint64_t time = get_time();
+  uint64_t time = sys_get_time();
   char toReturn[TIME_LENGTH] = {'\0'};
 
   fprintf(STDOUT, "Current time is: ");
@@ -67,7 +67,7 @@ void time() {
 
 void regs() {
   uint64_t buffer[17];
-  char getRegsUnsuccessful = get_registers(buffer);
+  char getRegsUnsuccessful = sys_get_registers(buffer);
   if (getRegsUnsuccessful) {
     fprintf(STDERR, "Press ctrl key to save registers\n");
     return;
@@ -104,7 +104,7 @@ char *get_fd_name(unsigned int fd) {
 
 int ps() {
   ProcessInfo array[MAX_PROCESSES];
-  int count = list_processes_info(array, MAX_PROCESSES);
+  int count = sys_list_processes_info(array, MAX_PROCESSES);
 
   // Print header with fixed column widths
   fprintf(STDOUT, "PID     Name           Status     Priority     Foreground     Parent     Input     Output\n");
@@ -169,7 +169,7 @@ int ps() {
 }
 
 void loop() {
-  pid_t pid = get_pid();
+  pid_t pid = sys_get_pid();
   char buffer[10];
 
   while (1) {
@@ -177,14 +177,14 @@ void loop() {
     fprintf(STDOUT, "Hello from process ");
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, "!\n");
-    wait(2000);
+    sys_wait(2000);
   }
 }
 
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
   while (1) {
-    int res = read_buffer(STDIN, buffer, 10);
+    int res = sys_read(STDIN, buffer, 10);
     if (res < 0) {
       return;
     }
@@ -200,13 +200,13 @@ void cat() {
 }
 
 void scale_down_command() {
-  scale_down();
-  clear_screen();
+  sys_scale_down();
+  sys_clear_screen();
 }
 
 void scale_up_command() {
-  scale_up();
-  clear_screen();
+  sys_scale_up();
+  sys_clear_screen();
 }
 
 int wc() {
@@ -215,7 +215,7 @@ int wc() {
   int lineCount = 0;
   char lastWasNewline = 1;
 
-  while ((bytesRead = read_buffer(STDIN, buffer, 1)) > 0) {
+  while ((bytesRead = sys_read(STDIN, buffer, 1)) > 0) {
     if (buffer[0] == '\n') {
       lineCount++;
       lastWasNewline = 1;
@@ -253,7 +253,7 @@ int filter() {
   int bytesRead;
 
   while (1) {
-    bytesRead = read_buffer(STDIN, buffer, BUFFER_SIZE);
+    bytesRead = sys_read(STDIN, buffer, BUFFER_SIZE);
     if (bytesRead <= 0) {
       break;
     }

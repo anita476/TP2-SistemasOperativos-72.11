@@ -21,7 +21,7 @@ void test_prio() {
   char *argv[] = {0};
   uint64_t i;
 
-  int fg_flag = is_foreground(get_pid());
+  int fg_flag = sys_is_foreground(sys_get_pid());
 
   createProcessInfo endlessInfo = {.name = "endless",
                                    .fg_flag = fg_flag,
@@ -34,36 +34,36 @@ void test_prio() {
   fprintf(STDOUT, "\n");
   fprintf(STDOUT, "CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    pids[i] = create_process(&endlessInfo);
+    pids[i] = sys_create_process(&endlessInfo);
   }
 
   bussy_wait(WAIT);
   fprintf(STDOUT, "\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    set_priority(pids[i], prio[i]);
+    sys_set_priority(pids[i], prio[i]);
   }
 
   bussy_wait(WAIT);
   fprintf(STDOUT, "\nBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    block(pids[i]);
+    sys_block(pids[i]);
 
   fprintf(STDOUT, "CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    set_priority(pids[i], MEDIUM);
+    sys_set_priority(pids[i], MEDIUM);
   }
 
   fprintf(STDOUT, "UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    unblock(pids[i]);
+    sys_unblock(pids[i]);
 
   bussy_wait(WAIT);
   fprintf(STDOUT, "\nKILLING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
-    kill(pids[i]);
+    sys_kill(pids[i]);
 }

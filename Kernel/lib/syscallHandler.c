@@ -99,19 +99,11 @@ void clear_line(uint64_t line) {
   }
 }
 
-void clear_screen() { sys_clear_screen(); }
-
-uint64_t sys_put_pixel(uint64_t color, uint64_t x, uint64_t y) {
-  return put_pixel((uint64_t) color, (uint64_t) x, (uint64_t) y);
-}
 
 uint64_t draw_rect(uint64_t hexColor, uint64_t x, uint64_t y, uint64_t width, uint64_t height) {
   return draw_rectangle((uint64_t) hexColor, (uint64_t) x, (uint64_t) y, (int) width, (int) height);
 }
 
-int scale_up() { return sys_scale_up(); }
-
-int scale_down() { return sys_scale_down(); }
 
 uint64_t make_sound(uint64_t freq, uint64_t duration, uint64_t wait) {
   play_note_sound((uint64_t) freq, (uint64_t) duration, (uint64_t) wait);
@@ -155,8 +147,10 @@ uint64_t get_char(uint64_t fileDescriptor) {
   uint64_t c = get_last_char();
   return c;
 }
+uint64_t put_pixel_handler(uint64_t color, uint64_t x, uint64_t y){
+  return (uint64_t)put_pixel( color,  x,  y);
+}
 
-void set_cursor(uint16_t posx, uint16_t line) { set_cursor(posx, line_to_height(line)); }
 
 uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
   switch (rax) {
@@ -179,7 +173,7 @@ uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx,
     clear_screen();
     break;
   case 8:
-    return put_pixel(rdi, rdi, rdx);
+    return put_pixel_handler(rdi, rdi, rdx);
   case 9:
     return draw_rect(rdi, rsi, rdx, r10, r8);
   case 10:

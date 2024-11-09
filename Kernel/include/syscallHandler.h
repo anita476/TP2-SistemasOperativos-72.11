@@ -68,7 +68,7 @@ void clear_line(uint64_t line);
 /*
     @brief Clears the screen
 */
-void sys_clear_screen();
+void clear_screen();
 
 /*
     @brief Puts a pixel
@@ -77,7 +77,7 @@ void sys_clear_screen();
     @param y The y coordinate
     @returns 0 if successful, -1 if error
 */
-uint64_t sys_put_pixel(uint64_t color, uint64_t x, uint64_t y);
+uint64_t put_pixel_handler(uint64_t color, uint64_t x, uint64_t y);
 
 /*
     @brief Draws a rectangle
@@ -94,13 +94,13 @@ uint64_t draw_rect(uint64_t hexColor, uint64_t x, uint64_t y, uint64_t width, ui
     @brief Scales the font up
     @returns 0 if successful, 1 if error
 */
-int sys_scale_up();
+int scale_up();
 
 /*
     @brief Scales the font down
     @returns 0 if successful, 1 if error
 */
-int sys_scale_down();
+int scale_down();
 
 /*
     @brief Makes a sound

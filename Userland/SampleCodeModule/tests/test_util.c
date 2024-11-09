@@ -71,7 +71,7 @@ void endless_loop() {
 }
 
 void endless_loop_print(uint64_t wait) {
-  int64_t pid = get_pid();
+  int64_t pid = sys_get_pid();
 
   while (1) {
     char buffer[5];

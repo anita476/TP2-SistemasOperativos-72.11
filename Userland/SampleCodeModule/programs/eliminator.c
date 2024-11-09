@@ -98,11 +98,11 @@ void move() {
 int did_lose(int players) {
   int toReturn = 0;
   if (!(p1Coord[0] >= 0 && p1Coord[0] < width && p1Coord[1] >= 16 && p1Coord[1] < height &&
-        get_pixel_color(p1Coord[0], p1Coord[1]) == 0x000000))
+        sys_get_pixel_color(p1Coord[0], p1Coord[1]) == 0x000000))
     toReturn = 1;
 
   if (!(p2Coord[0] >= 0 && p2Coord[0] < width && p2Coord[1] >= 16 && p2Coord[1] < height &&
-        get_pixel_color(p2Coord[0], p2Coord[1]) == 0x000000) &&
+        sys_get_pixel_color(p2Coord[0], p2Coord[1]) == 0x000000) &&
       players == 2)
     toReturn = (toReturn == 1) ? 3 : 2;
 
@@ -111,8 +111,8 @@ int did_lose(int players) {
 
 void lose(int whoLost, int pts) {
   play_wah_wah_wah();
-  clear_screen();
-  set_cursor(0, 15);
+  sys_clear_screen();
+  sys_set_cursor(0, 15);
   switch (whoLost) {
   case 1:
     fprintf(
@@ -143,16 +143,16 @@ void lose(int whoLost, int pts) {
   char c = 0;
   char currentDecision = 1;
   while (c != '\n') {
-    c = get_char();
+    c = sys_get_char();
     switch (c) {
     case 'a':
-      draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
-      draw_rectangle(0x000000, 568, 320, 8, 1);
+      sys_draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
+      sys_draw_rectangle(0x000000, 568, 320, 8, 1);
       currentDecision = 1;
       break;
     case 'd':
-      draw_rectangle(0x000000, 439, 320, 8, 1);
-      draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
+      sys_draw_rectangle(0x000000, 439, 320, 8, 1);
+      sys_draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
       currentDecision = 2;
       break;
     default:
@@ -162,11 +162,11 @@ void lose(int whoLost, int pts) {
   if (currentDecision == 1)
     eliminator();
   else
-    clear_screen();
+    sys_clear_screen();
 }
 
 void print_pts(int pts) {
-  set_cursor(4, 0);
+  sys_set_cursor(4, 0);
   fprintf(STDOUT, "PTS: ");
   char s[50] = {0};
   fprintf(STDOUT, itoa(pts, s, 10));
@@ -177,12 +177,12 @@ void play1() {
                     // to make a syscall
   int lost = 0;
   int pts = 0;
-  clear_screen();
+  sys_clear_screen();
 
-  width = get_max_width();
-  height = get_max_height();
+  width = sys_get_max_width();
+  height = sys_get_max_height();
 
-  draw_rectangle(0x328fa8, 0, 16, width, 1);
+  sys_draw_rectangle(0x328fa8, 0, 16, width, 1);
 
   p1Coord[0] = width / 2;
   p1Coord[1] = 16;
@@ -192,13 +192,13 @@ void play1() {
 
   char c;
   while (lost == 0) {
-    c = get_char();
+    c = sys_get_char();
     change_dir(c);
 
     if (counter == 0) {
       move();
       lost = did_lose(1);
-      draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
+      sys_draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
     }
     counter++;
     if (counter >= SPEED) {
@@ -216,12 +216,12 @@ void play2() {
                     // to make a syscall
   int lost = 0;     // 1 if Player 1 Lost, 2 if Player 2 Lost, 3 if tie
   int pts = 0;
-  clear_screen();
+  sys_clear_screen();
 
-  width = get_max_width();
-  height = get_max_height();
+  width = sys_get_max_width();
+  height = sys_get_max_height();
 
-  draw_rectangle(0x328fa8, 0, 16, width, 1);
+  sys_draw_rectangle(0x328fa8, 0, 16, width, 1);
 
   p1Dir = DOWN;
   p2Dir = UP;
@@ -233,14 +233,14 @@ void play2() {
 
   char c;
   while (lost == 0) {
-    c = get_char();
+    c = sys_get_char();
     change_dir(c);
 
     if (counter == 0) {
       move();
       lost = did_lose(2);
-      draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
-      draw_rectangle(p2Color, p2Coord[0], p2Coord[1], 1, 1);
+      sys_draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
+      sys_draw_rectangle(p2Color, p2Coord[0], p2Coord[1], 1, 1);
     }
     counter++;
     if (counter >= SPEED) {
@@ -255,9 +255,9 @@ void play2() {
 
 void eliminator() {
   for (int i = 0; i < 4; i++)
-    scale_down();
-  clear_screen();
-  set_cursor(0, 15);
+    sys_scale_down();
+  sys_clear_screen();
+  sys_set_cursor(0, 15);
   fprintf(
       STDOUT,
       "\n                                      Please select the amount of players and press ENTER\n                 "
@@ -267,16 +267,16 @@ void eliminator() {
   char c = 0;
   char currentDecision = 1;
   while (c != '\n') {
-    c = get_char();
+    c = sys_get_char();
     switch (c) {
     case 'a':
-      draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
-      draw_rectangle(0x000000, 568, 320, 8, 1);
+      sys_draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
+      sys_draw_rectangle(0x000000, 568, 320, 8, 1);
       currentDecision = 1;
       break;
     case 'd':
-      draw_rectangle(0x000000, 439, 320, 8, 1);
-      draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
+      sys_draw_rectangle(0x000000, 439, 320, 8, 1);
+      sys_draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
       currentDecision = 2;
       break;
     default:

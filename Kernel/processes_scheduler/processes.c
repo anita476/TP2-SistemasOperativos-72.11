@@ -114,8 +114,6 @@ pid createProcess(createProcessInfo *info) {
   process->argv = argvCopy;
   process->argc = info->argc;
 
-  process->input = info->input;
-  process->output = info->output;
 
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
     addChild(parent, pid);
@@ -123,6 +121,22 @@ pid createProcess(createProcessInfo *info) {
   } else {
     process->parent = (NO_PROC);
   }
+  int parentInput = get_process_input(process->parent);
+  if(parentInput!= STDIN && info->input == STDIN){
+    process->input = parentInput;
+  }
+  else{
+    process->input = info->input;
+  }
+  int parentOutput = get_process_output(process->parent);
+  if(parentOutput != STDOUT && info->output == STDOUT){
+    process->output = parentOutput;
+  }
+  else{
+    process->output = info->output;
+  }
+  
+  
 
   // Call scheduler so that it adds the process to its queue and blocks parent process
   processWasCreated(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
@@ -131,7 +145,9 @@ pid createProcess(createProcessInfo *info) {
     print(STDERR, "NAME POINTER IS NULL\n");
   }
   lastPID++;
-
+  print(STDERR, "Created process with name: ");
+  print(STDERR, process->name);
+  print(STDERR, "\n");
   return pid;
 }
 
@@ -193,7 +209,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   if (process->output != STDOUT) {
     print(STDERR, "Sent EOF to process");
     signal_eof(process->output);
-  }
+  } 
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));
@@ -294,6 +310,9 @@ static int findPID(pid pid, ProcessS **pr) {
 }
 
 int get_process_input(pid pid) {
+  if(pid == NO_PROC || pid == PID_KERNEL || pid == 0){
+    return STDIN;
+  }
   ProcessS *p;
   if (!findPID(pid, &p)) {
     return -1;
@@ -302,6 +321,9 @@ int get_process_input(pid pid) {
 }
 
 int get_process_output(pid pid) {
+  if(pid == NO_PROC || pid == PID_KERNEL || pid == 0){
+    return STDOUT;
+  }
   ProcessS *p;
   if (!findPID(pid, &p)) {
     return -1;

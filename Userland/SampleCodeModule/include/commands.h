@@ -1,5 +1,7 @@
 #include "libSysCalls.h"
 
+#define BUFFER_SIZE 1024
+
 /*
     @brief Prints all the commands available
 */
@@ -33,6 +35,27 @@ int ps();
 */
 void loop();
 
+/*
+    @brief Prints the contents of a file or echoes the input
+*/
+void cat();
+
+/*
+    @brief Scales down the screen
+*/
 void scaleDownCommand();
 
+/*
+    @brief Scales up the screen
+*/
 void scaleUpCommand();
+
+/*
+    @brief Filters the input
+*/
+int filter();
+
+/*
+    @brief Counts the number of lines
+*/
+int wc();

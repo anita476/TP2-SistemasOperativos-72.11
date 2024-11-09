@@ -59,9 +59,9 @@ int sem_open(sem_name semName, int initValue) {
   if (semId == -1) {  // need to create sem
     acquire(&lock);   // Get global lock for creation
 
-    /*         print(STDERR, "Creating semaphore ");
+             print(STDERR, "Creating semaphore ");
             print(STDERR, semName);
-            print(STDERR, "\n"); */
+            print(STDERR, "\n"); 
 
     if (active >= MAX_PROCESSES) {
       print(STDERR, "Error: Maximum semaphores reached\n");

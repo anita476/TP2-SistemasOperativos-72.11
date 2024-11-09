@@ -1,4 +1,14 @@
 #include <stdint.h>
+#include <lib.h>
+#include <processes.h>
+#include <scheduler.h>
+#include <videoDriver.h>
+
+/*
+    @brief Checks if a key is available
+    @return 1 if a key is available, 0 otherwise
+*/
+char isKeyAvailable();
 
 /*
     @brief Handles the keyboard
@@ -13,7 +23,15 @@ void removeCharFromBuffer();
 /*
     @brief Gets a character from the buffer
 */
-char getFromBuffer();
+char getKeyFromBuffer();
+
+/*
+    @brief Gets the buffer
+    @param dest: The destination buffer
+    @param size: The size of the buffer
+    @return The number of characters read
+*/
+unsigned int getBuffer(char *dest, unsigned int size);
 
 /*
     @brief Cleans the buffer
@@ -34,3 +52,8 @@ char getLastChar();
     @brief Cleans the read
 */
 void cleanRead();
+
+
+void addToBlockingQueueRead(pid pid);
+
+void removeFromBlockingQueue();

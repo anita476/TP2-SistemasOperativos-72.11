@@ -84,6 +84,7 @@ int signal_eof(unsigned int pipe_id){
 int open_pipe(unsigned int pipe_id){
 	int pos;
 	if(pipe_id == 0){ // no pipe_id
+		print(STDERR, "Open and create a new pipe\n");
 		//find pos
 		int id = find_available_pipe();
 		pos = find_pipe(id);
@@ -155,7 +156,7 @@ int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){
 
 	// Nothing to read and pipe has finished -> send EOF
 	if(pipeList[pos].eof && pipeList[pos].amount == 0){
-		print(STDERR, "NOTHING MORE TO READ\n");
+		//print(STDERR, "NOTHING MORE TO READ\n");
 		return EOF;
 	}
 	int i;
@@ -203,6 +204,7 @@ int close_pipe(unsigned int pipe_id){
 
 	/* only if no processes have the pipe open free all resources, otherwise only free the semaphores*/
 	if(pipeList[pos].interested_processes == 0){
+		print(STDERR, "No one is using this pipe: closing for real\n");
 		free(pipeList[pos].pipe);
 		free(pipeList[pos].read_sem_name);
 		free(pipeList[pos].write_sem_name);

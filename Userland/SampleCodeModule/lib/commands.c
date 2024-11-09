@@ -3,6 +3,7 @@
 
 #include <_loader.h>
 #include <commands.h>
+#include <defs.h>
 #include <eliminator.h>
 
 #define TIME_LENGTH 9
@@ -26,14 +27,16 @@ void help() {
   fprintf(STDOUT, "\n * block: Block a process by its PID");
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
-  fprintf(STDOUT, "\n * mmstate: Display the current state of the memory manager");
+  fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
+  fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
+  fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
+  fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");
-  fprintf(STDOUT,
-          "\n * testproc: Run a process management test in an endless loop. Receives max processes as parameter");
+  fprintf(STDOUT, "\n * testproc: Run a process management test in an endless loop");
   fprintf(STDOUT, "\n * testsync: Run synchronization test using semaphores");
-  fprintf(STDOUT, "\n * testpipe: Run a pipe usage test. No parameters needed");
+  fprintf(STDOUT, "\n * testpipe: Run a pipe usage test");
   fprintf(STDOUT, "\n");
 }
 
@@ -214,6 +217,16 @@ void loop() {
   }
 }
 
+void cat() {
+  char buffer[BUFFER_SIZE] = {0};
+  while (1) {
+    readBuffer(STDIN, buffer, 10);
+    fprintf(STDERR, buffer);
+    if (buffer[0] == (-1)) {  // this is wrong -> maybe fix -> should send EOF !!
+      return;
+    }
+  }
+}
 void scaleDownCommand() {
   scaleDown();
   clearScreen();
@@ -222,4 +235,72 @@ void scaleDownCommand() {
 void scaleUpCommand() {
   scaleUp();
   clearScreen();
+}
+
+int wc() {
+  char buffer[BUFFER_SIZE];
+  int bytesRead;
+  int lineCount = 0;
+  char lastWasNewline = 1;
+
+  while ((bytesRead = readBuffer(STDIN, buffer, 1)) > 0) {
+    if (buffer[0] == '\n') {
+      lineCount++;
+      lastWasNewline = 1;
+    } else if (buffer[0] == -1) {
+      if (!lastWasNewline) {
+        lineCount++;
+      }
+      break;
+    } else {
+      lastWasNewline = 0;
+    }
+  }
+  char result[20];
+  itoa(lineCount, result, 10);
+  fprintf(STDOUT, "Number of lines written: ");
+  fprintf(STDOUT, result);
+  fprintf(STDOUT, "\n");
+
+  return 0;
+}
+
+int isVowel(char c) {
+  char vowels[] = {'a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U'};
+  for (int i = 0; i < 10; i++) {
+    if (c == vowels[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int filter() {
+  char buffer[BUFFER_SIZE];
+  char output[BUFFER_SIZE];
+  int bytesRead;
+
+  while (1) {
+    bytesRead = readBuffer(STDIN, buffer, BUFFER_SIZE);
+    if (bytesRead <= 0) {
+      break;
+    }
+
+    int outIndex = 0;
+    for (int i = 0; i < bytesRead; i++) {
+      if (buffer[i] == EOF) {
+        return 0;
+      }
+      if (!isVowel(buffer[i])) {
+        output[outIndex++] = buffer[i];
+      }
+    }
+
+    if (outIndex > 0) {
+      output[outIndex] = '\0';
+      fprintf(STDOUT, output);
+    }
+  }
+
+  return 0;
 }

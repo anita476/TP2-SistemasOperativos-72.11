@@ -70,4 +70,6 @@ typedef struct pipeInfo {
 	//smth else
 }pipeInfo;
 
+#define EOF (-1)
+
 #endif

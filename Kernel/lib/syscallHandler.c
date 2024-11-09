@@ -41,21 +41,17 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
     return 0;  // we dont support reading directly from a pipe in read !
   }
   if (whereFrom != STDIN) {
-    return read_from_pipe(whereFrom, (char *) buffer, length);
+    open_pipe(whereFrom);
+    int res = read_from_pipe(whereFrom, (char *) buffer, length);
+    close_pipe(whereFrom);
+    return res;
   } else {
-    // we probs wont use this but its wrong at the moment
-    char *bufferPosition = (char *) buffer;
-    int i = 0;
-    char readCharacter;
     cleanRead();
-    while (i < length && (readCharacter = getFromBuffer()) != '\0') {
-      if (readCharacter == EOF_CHAR) {
-        bufferPosition[i] = '\0';
-        return i;
-      }
+    while(!isKeyAvailable()){
+      addToBlockingQueueRead(pid); // block and yield while adding to queue
     }
-    bufferPosition[i] = '\0';
-    return i;
+   
+    return getBuffer((char *) buffer, length);
   }
 }
 
@@ -64,7 +60,12 @@ uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   int whereTo = get_process_output(pid);
   // Check if writing to pipe or to screen here !!
   if (whereTo != STDOUT) {
-    return write_to_pipe(whereTo, (char *) buffer, length);
+    open_pipe(whereTo);
+    print(STDERR, "Opened pipe and about to write to pipe\n");
+    int res = write_to_pipe(whereTo, (char *) buffer, length);
+    close_pipe(whereTo);
+    print(STDERR, "Wrote to pipe and closed pipe\n");
+    return res;
   } else {
     print(fileDescriptor, (char *) buffer);
   }

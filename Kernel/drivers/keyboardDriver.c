@@ -3,13 +3,10 @@
 
 #include <interrupts.h>
 #include <keyboardDriver.h>
-#include <lib.h>
-#include <processes.h>
-#include <scheduler.h>
-#include <videoDriver.h>
+
 
 #define BUFFER_SIZE 1024
-#define EOF_CHAR    4
+#define EOF_CHAR    -1
 
 // Assembly function
 extern int getKey();
@@ -35,12 +32,39 @@ char capsLockFlag = 0;
 
 char isAlpha(char c) { return (c >= 'a' && c <= 'z'); }
 
+char isKeyAvailable() { return (buffer[readIndex] != '\0'); }
+
+// Waiting queue
+pid waitingToRead[MAX_PROCESSES] = {0};
+int waitingToReadCounter = 0;
+
+void addToBlockingQueueRead(pid pid) {
+  waitingToRead[waitingToReadCounter] = pid;
+  waitingToReadCounter++;
+  block(pid);
+  yield();
+}
+
+void removeFromBlockingQueue() {
+  if (waitingToReadCounter == 0) {
+    return;
+  }
+  pid toUnblock = waitingToRead[0];
+  for (int i = 0; i < waitingToReadCounter; i++){
+    waitingToRead[i] = waitingToRead[i+1];
+  }
+  waitingToReadCounter--;
+  unblock(toUnblock);
+}
+
 void addToBuffer(char c) {
   // Resets the index if the buffer is full
   if (writeIndex >= BUFFER_SIZE)
     writeIndex = 0;
   buffer[writeIndex++] = c;
   lastIndexFlag = 1;
+  // Here we check if there are processes waiting for read
+  removeFromBlockingQueue();
 }
 
 void keyboardHandler() {
@@ -66,22 +90,21 @@ void keyboardHandler() {
   if (ctrlFlag) {
     // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
+      print(STDOUT, "^C\n");
+      cleanBuffer();
       for (int i = 1; i < MAX_PROCESSES; i++) {
-        if (isForeground(i)) {
+        if (isForeground(i) > 0) {
           killWithChildren(i);
-          print(STDOUT, "^C\n");
-          cleanBuffer();
-          print(STDOUT, "caOS>");
           return;
         }
       }
+      yield();
+      return;
     }
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       addToBuffer(EOF_CHAR);
       print(STDOUT, "^D\n");
-      // cleanBuffer();
-      print(STDOUT, "caOS>");
       return;
     }
   }
@@ -133,15 +156,27 @@ void cleanBuffer() {
   readIndex = 0;
 }
 
-void cleanRead() { readIndex = 0; }
+void cleanRead() { readIndex = writeIndex; }
 
-char getFromBuffer() {
-  if (readIndex == writeIndex)
+char getKeyFromBuffer() {
+  if (!isKeyAvailable())
     return 0;
-  if (readIndex >= BUFFER_SIZE) {
-    readIndex = 0;
+
+  char c = buffer[readIndex];
+  buffer[readIndex] = 0;
+
+  readIndex = (readIndex + 1) % BUFFER_SIZE;
+
+  return c;
+}
+
+unsigned int getBuffer(char *dest, unsigned int size) {
+  int i = 0;
+  while (isKeyAvailable() && i < size) {
+    char c = getKeyFromBuffer();
+    dest[i++] = c;
   }
-  return buffer[readIndex++];
+  return i;
 }
 
 char getLastChar() {

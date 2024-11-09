@@ -106,7 +106,7 @@ int interpret(char **args, int argc) {
       }
       auxArgc--;
     }
-    if (strcmp(args[i], "-") == 0) { /* QEMU doesnt let me put "|" */
+    if (strcmp(args[i], "|") == 0) { /* QEMU doesnt let me put "|" */
       int argc1 = i;
       int argc2 = auxArgc - (i + 1);
       char *argv1[argc1];

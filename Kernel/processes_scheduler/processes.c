@@ -5,6 +5,7 @@
 #include <processes.h>
 #include <scheduler.h>
 #include <videoDriver.h>
+#include <keyboardDriver.h>
 
 static int nameValidation(const char *name);
 static int findPID(pid pid, ProcessS **pr);
@@ -206,7 +207,8 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
 
   // send eof signal if it was a producer
-  if (process->output != STDOUT) {
+  if (process->output != STDOUT && (get_process_output(process->parent)== STDOUT)) {
+    cleanBuffer();
     print(STDERR, "Sent EOF to process");
     signal_eof(process->output);
   } 

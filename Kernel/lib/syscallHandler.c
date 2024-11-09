@@ -61,10 +61,8 @@ uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   // Check if writing to pipe or to screen here !!
   if (whereTo != STDOUT) {
     open_pipe(whereTo);
-    print(STDERR, "Opened pipe and about to write to pipe\n");
     int res = write_to_pipe(whereTo, (char *) buffer, length);
     close_pipe(whereTo);
-    print(STDERR, "Wrote to pipe and closed pipe\n");
     return res;
   } else {
     print(fileDescriptor, (char *) buffer);

@@ -28,9 +28,12 @@ void help() {
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
   fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
+  fprintf(STDOUT,"\n ----------------------------IPC-----------------------------");
+  fprintf(STDOUT, "\n The following commands can be connected using pipes (|):");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
   fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
   fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
+  fprintf(STDOUT, "\n * phylo: Dining Philosophers problem");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");

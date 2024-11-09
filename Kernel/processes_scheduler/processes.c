@@ -51,9 +51,15 @@ pid createProcess(createProcessInfo *info) {
     ;
 
   if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
-    if (pid >= MAX_PROCESSES) {}
-    if (info->argc < 0) {}
-    if (!nameValidation(info->name)) {}
+    if (pid >= MAX_PROCESSES) {
+      print(STDERR, "No more processes can be created\n");
+    }
+    if (info->argc < 0) {
+      print(STDERR, "Argc is negative\n");
+    }
+    if (!nameValidation(info->name)) {
+      print(STDERR, "Name is invalid\n");
+    }
     return -1;
   }
 

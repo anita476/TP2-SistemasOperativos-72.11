@@ -12,9 +12,10 @@
 #include "test_sync.h"
 #include "test_util.h"
 #include <test_pipe.h>
+#include "phylo.h"
 #include <_loader.h>
 
-#define COMMANDS_SIZE 24
+#define COMMANDS_SIZE 25
 #define BUFFER_SIZE   1024
 
 /* 

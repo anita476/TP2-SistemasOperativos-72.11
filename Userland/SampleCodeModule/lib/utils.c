@@ -1,5 +1,7 @@
-#include "utils.h"
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "utils.h"
 
 char *itoa(int num, char *str, int base) {
   int i = 0;
@@ -44,31 +46,30 @@ char *itoa(int num, char *str, int base) {
   return str;
 }
 
-
 void sprintf(char *dest, const char *format, int number) {
-    int dest_pos = 0;
-    int fmt_pos = 0;
-    
-    // Copy format string until we find %d
-    while(format[fmt_pos] != '\0') {
-        if(format[fmt_pos] == '%' && format[fmt_pos + 1] == 'd') {
-            // Found %d, convert number and copy it
-            char num_str[20];
-            itoa(number, num_str, 10);
-            
-            // Copy the number string
-            int i = 0;
-            while(num_str[i] != '\0') {
-                dest[dest_pos++] = num_str[i++];
-            }
-            
-            fmt_pos += 2;  // Skip the %d
-        } else {
-            // Copy regular character
-            dest[dest_pos++] = format[fmt_pos++];
-        }
+  int dest_pos = 0;
+  int fmt_pos = 0;
+
+  // Copy format string until we find %d
+  while (format[fmt_pos] != '\0') {
+    if (format[fmt_pos] == '%' && format[fmt_pos + 1] == 'd') {
+      // Found %d, convert number and copy it
+      char num_str[20];
+      itoa(number, num_str, 10);
+
+      // Copy the number string
+      int i = 0;
+      while (num_str[i] != '\0') {
+        dest[dest_pos++] = num_str[i++];
+      }
+
+      fmt_pos += 2;  // Skip the %d
+    } else {
+      // Copy regular character
+      dest[dest_pos++] = format[fmt_pos++];
     }
-    
-    // Null terminate
-    dest[dest_pos] = '\0';
+  }
+
+  // Null terminate
+  dest[dest_pos] = '\0';
 }

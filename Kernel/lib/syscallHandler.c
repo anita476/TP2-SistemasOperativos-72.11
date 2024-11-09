@@ -12,10 +12,9 @@
 #include <semaphores.h>
 #include <sound.h>
 #include <stdint.h>
+#include <syscallHandler.h>
 #include <time.h>
 #include <videoDriver.h>
-
-#include <syscallHandler.h>
 
 // from interruptions we get the register array to read it
 extern const uint64_t show_registers_dump[17];
@@ -47,10 +46,10 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
     return res;
   } else {
     cleanRead();
-    while(!isKeyAvailable()){
-      addToBlockingQueueRead(pid); // block and yield while adding to queue
+    while (!isKeyAvailable()) {
+      addToBlockingQueueRead(pid);  // block and yield while adding to queue
     }
-   
+
     return getBuffer((char *) buffer, length);
   }
 }

@@ -1,9 +1,9 @@
 #ifndef TEST_PIPE_H
 #define TEST_PIPE_H
 
-#include <libSysCalls.h>
-#include <defs.h>
 #include <_loader.h>
+#include <defs.h>
+#include <libSysCalls.h>
 #include <test_util.h>
 
 void test_pipe();

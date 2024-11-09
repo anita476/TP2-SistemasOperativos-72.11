@@ -61,35 +61,34 @@ void free(void *ptr) {
   freeList = blockToFree;  // Add to the front of the free list
 }
 
-
 void memory_manager_state() {
-    char buffer[32];
-    print(STDOUT, "\n=== Memory Manager State ===\n");
+  char buffer[32];
+  print(STDOUT, "\n=== Memory Manager State ===\n");
 
-    // Calculate total allocated by traversing the free list
-    size_t total_free = 0;
-    struct block *current = freeList;
-    while (current != NULL) {
-        total_free += current->size;
-        current = current->next;
-    }
+  // Calculate total allocated by traversing the free list
+  size_t total_free = 0;
+  struct block *current = freeList;
+  while (current != NULL) {
+    total_free += current->size;
+    current = current->next;
+  }
 
-    // The total is what we got in init
-    size_t total = freeList->size + BLOCK_SIZE;  // Add back the first block header
+  // The total is what we got in init
+  size_t total = freeList->size + BLOCK_SIZE;  // Add back the first block header
 
-    print(STDOUT, "Total memory: ");
-    intToStr(total, buffer, 10);
-    print(STDOUT, buffer);
-    print(STDOUT, " bytes\n");
+  print(STDOUT, "Total memory: ");
+  intToStr(total, buffer, 10);
+  print(STDOUT, buffer);
+  print(STDOUT, " bytes\n");
 
-    print(STDOUT, "Free memory: ");
-    intToStr(total_free, buffer, 10);
-    print(STDOUT, buffer);
-    print(STDOUT, " bytes\n");
+  print(STDOUT, "Free memory: ");
+  intToStr(total_free, buffer, 10);
+  print(STDOUT, buffer);
+  print(STDOUT, " bytes\n");
 
-    print(STDOUT, "Allocated memory: ");
-    intToStr(total - total_free, buffer, 10);
-    print(STDOUT, buffer);
-    print(STDOUT, " bytes\n");
+  print(STDOUT, "Allocated memory: ");
+  intToStr(total - total_free, buffer, 10);
+  print(STDOUT, buffer);
+  print(STDOUT, " bytes\n");
 }
 #endif

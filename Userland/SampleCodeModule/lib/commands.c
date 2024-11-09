@@ -12,6 +12,7 @@
 void help() {
   fprintf(STDOUT, "Welcome to caOS shell! Please input your command\n");
   fprintf(STDOUT, "Choose from the following:");
+  fprintf(STDOUT, "\n ----------------------------General--------------------------");
   fprintf(STDOUT, "\n * clear: Clean the screen");
   fprintf(STDOUT, "\n * divzero: Divide by 0 to trigger a zero division exception");
   fprintf(STDOUT, "\n * eliminator: Play Eliminator against yourself or a friend. Use WASD to move Player 1, IJKL to "
@@ -22,15 +23,17 @@ void help() {
   fprintf(STDOUT, "\n * scaledown: Reduce the text size (min: 1, default: 1)");
   fprintf(STDOUT, "\n * scaleup: Increment the text size (max: 4, default: 1)");
   fprintf(STDOUT, "\n * time: Display the current time");
+  fprintf(STDOUT, "\n ----------------------------Memory---------------------------");
+  fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
+  fprintf(STDOUT, "\n ---------------------------Processes-------------------------");
   fprintf(STDOUT, "\n * ps: List all processes");
   fprintf(STDOUT, "\n * loop: Run an endless loop");
   fprintf(STDOUT, "\n * kill: Kill a process by its PID");
   fprintf(STDOUT, "\n * block: Block a process by its PID");
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
-  fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
-  fprintf(STDOUT,"\n ----------------------------IPC-----------------------------");
-  fprintf(STDOUT, "\n The following commands can be connected using pipes (|):");
+  fprintf(STDOUT, "\n -----------------------------IPC-----------------------------");
+  fprintf(STDOUT, "\n The following commands can be connected using pipes (-):");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
   fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
   fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
@@ -39,7 +42,7 @@ void help() {
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");
   fprintf(STDOUT, "\n * testproc: Run a process management test in an endless loop");
-  fprintf(STDOUT, "\n * testsync: Run synchronization test using semaphores");
+  fprintf(STDOUT, "\n * testsync: Run synchronization test with or without semaphores");
   fprintf(STDOUT, "\n * testpipe: Run a pipe usage test");
   fprintf(STDOUT, "\n");
 }
@@ -182,13 +185,13 @@ void cat() {
   char buffer[BUFFER_SIZE] = {0};
   while (1) {
     int res = readBuffer(STDIN, buffer, 10);
-    if(res < 0){
+    if (res < 0) {
       return;
     }
     if (buffer[0] == (EOF)) {  // this is wrong -> maybe fix -> should send EOF !!
       return;
     }
-    for(int i = res; i < BUFFER_SIZE; i++){
+    for (int i = res; i < BUFFER_SIZE; i++) {
       buffer[i] = 0;
     }
     fprintf(STDOUT, buffer);

@@ -4,7 +4,6 @@
 #include <interrupts.h>
 #include <keyboardDriver.h>
 
-
 #define BUFFER_SIZE 1024
 #define EOF_CHAR    -1
 
@@ -50,8 +49,8 @@ void removeFromBlockingQueue() {
     return;
   }
   pid toUnblock = waitingToRead[0];
-  for (int i = 0; i < waitingToReadCounter; i++){
-    waitingToRead[i] = waitingToRead[i+1];
+  for (int i = 0; i < waitingToReadCounter; i++) {
+    waitingToRead[i] = waitingToRead[i + 1];
   }
   waitingToReadCounter--;
   unblock(toUnblock);

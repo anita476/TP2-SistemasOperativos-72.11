@@ -9,6 +9,8 @@
 #define MAX_PROCESSES   15
 #define MAX_NAME_LENGTH 20
 
+#include <stdint.h>
+
 typedef void (*ProcessStart)(int argc, char *argv[]);
 typedef int pid;
 typedef int priority;
@@ -60,15 +62,14 @@ typedef int fd;
 
 /* Pipe related constants */
 #define INVALID_PIPE (-1)
-#define NO_SPACE (-2)
-#define PIPE_ERROR (-3) /* For when theres a read or write error, but i havent reached EOF ! */
+#define NO_SPACE     (-2)
+#define PIPE_ERROR   (-3) /* For when theres a read or write error, but i havent reached EOF ! */
 
 typedef struct pipeInfo {
-    unsigned int id;
-	unsigned int amount;
-	uint8_t eof;
-	//smth else
-}pipeInfo;
+  unsigned int id;
+  unsigned int amount;
+  uint8_t eof;
+} pipeInfo;
 
 #define EOF (-1)
 

@@ -1,7 +1,10 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "test_util.h"
-#include <utils.h>
 #include <defs.h>
 #include <libSysCalls.h>
+#include <utils.h>
 
 /* Constants */
 #define SEM_ID               "sem"
@@ -23,7 +26,7 @@ void myProcessInc(int argc, char *argv[]) {
   char buffer[20];
 
   if (argc != 3) {
-    fprintf(STDERR,"Must receive three arguments: n, inc, useSem\n");
+    fprintf(STDERR, "Must receive three arguments: n, inc, useSem\n");
     return;
   }
 
@@ -34,23 +37,23 @@ void myProcessInc(int argc, char *argv[]) {
   if ((use_sem = satoi(argv[2])) < 0)
     return;
 
-  fprintf(STDOUT,"Process PID: ");
+  fprintf(STDOUT, "Process PID: ");
   itoa(getpid(), buffer, 10);
-  fprintf(STDOUT,buffer);
-  fprintf(STDOUT," starting with inc=");
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, " starting with inc=");
   itoa(inc, buffer, 10);
   fprintf(STDOUT, buffer);
-  fprintf(STDOUT,"\n");
+  fprintf(STDOUT, "\n");
 
   sem sem;
 
   if (use_sem) {
-    fprintf(STDOUT,"PID ");
+    fprintf(STDOUT, "PID ");
     itoa(getpid(), buffer, 10);
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, ": Opening semaphore\n");
     if ((sem = sem_open(SEM_ID, 1)) < 0) {
-      fprintf(STDERR,"testSync: ERROR opening semaphore\n");
+      fprintf(STDERR, "testSync: ERROR opening semaphore\n");
       return;
     }
   } else {
@@ -70,16 +73,16 @@ void myProcessInc(int argc, char *argv[]) {
     slowInc(&global, inc);
     int64_t after = global;
 
-    fprintf(STDOUT,"PID ");
+    fprintf(STDOUT, "PID ");
     itoa(getpid(), buffer, 10);
-    fprintf(STDOUT,buffer);
-    fprintf(STDOUT,": ");
+    fprintf(STDOUT, buffer);
+    fprintf(STDOUT, ": ");
     itoa(before, buffer, 10);
-    fprintf(STDOUT,buffer);
-    fprintf(STDOUT , " -> ");
+    fprintf(STDOUT, buffer);
+    fprintf(STDOUT, " -> ");
     itoa(after, buffer, 10);
-    fprintf(STDOUT,buffer);
-    fprintf(STDOUT,"\n");
+    fprintf(STDOUT, buffer);
+    fprintf(STDOUT, "\n");
 
     if (use_sem)
       sem_post(sem);
@@ -88,27 +91,27 @@ void myProcessInc(int argc, char *argv[]) {
   if (use_sem)
     sem_close(sem);
 
-  fprintf(STDOUT,"Process PID: ");
+  fprintf(STDOUT, "Process PID: ");
   itoa(getpid(), buffer, 10);
-  fprintf(STDOUT,buffer);
-  fprintf(STDOUT," finishing\n");
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, " finishing\n");
 }
 
 void testSync(int argc, char *argv[]) {
   if (argc != 2) {
-    fprintf(STDERR,"testsync: usage: testsync [n] [use_sem]\n");
+    fprintf(STDERR, "testsync: usage: testsync [n] [use_sem]\n");
     return;
   }
 
   char bufferaa[20];
-  fprintf(STDOUT,"Starting test with parameters:\n");
-  fprintf(STDOUT,"Iterations: ");
+  fprintf(STDOUT, "Starting test with parameters:\n");
+  fprintf(STDOUT, "Iterations: ");
   itoa(satoi(argv[0]), bufferaa, 10);
-  fprintf(STDOUT,bufferaa);
-  fprintf(STDOUT,"\nUse semaphore: ");
+  fprintf(STDOUT, bufferaa);
+  fprintf(STDOUT, "\nUse semaphore: ");
   itoa(satoi(argv[1]), bufferaa, 10);
-  fprintf(STDOUT,bufferaa);
-  fprintf(STDOUT,"\n");
+  fprintf(STDOUT, bufferaa);
+  fprintf(STDOUT, "\n");
 
   char *argvDec[] = {argv[0], "-1", argv[1], NULL};
   char *argvInc[] = {argv[0], "1", argv[1], NULL};
@@ -146,23 +149,23 @@ void testSync(int argc, char *argv[]) {
   for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
     char buffer[20];
     itoa(pids[i], buffer, 10);
-    fprintf(STDOUT,"Created process with PID: ");
-    fprintf(STDOUT,buffer);
-    fprintf(STDOUT,"\n");
+    fprintf(STDOUT, "Created process with PID: ");
+    fprintf(STDOUT, buffer);
+    fprintf(STDOUT, "\n");
   }
 
   waitForChildren();  // this makes it wait until ALL children are dead
   fprintf(STDOUT, "------------------------------------------------------------\n");
-  fprintf(STDOUT,"Final value:");
+  fprintf(STDOUT, "Final value:");
   char buffer[300];
   itoa(global, buffer, 10);
   fprintf(STDOUT, buffer);
-  fprintf(STDOUT,"\n");
+  fprintf(STDOUT, "\n");
 
   if (global == 0) {
-    fprintf(STDERR,"Test passed\n");
+    fprintf(STDERR, "Test passed\n");
   } else {
-    fprintf(STDERR,"Test failed\n");
+    fprintf(STDERR, "Test failed\n");
   }
   fprintf(STDOUT, "------------------------------------------------------------\n");
 
@@ -171,23 +174,23 @@ void testSync(int argc, char *argv[]) {
 
 void testNoSync(int argc, char *argv[]) {
   if (argc != 2) {
-    fprintf(STDERR,"testsync: usage: testsync [n] [use_sem]\n");
+    fprintf(STDERR, "testsync: usage: testsync [n] [use_sem]\n");
     return;
   }
 
   char *argvDec[] = {argv[0], "-1", argv[1], NULL};
   char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
-  fprintf(STDOUT,"Starting test with parameters:\n");
+  fprintf(STDOUT, "Starting test with parameters:\n");
   fprintf(STDOUT, argv[0]);
-  fprintf(STDOUT,"\t");
-  fprintf(STDOUT,argv[1]);
-  fprintf(STDOUT,"\n");
-  fprintf(STDOUT,"Iterations: ");
-  fprintf(STDOUT,argv[0]);
-  fprintf(STDOUT,"\nUse semaphore: ");
-  fprintf(STDOUT,argv[1]);
-  fprintf(STDOUT,"\n");
+  fprintf(STDOUT, "\t");
+  fprintf(STDOUT, argv[1]);
+  fprintf(STDOUT, "\n");
+  fprintf(STDOUT, "Iterations: ");
+  fprintf(STDOUT, argv[0]);
+  fprintf(STDOUT, "\nUse semaphore: ");
+  fprintf(STDOUT, argv[1]);
+  fprintf(STDOUT, "\n");
 
   int fg_flag = isForeground(getpid());
 
@@ -222,17 +225,17 @@ void testNoSync(int argc, char *argv[]) {
   for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
     char buffer[20];
     itoa(pids[i], buffer, 10);
-    fprintf(STDOUT,"Created process with PID: ");
-    fprintf(STDOUT,buffer);
-    fprintf(STDOUT,"\n");
+    fprintf(STDOUT, "Created process with PID: ");
+    fprintf(STDOUT, buffer);
+    fprintf(STDOUT, "\n");
   }
 
   waitForChildren();  // this makes it wait until ALL children are dead
-  fprintf(STDOUT,"Final value:");
+  fprintf(STDOUT, "Final value:");
   char buffer[300];
   itoa(global, buffer, 10);
-  fprintf(STDOUT,buffer);
-  fprintf(STDOUT,"\n");
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, "\n");
 
   return;
 }

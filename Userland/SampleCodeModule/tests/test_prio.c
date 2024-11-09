@@ -33,38 +33,38 @@ void test_prio() {
                                    .argv = (const char *const *) argv,
                                    .input = STDIN,
                                    .output = STDOUT};
-  fprintf(STDOUT,"\n");
-  fprintf(STDOUT,"CREATING PROCESSES...\n");
+  fprintf(STDOUT, "\n");
+  fprintf(STDOUT, "CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     pids[i] = createProcess(&endlessInfo);
   }
 
   bussy_wait(WAIT);
-  fprintf(STDOUT,"\nCHANGING PRIORITIES...\n");
+  fprintf(STDOUT, "\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     setPriority(pids[i], prio[i]);
   }
 
   bussy_wait(WAIT);
-  fprintf(STDOUT,"\nBLOCKING...\n");
+  fprintf(STDOUT, "\nBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     block(pids[i]);
 
-  fprintf(STDOUT,"CHANGING PRIORITIES WHILE BLOCKED...\n");
+  fprintf(STDOUT, "CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
     setPriority(pids[i], MEDIUM);
   }
 
-  fprintf(STDOUT,"UNBLOCKING...\n");
+  fprintf(STDOUT, "UNBLOCKING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     unblock(pids[i]);
 
   bussy_wait(WAIT);
-  fprintf(STDOUT,"\nKILLING...\n");
+  fprintf(STDOUT, "\nKILLING...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++)
     kill(pids[i]);

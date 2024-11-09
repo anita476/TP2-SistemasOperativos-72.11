@@ -79,8 +79,11 @@ static Command commandList[COMMANDS_SIZE] = {
     {.name = "cat", .isPipeable = 1, .numberArgs = 0, .start = (ProcessStart) cat, .usage = "Usage: cat"},
     {.name = "filter", .isPipeable = 1, .numberArgs = 0, .start = (ProcessStart) filter, .usage = "Usage: filter"},
     {.name = "wc", .isPipeable = 1, .numberArgs = 0, .start = (ProcessStart) wc, .usage = "Usage: wc"},
-    {.name = "phylo", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) phylo, .usage = "Usage: phylo [number_of_philosophers]"}
-};
+    {.name = "phylo",
+     .isPipeable = 0,
+     .numberArgs = 1,
+     .start = (ProcessStart) phylo,
+     .usage = "Usage: phylo [number_of_philosophers]"}};
 
 int findCommand(char *command) {
   for (int i = 0; i < COMMANDS_SIZE; i++) {

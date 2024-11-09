@@ -1,13 +1,13 @@
+#include <defs.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <defs.h>
 
 /*
     @brief Reads the buffer
     @param buffer The buffer
     @param length The length
 */
-uint64_t readBuffer(int fileDes, char* buffer, uint64_t length);
+uint64_t readBuffer(int fileDes, char *buffer, uint64_t length);
 
 /*
     @brief Gets a character from the buffer
@@ -18,13 +18,13 @@ char getChar();
     @brief Puts a character to the buffer
     @param c The character
 */
-void putChar(char c);    
+void putChar(char c);
 
 /*
     @brief Prints a buffer
     @param buffer The buffer
 */
-uint64_t fprintf(fd fileDes, char* buffer);                       
+uint64_t fprintf(fd fileDes, char *buffer);
 
 /*
     @brief Gets the time
@@ -53,7 +53,7 @@ void clearLine(uint64_t line);
 */
 void drawRectangle(uint64_t color, uint64_t posX, uint64_t posY, uint64_t width, uint64_t height);
 
-/* 
+/*
     @brief Scales the font up
 */
 void scaleUp();
@@ -102,7 +102,7 @@ void setCursorToLine(uint64_t line);
     @param buffer The buffer
     @returns The registers
 */
-char getRegisters(uint64_t * buffer);
+char getRegisters(uint64_t *buffer);
 
 /*
     @brief Sets the cursor
@@ -116,20 +116,20 @@ void setCursor(uint64_t posx, uint64_t line);
     @param bytes The bytes to allocate
     @returns The pointer to the allocated memory
 */
-void * malloc(size_t bytes);
+void *malloc(size_t bytes);
 
 /*
     @brief Frees memory
     @param ptr The pointer
 */
-void free(void * ptr);
+void free(void *ptr);
 
 /*
     @brief Creates a process
     @param info The process info
     @returns The pid of the created process
 */
-pid createProcess(createProcessInfo * info);
+pid createProcess(createProcessInfo *info);
 
 /*
     @brief Gets the pid
@@ -177,7 +177,7 @@ int setPriority(pid pid, priority priority);
     @param max_proc The max processes
     @returns The number of processes listed
 */
-int listProcessesInfo(ProcessInfo * processes, int max_proc);
+int listProcessesInfo(ProcessInfo *processes, int max_proc);
 
 /*
     @brief Gets the process info
@@ -185,12 +185,12 @@ int listProcessesInfo(ProcessInfo * processes, int max_proc);
     @param processInfo The process info to fill
     @returns 0 if successful, -1 otherwise
 */
-int getProcessInfo(pid pid, ProcessInfo * processInfo);
+int getProcessInfo(pid pid, ProcessInfo *processInfo);
 
 /*
     @brief Checks if a process is foreground
     @param pid The pid of the process
-    @returns 1 if in foreground, 0 otherwise
+    @returns 1 if in foreground, 0 if not and -1 if error
 */
 int isForeground(pid pid);
 
@@ -247,17 +247,53 @@ int sem_post(sem sem);
 */
 int sem_wait(sem sem);
 
-/* @brief Prints memory manager info 
+/*
+    @brief Prints memory manager info
 */
+void memory_manager_state();
 
-void memory_manager_state(); 
-
-
+/*
+    @brief Opens a pipe
+    @param pipe_id The id of the pipe
+    @returns pipe_id if successful, -1 otherwise
+*/
 int open_pipe(unsigned int pipe_id);
+
+/*
+    @brief Closes a pipe
+    @param pipe_id The id of the pipe
+    @returns 0 if successful, -1 otherwise
+*/
 int close_pipe(unsigned int pipe_id);
 
-int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes);
-int write_to_pipe(unsigned int pipe_id, char * src, unsigned int bytes);
-int get_pipe_info(unsigned int pipe_id, pipeInfo * info);
+/*
+    @brief Reads from a pipe
+    @param pipe_id The id of the pipe
+    @param dest The destination
+    @param bytes The number of bytes to read
+    @returns bytes read if successful, -1 otherwise
+*/
+int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes);
 
+/*
+    @brief Writes to a pipe
+    @param pipe_id The id of the pipe
+    @param src The source
+    @param bytes The number of bytes to write
+    @returns bytes written if successful, -1 otherwise
+*/
+int write_to_pipe(unsigned int pipe_id, char *src, unsigned int bytes);
+
+/*
+    @brief Gets the pipe info
+    @param pipe_id The id of the pipe
+    @param info The info to fill
+    @returns 0 if successful, -1 otherwise
+*/
+int get_pipe_info(unsigned int pipe_id, pipeInfo *info);
+
+/*
+    @brief Waits for a process
+    @param pid The pid of the process
+*/
 void waitForPID(pid pid);

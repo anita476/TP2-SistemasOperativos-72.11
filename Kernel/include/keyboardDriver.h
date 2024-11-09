@@ -1,7 +1,7 @@
-#include <stdint.h>
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
+#include <stdint.h>
 #include <videoDriver.h>
 
 /*
@@ -22,6 +22,7 @@ void removeCharFromBuffer();
 
 /*
     @brief Gets a character from the buffer
+    @returns The character
 */
 char getKeyFromBuffer();
 
@@ -29,7 +30,7 @@ char getKeyFromBuffer();
     @brief Gets the buffer
     @param dest: The destination buffer
     @param size: The size of the buffer
-    @return The number of characters read
+    @returns The number of characters read
 */
 unsigned int getBuffer(char *dest, unsigned int size);
 
@@ -53,7 +54,13 @@ char getLastChar();
 */
 void cleanRead();
 
-
+/*
+    @brief Adds a pid to the blocking queue
+    @param pid The pid to add
+*/
 void addToBlockingQueueRead(pid pid);
 
+/*
+    @brief Removes a pid from the blocking queue
+*/
 void removeFromBlockingQueue();

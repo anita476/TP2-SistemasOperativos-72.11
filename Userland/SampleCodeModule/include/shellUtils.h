@@ -1,8 +1,9 @@
 #ifndef _SHELL_UTILS_H
 #define _SHELL_UTILS_H
 
-#include <shell.h>
 #include <libSysCalls.h>
+#include <shell.h>
 
-int tokenize(char * buffer, char * * args);
+int tokenize(char *buffer, char **args);
+
 #endif

@@ -1,11 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include <keyboardDriver.h>
 #include <lib.h>
 #include <processes.h>
 #include <scheduler.h>
 #include <videoDriver.h>
-#include <keyboardDriver.h>
 
 static int nameValidation(const char *name);
 static int findPID(pid pid, ProcessS **pr);
@@ -121,7 +121,6 @@ pid createProcess(createProcessInfo *info) {
   process->argv = argvCopy;
   process->argc = info->argc;
 
-
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
     addChild(parent, pid);
     process->parent = parent;
@@ -129,21 +128,17 @@ pid createProcess(createProcessInfo *info) {
     process->parent = (NO_PROC);
   }
   int parentInput = get_process_input(process->parent);
-  if(parentInput!= STDIN && info->input == STDIN){
+  if (parentInput != STDIN && info->input == STDIN) {
     process->input = parentInput;
-  }
-  else{
+  } else {
     process->input = info->input;
   }
   int parentOutput = get_process_output(process->parent);
-  if(parentOutput != STDOUT && info->output == STDOUT){
+  if (parentOutput != STDOUT && info->output == STDOUT) {
     process->output = parentOutput;
-  }
-  else{
+  } else {
     process->output = info->output;
   }
-  
-  
 
   // Call scheduler so that it adds the process to its queue and blocks parent process
   processWasCreated(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
@@ -210,9 +205,9 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
 
   // send eof signal if it was a producer
-  if (process->output != STDOUT && (get_process_output(process->parent)== STDOUT)) {
+  if (process->output != STDOUT && (get_process_output(process->parent) == STDOUT)) {
     signal_eof(process->output);
-  } 
+  }
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));
@@ -313,7 +308,7 @@ static int findPID(pid pid, ProcessS **pr) {
 }
 
 int get_process_input(pid pid) {
-  if(pid == NO_PROC || pid == PID_KERNEL || pid == 0){
+  if (pid == NO_PROC || pid == PID_KERNEL || pid == 0) {
     return STDIN;
   }
   ProcessS *p;
@@ -324,7 +319,7 @@ int get_process_input(pid pid) {
 }
 
 int get_process_output(pid pid) {
-  if(pid == NO_PROC || pid == PID_KERNEL || pid == 0){
+  if (pid == NO_PROC || pid == PID_KERNEL || pid == 0) {
     return STDOUT;
   }
   ProcessS *p;

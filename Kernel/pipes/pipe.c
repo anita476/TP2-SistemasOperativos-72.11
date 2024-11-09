@@ -84,7 +84,6 @@ int signal_eof(unsigned int pipe_id){
 int open_pipe(unsigned int pipe_id){
 	int pos;
 	if(pipe_id == 0){ // no pipe_id
-		print(STDERR, "Open and create a new pipe\n");
 		//find pos
 		int id = find_available_pipe();
 		pos = find_pipe(id);
@@ -161,8 +160,7 @@ int read_from_pipe(unsigned int pipe_id, char * dest, unsigned int bytes){
 	}
 	int i;
 			
-	for(i = 0; i<bytes && !(pipeList[pos].eof && pipeList[pos].amount == 0); i++){
-
+	for(i = 0; i<bytes && !(pipeList[pos].eof && (pipeList[pos].amount == 0)); i++){
 		sem_wait(pipeList[pos].read_sem);	
 
 		dest[i] = pipeList[pos].pipe[pipeList[pos].read_pos];
@@ -200,7 +198,7 @@ int close_pipe(unsigned int pipe_id){
 	sem_close(pipeList[pos].read_sem);
 	sem_close(pipeList[pos].write_sem);
 
-	pipeList[pos].interested_processes --;
+	pipeList[pos].interested_processes--;
 
 	/* only if no processes have the pipe open free all resources, otherwise only free the semaphores*/
 	if(pipeList[pos].interested_processes == 0){
@@ -215,18 +213,7 @@ int close_pipe(unsigned int pipe_id){
 		pipeList[pos].read_pos = 0;
 		pipeList[pos].amount = 0;
 		pipeList[pos].pipe = 0;
+		active_pipes--;
 	}
-	active_pipes--;
 	return 0;
 }
-
-/*
-pipe idea so i dont forget:
--> when process wants to use a pipe -> 
--> when process wants to print to stdout or stderr && isPiped -> doesnt know it but its input fileDes is different -> write handles it (calls write to pipe if necessary)
--> read does the same thing 
-
--> when using pipes read and write is blocking hence the semaphores!
-
-
-*/

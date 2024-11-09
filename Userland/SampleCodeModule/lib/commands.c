@@ -220,12 +220,19 @@ void loop() {
 void cat() {
   char buffer[BUFFER_SIZE] = {0};
   while (1) {
-    readBuffer(STDIN, buffer, 10);
-    fprintf(STDOUT, buffer);
+    int res = readBuffer(STDIN, buffer, 10);
+    if(res < 0){
+      return;
+    }
     if (buffer[0] == (EOF)) {  // this is wrong -> maybe fix -> should send EOF !!
       return;
     }
+    for(int i = res; i < BUFFER_SIZE; i++){
+      buffer[i] = 0;
+    }
+    fprintf(STDOUT, buffer);
   }
+  fprintf(STDOUT, "\n");
 }
 void scaleDownCommand() {
   scaleDown();

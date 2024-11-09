@@ -250,14 +250,12 @@ static int philosopher_action(int argc, char *argv[]) {
         return -1;
     }
     int phil_id = satoi(argv[0]);
-    
-    if (phil_id < 0 || phil_id >= MAX_PHILOSOPHERS) {
-        fprintf(STDERR, "ERROR: Invalid philosopher ID\n");
-        return -1;
-    }
 
-    if (philosophers[phil_id].sem = add_semaphore(phil_id) < 0) {
-        return -1;
+    char sem_name[8];
+    sprintf(sem_name, "phy_%d", phil_id);
+    if ((philosophers[phil_id].sem = sem_open(sem_name, 0)) < 0) {
+        fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
+        return -1; 
     }
     
     if (sem_open(MUTEX, 1) != mutex) {
@@ -315,7 +313,14 @@ static int add_philosopher(int id) {
     philosophers[id].state = NONE; 
     philosophers[id].prev = NONE;   
 
-    if ((philosophers[id].sem = add_semaphore(id)) < 0) {
+    // if ((philosophers[id].sem = add_semaphore(id)) < 0) {
+    //     return -1;
+    // }
+
+    char sem_name[8];
+    sprintf(sem_name, "phy_%d", id);
+    if ((philosophers[id].sem = sem_open(sem_name, 0)) < 0) {
+        fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
         return -1;
     }
 

@@ -149,7 +149,6 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
                 if (remove_philosopher(1) < 0) { 
                     fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
                 } 
-                // yield();
                 break;
             case 's':
             sem_wait(mutex);
@@ -251,12 +250,14 @@ static int philosopher_action(int argc, char *argv[]) {
         return -1;
     }
     int phil_id = satoi(argv[0]);
-    char sem_name[8];
-    sprintf(sem_name, "phy_%d", phil_id);
+    
+    if (phil_id < 0 || phil_id >= MAX_PHILOSOPHERS) {
+        fprintf(STDERR, "ERROR: Invalid philosopher ID\n");
+        return -1;
+    }
 
-    if ((philosophers[phil_id].sem = sem_open(sem_name, 0)) < 0) {
-        fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
-        return -1; 
+    if (philosophers[phil_id].sem = add_semaphore(phil_id) < 0) {
+        return -1;
     }
     
     if (sem_open(MUTEX, 1) != mutex) {

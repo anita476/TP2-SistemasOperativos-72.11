@@ -35,12 +35,12 @@ void cat();
 /*
     @brief Scales down the screen
 */
-void scaleDownCommand();
+void scale_down_command();
 
 /*
     @brief Scales up the screen
 */
-void scaleUpCommand();
+void scale_up_command();
 
 /*
     @brief Filters the input

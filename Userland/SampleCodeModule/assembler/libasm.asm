@@ -1,16 +1,16 @@
 GLOBAL syscall
-GLOBAL divzero
-GLOBAL invalidOpCode
+GLOBAL div_zero
+GLOBAL invalid_opcode
 section .text
-GLOBAL haltcpu
+GLOBAL halt_cpu
 
-divzero:
+div_zero:
 	mov rax, 5
 	mov ebx, 0
 	div ebx
 	ret
 
-invalidOpCode:
+invalid_opcode:
     mov cr6, rax
     ret
 
@@ -23,7 +23,7 @@ syscall:
 	pop rbp;
 	ret	
 
-haltcpu:
+halt_cpu:
 	cli
 	hlt
 	ret

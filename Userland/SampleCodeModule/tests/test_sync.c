@@ -12,14 +12,14 @@
 
 int64_t global;  // shared memory
 
-void slowInc(int64_t *p, int64_t inc) {
+void slow_inc(int64_t *p, int64_t inc) {
   uint64_t aux = *p;
   aux += inc;
   yield();
   *p = aux;
 }
 
-void myProcessInc(int argc, char *argv[]) {
+void my_process_inc(int argc, char *argv[]) {
   uint64_t n;
   int8_t inc;
   int8_t use_sem;
@@ -38,7 +38,7 @@ void myProcessInc(int argc, char *argv[]) {
     return;
 
   fprintf(STDOUT, "Process PID: ");
-  itoa(getpid(), buffer, 10);
+  itoa(get_pid(), buffer, 10);
   fprintf(STDOUT, buffer);
   fprintf(STDOUT, " starting with inc=");
   itoa(inc, buffer, 10);
@@ -49,7 +49,7 @@ void myProcessInc(int argc, char *argv[]) {
 
   if (use_sem) {
     fprintf(STDOUT, "PID ");
-    itoa(getpid(), buffer, 10);
+    itoa(get_pid(), buffer, 10);
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, ": Opening semaphore\n");
     if ((sem = sem_open(SEM_ID, 1)) < 0) {
@@ -70,11 +70,11 @@ void myProcessInc(int argc, char *argv[]) {
       sem_wait(sem);
     }
     int64_t before = global;
-    slowInc(&global, inc);
+    slow_inc(&global, inc);
     int64_t after = global;
 
     fprintf(STDOUT, "PID ");
-    itoa(getpid(), buffer, 10);
+    itoa(get_pid(), buffer, 10);
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, ": ");
     itoa(before, buffer, 10);
@@ -92,12 +92,12 @@ void myProcessInc(int argc, char *argv[]) {
     sem_close(sem);
 
   fprintf(STDOUT, "Process PID: ");
-  itoa(getpid(), buffer, 10);
+  itoa(get_pid(), buffer, 10);
   fprintf(STDOUT, buffer);
   fprintf(STDOUT, " finishing\n");
 }
 
-void testSync(int argc, char *argv[]) {
+void test_sync(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(STDERR, "testsync: usage: testsync [n] [use_sem]\n");
     return;
@@ -116,12 +116,12 @@ void testSync(int argc, char *argv[]) {
   char *argvDec[] = {argv[0], "-1", argv[1], NULL};
   char *argvInc[] = {argv[0], "1", argv[1], NULL};
 
-  int fg_flag = isForeground(getpid());
+  int fg_flag = is_foreground(get_pid());
 
   createProcessInfo decInfo = {.name = "processDec",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
-                               .start = (ProcessStart) myProcessInc,
+                               .start = (ProcessStart) my_process_inc,
                                .argc = 3,
                                .argv = (const char *const *) argvDec,
                                .input = STDIN,
@@ -130,7 +130,7 @@ void testSync(int argc, char *argv[]) {
   createProcessInfo incInfo = {.name = "processInc",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
-                               .start = (ProcessStart) myProcessInc,
+                               .start = (ProcessStart) my_process_inc,
                                .argc = 3,
                                .argv = (const char *const *) argvInc,
                                .input = STDIN,
@@ -142,8 +142,8 @@ void testSync(int argc, char *argv[]) {
 
   int i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-    pids[i] = createProcess(&decInfo);
-    pids[i + TOTAL_PAIR_PROCESSES] = createProcess(&incInfo);
+    pids[i] = create_process(&decInfo);
+    pids[i + TOTAL_PAIR_PROCESSES] = create_process(&incInfo);
   }
 
   for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
@@ -154,7 +154,7 @@ void testSync(int argc, char *argv[]) {
     fprintf(STDOUT, "\n");
   }
 
-  waitForChildren();  // this makes it wait until ALL children are dead
+  wait_for_children();  // this makes it wait until ALL children are dead
   fprintf(STDOUT, "------------------------------------------------------------\n");
   fprintf(STDOUT, "Final value:");
   char buffer[300];
@@ -172,7 +172,7 @@ void testSync(int argc, char *argv[]) {
   return;
 }
 
-void testNoSync(int argc, char *argv[]) {
+void test_no_sync(int argc, char *argv[]) {
   if (argc != 2) {
     fprintf(STDERR, "testsync: usage: testsync [n] [use_sem]\n");
     return;
@@ -192,12 +192,12 @@ void testNoSync(int argc, char *argv[]) {
   fprintf(STDOUT, argv[1]);
   fprintf(STDOUT, "\n");
 
-  int fg_flag = isForeground(getpid());
+  int fg_flag = is_foreground(get_pid());
 
   createProcessInfo decInfo = {.name = "processDec",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
-                               .start = (ProcessStart) myProcessInc,
+                               .start = (ProcessStart) my_process_inc,
                                .argc = 3,
                                .argv = (const char *const *) argvDec,
                                .input = STDIN,
@@ -206,7 +206,7 @@ void testNoSync(int argc, char *argv[]) {
   createProcessInfo incInfo = {.name = "processInc",
                                .fg_flag = fg_flag,
                                .priority = DEFAULT_PRIORITY,
-                               .start = (ProcessStart) myProcessInc,
+                               .start = (ProcessStart) my_process_inc,
                                .argc = 3,
                                .argv = (const char *const *) argvInc,
                                .input = STDIN,
@@ -218,8 +218,8 @@ void testNoSync(int argc, char *argv[]) {
 
   int i;
   for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
-    pids[i] = createProcess(&decInfo);
-    pids[i + TOTAL_PAIR_PROCESSES] = createProcess(&incInfo);
+    pids[i] = create_process(&decInfo);
+    pids[i + TOTAL_PAIR_PROCESSES] = create_process(&incInfo);
   }
 
   for (i = 0; i < 2 * TOTAL_PAIR_PROCESSES; i++) {
@@ -230,7 +230,7 @@ void testNoSync(int argc, char *argv[]) {
     fprintf(STDOUT, "\n");
   }
 
-  waitForChildren();  // this makes it wait until ALL children are dead
+  wait_for_children();  // this makes it wait until ALL children are dead
   fprintf(STDOUT, "Final value:");
   char buffer[300];
   itoa(global, buffer, 10);

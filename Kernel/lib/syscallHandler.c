@@ -20,21 +20,21 @@
 extern const uint64_t show_registers_dump[17];
 extern const uint64_t has_regs;
 
-extern uint16_t getHours();
-extern uint16_t getMinutes();
-extern uint16_t getSeconds();
+extern uint16_t get_hours();
+extern uint16_t get_minutes();
+extern uint16_t get_seconds();
 
 // syscalls params:	RDI	RSI	RDX	R10	R8	R9
 // syscallHandler:	RDI RSI RDX R10 R8  RAX
 // params in C are:	RDI RSI RDX RCX R8  R9
 
 void exit_process() {
-  kill(getpid());
+  kill(get_pid());
   yield();
 }
 
 uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
-  int pid = getpid();
+  int pid = get_pid();
   int whereFrom = get_process_input(pid);
   if (fileDescriptor != STDIN) {
     return 0;  // we dont support reading directly from a pipe in read !
@@ -45,17 +45,17 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
     close_pipe(whereFrom);
     return res;
   } else {
-    cleanRead();
-    while (!isKeyAvailable()) {
-      addToBlockingQueueRead(pid);  // block and yield while adding to queue
+    clean_read();
+    while (!is_key_available()) {
+      add_to_blocking_queue_read(pid);  // block and yield while adding to queue
     }
 
-    return getBuffer((char *) buffer, length);
+    return get_buffer((char *) buffer, length);
   }
 }
 
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
-  int pid = getpid();
+  int pid = get_pid();
   int whereTo = get_process_output(pid);
   // Check if writing to pipe or to screen here !!
   if (whereTo != STDOUT) {
@@ -70,7 +70,7 @@ uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
 }
 
 uint64_t get_current_time() {
-  uint16_t hours = getHours();
+  uint16_t hours = get_hours();
   if (hours >= 3)
     hours -= 3;
   else if (hours == 2)
@@ -79,57 +79,57 @@ uint64_t get_current_time() {
     hours = 22;
   else if (hours == 0)
     hours = 21;
-  return (uint64_t) ((hours * 10000) + (getMinutes() * 100) + (getSeconds()));
+  return (uint64_t) ((hours * 10000) + (get_minutes() * 100) + (get_seconds()));
 }
 
-uint64_t elapsed_millis() { return millisElapsed(); }
+uint64_t elapsed_millis() { return millis_elapsed(); }
 
-uint64_t get_height_ch() { return getHeightChars(); }
+uint64_t get_height_ch() { return get_height_chars(); }
 
-uint64_t get_width_ch() { return getWidthChars(); }
+uint64_t get_width_ch() { return get_width_chars(); }
 
 void clear_line(uint64_t line) {
-  int startY = lineToHeight(line);
-  for (int i = 0; i < getWidthPixels(); i++) {
+  int startY = line_to_height(line);
+  for (int i = 0; i < get_width_pixels(); i++) {
     int heightCounter = 0;
-    while (heightCounter < CHAR_HEIGHT * getScale()) {
-      putPixel(0x000000, i, heightCounter + startY);
+    while (heightCounter < CHAR_HEIGHT * get_scale()) {
+      put_pixel(0x000000, i, heightCounter + startY);
       heightCounter++;
     }
   }
 }
 
-void clear_screen() { clearScreen(); }
+void clear_screen() { sys_clear_screen(); }
 
-uint64_t put_pixel(uint64_t color, uint64_t x, uint64_t y) {
-  return putPixel((uint32_t) color, (uint64_t) x, (uint64_t) y);
+uint64_t sys_put_pixel(uint64_t color, uint64_t x, uint64_t y) {
+  return put_pixel((uint64_t) color, (uint64_t) x, (uint64_t) y);
 }
 
 uint64_t draw_rect(uint64_t hexColor, uint64_t x, uint64_t y, uint64_t width, uint64_t height) {
-  return drawRectangle((uint64_t) hexColor, (uint64_t) x, (uint64_t) y, (int) width, (int) height);
+  return draw_rectangle((uint64_t) hexColor, (uint64_t) x, (uint64_t) y, (int) width, (int) height);
 }
 
-uint64_t scale_up() { return scaleUp(); }
+int scale_up() { return sys_scale_up(); }
 
-uint64_t scale_down() { return scaleDown(); }
+int scale_down() { return sys_scale_down(); }
 
 uint64_t make_sound(uint64_t freq, uint64_t duration, uint64_t wait) {
-  playNoteSound((uint64_t) freq, (uint64_t) duration, (uint64_t) wait);
+  play_note_sound((uint64_t) freq, (uint64_t) duration, (uint64_t) wait);
   return 1;
 }
 
-uint64_t get_height_pix() { return (uint64_t) getHeightPixels(); }
+uint64_t get_height_pix() { return (uint64_t) get_height_pixels(); }
 
-uint64_t get_width_pix() { return (uint64_t) getWidthPixels(); }
+uint64_t get_width_pix() { return (uint64_t) get_width_pixels(); }
 
-uint32_t get_pix(uint64_t x, uint64_t y) { return getPixelColor((uint64_t) x, (uint64_t) y); }
+uint32_t get_pix(uint64_t x, uint64_t y) { return get_pixel_color((uint64_t) x, (uint64_t) y); }
 
-uint64_t get_max_lines() { return getHeightChars(); }
+uint64_t get_max_lines() { return get_height_chars(); }
 
 uint64_t set_cursor_to_line(uint64_t line) {
   if (line >= get_max_lines())
     return 1;
-  setCursorLine(line);
+  set_cursor_line(line);
   return 0;
 }
 
@@ -152,13 +152,13 @@ uint64_t wait(uint64_t millis) {
 uint64_t get_char(uint64_t fileDescriptor) {
   if (fileDescriptor != STDIN)
     return 0;
-  uint64_t c = getLastChar();
+  uint64_t c = get_last_char();
   return c;
 }
 
-void set_cursor(uint64_t posx, uint64_t line) { setCursor(posx, lineToHeight(line)); }
+void set_cursor(uint16_t posx, uint16_t line) { set_cursor(posx, line_to_height(line)); }
 
-uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
+uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
   switch (rax) {
   case 0:
     return read(rdi, rsi, rdx);
@@ -209,9 +209,9 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
     free((void *) rdi);
     break;
   case 22:
-    return (uint64_t) createProcess((void *) rdi);
+    return (uint64_t) create_process((void *) rdi);
   case 23:
-    return (uint64_t) getpid();
+    return (uint64_t) get_pid();
   case 24:
     return (uint64_t) kill(rdi);
   case 25:
@@ -222,19 +222,19 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
     yield();
     break;
   case 28:
-    return setPriority(rdi, rsi);
+    return set_priority(rdi, rsi);
   case 29:
-    return listProcessesInfo((void *) rdi, rsi);
+    return list_processes_info((void *) rdi, rsi);
   case 30:
     exit_process();
     break;
   case 31:
-    waitForChildren();
+    wait_for_children();
     break;
   case 32:
-    return getProcessInfo(rdi, (void *) rsi);
+    return get_process_info(rdi, (void *) rsi);
   case 33:
-    return isForeground(rdi);
+    return is_foreground(rdi);
   case 34:
     return nice(rdi, rsi);
   case 35:
@@ -265,7 +265,7 @@ uint64_t syscallHandler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, 
   case 46:
     return get_pipe_info(rdi, (void *) rsi);
   case 47:
-    waitForPID(rdi);
+    wait_for_pid(rdi);
     break;
   default:
     return 1;

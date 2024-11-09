@@ -8,6 +8,6 @@
     @param exception The exception
     @param registers The registers
 */
-void exceptionDispatcher(int exception, uint64_t registers[17]);
+void exception_dispatcher(int exception, uint64_t registers[17]);
 
 #endif

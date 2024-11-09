@@ -19,7 +19,7 @@ extern void _cli();
 extern void _sti();
 extern void _hlt();
 
-extern uint64_t resetMain();
+extern uint64_t reset_main();
 extern uint64_t show_registers[17];
 
 extern uint8_t text;
@@ -37,19 +37,19 @@ static void *const endHeapAddres = (void *) 0x2000000;
 
 typedef int (*EntryPoint)();
 
-void clearBSS(void *bssAddress, uint64_t bssSize) { memset(bssAddress, 0, bssSize); }
+void clear_BSS(void *bssAddress, uint64_t bssSize) { memset(bssAddress, 0, bssSize); }
 
-void *getStackBase() {
+void *get_stack_base() {
   return (void *) ((uint64_t) &endOfKernel + PageSize * 8  // The size of the stack itself, 32KiB
                    - sizeof(uint64_t)                      // Begin at the top of the stack
   );
 }
 
-void *initializeKernelBinary() {
+void *initialize_kernel_binary() {
   void *moduleAddresses[] = {sampleCodeModuleAddress};
-  loadModules(&endOfKernelBinary, moduleAddresses);
-  clearBSS(&bss, &endOfKernel - &bss);
-  return getStackBase();
+  load_modules(&endOfKernelBinary, moduleAddresses);
+  clear_BSS(&bss, &endOfKernel - &bss);
+  return get_stack_base();
 }
 
 void init_shell() {
@@ -61,18 +61,18 @@ void init_shell() {
                                  .argv = (const char *const *) NULL,
                                  .input = STDIN,
                                  .output = STDOUT};
-  createProcess(&shellInfo);
+  create_process(&shellInfo);
 }
 
-void welcomeSequence() {
+void welcome_sequence() {
   for (int i = 0; i < 4; i++)
     scale_down();
   scale_up();
-  setCursorLine(8);
+  set_cursor_line(8);
   print(STDOUT, "                        Welcome to caOS!\n");
-  putSaul(450, 300, 125, 125);
-  playBetterCallSaul();
-  setCursorLine(23);
+  put_saul(450, 300, 125, 125);
+  play_better_call_saul();
+  set_cursor_line(23);
   print(STDOUT, " Starting...");
   wait(1000);
   scale_down();

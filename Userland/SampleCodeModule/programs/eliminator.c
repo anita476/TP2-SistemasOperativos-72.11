@@ -28,7 +28,7 @@ uint32_t p2Color = 0x00FF00;
 int64_t p1Coord[2] = {0, 0};  // pxCoord is a coordinate to center
 int64_t p2Coord[2] = {0, 0};
 
-void changeDir(char c) {
+void change_dir(char c) {
   switch (c) {
   case 'w':
     p1Dir = UP;
@@ -95,14 +95,14 @@ void move() {
   }
 }
 
-int didLose(int players) {
+int did_lose(int players) {
   int toReturn = 0;
   if (!(p1Coord[0] >= 0 && p1Coord[0] < width && p1Coord[1] >= 16 && p1Coord[1] < height &&
-        getPixelColor(p1Coord[0], p1Coord[1]) == 0x000000))
+        get_pixel_color(p1Coord[0], p1Coord[1]) == 0x000000))
     toReturn = 1;
 
   if (!(p2Coord[0] >= 0 && p2Coord[0] < width && p2Coord[1] >= 16 && p2Coord[1] < height &&
-        getPixelColor(p2Coord[0], p2Coord[1]) == 0x000000) &&
+        get_pixel_color(p2Coord[0], p2Coord[1]) == 0x000000) &&
       players == 2)
     toReturn = (toReturn == 1) ? 3 : 2;
 
@@ -110,9 +110,9 @@ int didLose(int players) {
 }
 
 void lose(int whoLost, int pts) {
-  playWahWahWah();
-  clearScreen();
-  setCursor(0, 15);
+  play_wah_wah_wah();
+  clear_screen();
+  set_cursor(0, 15);
   switch (whoLost) {
   case 1:
     fprintf(
@@ -143,16 +143,16 @@ void lose(int whoLost, int pts) {
   char c = 0;
   char currentDecision = 1;
   while (c != '\n') {
-    c = getChar();
+    c = get_char();
     switch (c) {
     case 'a':
-      drawRectangle(0xFFFFFF, 439, 320, 8, 1);
-      drawRectangle(0x000000, 568, 320, 8, 1);
+      draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
+      draw_rectangle(0x000000, 568, 320, 8, 1);
       currentDecision = 1;
       break;
     case 'd':
-      drawRectangle(0x000000, 439, 320, 8, 1);
-      drawRectangle(0xFFFFFF, 568, 320, 8, 1);
+      draw_rectangle(0x000000, 439, 320, 8, 1);
+      draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
       currentDecision = 2;
       break;
     default:
@@ -162,11 +162,11 @@ void lose(int whoLost, int pts) {
   if (currentDecision == 1)
     eliminator();
   else
-    clearScreen();
+    clear_screen();
 }
 
-void printPts(int pts) {
-  setCursor(4, 0);
+void print_pts(int pts) {
+  set_cursor(4, 0);
   fprintf(STDOUT, "PTS: ");
   char s[50] = {0};
   fprintf(STDOUT, itoa(pts, s, 10));
@@ -177,12 +177,12 @@ void play1() {
                     // to make a syscall
   int lost = 0;
   int pts = 0;
-  clearScreen();
+  clear_screen();
 
-  width = getMaxWidth();
-  height = getMaxHeight();
+  width = get_max_width();
+  height = get_max_height();
 
-  drawRectangle(0x328fa8, 0, 16, width, 1);
+  draw_rectangle(0x328fa8, 0, 16, width, 1);
 
   p1Coord[0] = width / 2;
   p1Coord[1] = 16;
@@ -192,18 +192,18 @@ void play1() {
 
   char c;
   while (lost == 0) {
-    c = getChar();
-    changeDir(c);
+    c = get_char();
+    change_dir(c);
 
     if (counter == 0) {
       move();
-      lost = didLose(1);
-      drawRectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
+      lost = did_lose(1);
+      draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
     }
     counter++;
     if (counter >= SPEED) {
       counter = 0;
-      printPts(pts);
+      print_pts(pts);
       if (pts < MAX_POINTS)
         pts++;
     }
@@ -216,12 +216,12 @@ void play2() {
                     // to make a syscall
   int lost = 0;     // 1 if Player 1 Lost, 2 if Player 2 Lost, 3 if tie
   int pts = 0;
-  clearScreen();
+  clear_screen();
 
-  width = getMaxWidth();
-  height = getMaxHeight();
+  width = get_max_width();
+  height = get_max_height();
 
-  drawRectangle(0x328fa8, 0, 16, width, 1);
+  draw_rectangle(0x328fa8, 0, 16, width, 1);
 
   p1Dir = DOWN;
   p2Dir = UP;
@@ -233,19 +233,19 @@ void play2() {
 
   char c;
   while (lost == 0) {
-    c = getChar();
-    changeDir(c);
+    c = get_char();
+    change_dir(c);
 
     if (counter == 0) {
       move();
-      lost = didLose(2);
-      drawRectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
-      drawRectangle(p2Color, p2Coord[0], p2Coord[1], 1, 1);
+      lost = did_lose(2);
+      draw_rectangle(p1Color, p1Coord[0], p1Coord[1], 1, 1);
+      draw_rectangle(p2Color, p2Coord[0], p2Coord[1], 1, 1);
     }
     counter++;
     if (counter >= SPEED) {
       counter = 0;
-      printPts(pts);
+      print_pts(pts);
       if (pts < MAX_POINTS)
         pts++;
     }
@@ -255,28 +255,28 @@ void play2() {
 
 void eliminator() {
   for (int i = 0; i < 4; i++)
-    scaleDown();
-  clearScreen();
-  setCursor(0, 15);
+    scale_down();
+  clear_screen();
+  set_cursor(0, 15);
   fprintf(
       STDOUT,
       "\n                                      Please select the amount of players and press ENTER\n                 "
       "                               (change decision with a or d)\n\n");
   fprintf(STDOUT, "                                                       1               2");
-  playDragonMelody();
+  play_dragon_melody();
   char c = 0;
   char currentDecision = 1;
   while (c != '\n') {
-    c = getChar();
+    c = get_char();
     switch (c) {
     case 'a':
-      drawRectangle(0xFFFFFF, 439, 320, 8, 1);
-      drawRectangle(0x000000, 568, 320, 8, 1);
+      draw_rectangle(0xFFFFFF, 439, 320, 8, 1);
+      draw_rectangle(0x000000, 568, 320, 8, 1);
       currentDecision = 1;
       break;
     case 'd':
-      drawRectangle(0x000000, 439, 320, 8, 1);
-      drawRectangle(0xFFFFFF, 568, 320, 8, 1);
+      draw_rectangle(0x000000, 439, 320, 8, 1);
+      draw_rectangle(0xFFFFFF, 568, 320, 8, 1);
       currentDecision = 2;
       break;
     default:

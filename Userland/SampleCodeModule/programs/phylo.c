@@ -125,7 +125,7 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   }
 
   char cmd = 0;
-  while (running && ((cmd = getChar()) != 'q')) {
+  while (running && ((cmd = get_char()) != 'q')) {
     if (cmd == 'q') {
       running = 0;
       break;
@@ -321,7 +321,7 @@ static int add_philosopher(int id) {
   char *args[] = {id_str, NULL};
   // Create philosopher process
 
-  int fg_flag = isForeground(getpid());
+  int fg_flag = is_foreground(get_pid());
 
   createProcessInfo info = {.name = name,
                             .fg_flag = fg_flag,
@@ -334,7 +334,7 @@ static int add_philosopher(int id) {
 
   print_welcome(id);
 
-  if ((philosophers[id].pid = createProcess(&info)) < 0) {
+  if ((philosophers[id].pid = create_process(&info)) < 0) {
     // sem_close(philosophers[id].sem);
     fprintf(STDERR, "ERROR: Unable to create process\n");
     sem_post(mutex);

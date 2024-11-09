@@ -21,12 +21,12 @@
 /*
     @brief Invalid opcode exception
 */
-extern void invalidOpCode();
+extern void invalid_opcode();
 
 /*
     @brief Division by zero exception
 */
-extern void divzero();
+extern void div_zero();
 
 typedef struct Command {
   char *name;
@@ -36,7 +36,7 @@ typedef struct Command {
   char *usage;
 } Command;
 
-int findCommand(char *command);
+int find_command(char *command);
 
 /*
     @brief Starts the shell

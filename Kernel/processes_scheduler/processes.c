@@ -7,23 +7,23 @@
 #include <scheduler.h>
 #include <videoDriver.h>
 
-static int nameValidation(const char *name);
-static int findPID(pid pid, ProcessS **pr);
+static int name_validation(const char *name);
+static int find_pid(pid pid, ProcessS **pr);
 
 static ProcessS processArr[MAX_PROCESSES];  // We store all of our proccesses info here
 static familyUnit families[MAX_PROCESSES];  // we store children here
 int lastPID = 0;
 
-static void addChild(pid parent, pid child) {
+static void add_child(pid parent, pid child) {
   families[parent].childrenArr[child] = 1;
   families[parent].numberOfChildren++;
 }
 
-static void removeChild(pid child) {
+static void remove_child(pid child) {
   ProcessS *proc = &processArr[child];
   pid parent = proc->parent;
   char buffer[10];
-  intToStr(proc->parent, buffer, 10);
+  int_to_str(proc->parent, buffer, 10);
   if (parent != (NO_PROC)) {
     families[parent].childrenArr[child] = 0;
     families[parent].numberOfChildren--;
@@ -33,7 +33,7 @@ static void removeChild(pid child) {
   }
 }
 
-static void shellAdoption(pid child, pid lastParent) {
+static void shell_adoption(pid child, pid lastParent) {
   /* remove from home */
   families[lastParent].childrenArr[child] = 0;
   families[lastParent].numberOfChildren--;
@@ -43,21 +43,21 @@ static void shellAdoption(pid child, pid lastParent) {
   families[0].numberOfChildren++;
 }
 
-pid createProcess(createProcessInfo *info) {
-  pid parent = getpid();
+pid create_process(createProcessInfo *info) {
+  pid parent = get_pid();
   pid pid = 0;
   // Find first empty slot
   for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++)
     ;
 
-  if (pid >= MAX_PROCESSES || info->argc < 0 || !nameValidation(info->name)) {
+  if (pid >= MAX_PROCESSES || info->argc < 0 || !name_validation(info->name)) {
     if (pid >= MAX_PROCESSES) {
       print(STDERR, "No more processes can be created\n");
     }
     if (info->argc < 0) {
       print(STDERR, "Argc is negative\n");
     }
-    if (!nameValidation(info->name)) {
+    if (!name_validation(info->name)) {
       print(STDERR, "Name is invalid\n");
     }
     return -1;
@@ -122,7 +122,7 @@ pid createProcess(createProcessInfo *info) {
   process->argc = info->argc;
 
   if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
-    addChild(parent, pid);
+    add_child(parent, pid);
     process->parent = parent;
   } else {
     process->parent = (NO_PROC);
@@ -141,7 +141,7 @@ pid createProcess(createProcessInfo *info) {
   }
 
   // Call scheduler so that it adds the process to its queue and blocks parent process
-  processWasCreated(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
+  process_was_created(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
                     process->stackStart);
   if (process->name == NULL) {
     print(STDERR, "NAME POINTER IS NULL\n");
@@ -150,7 +150,7 @@ pid createProcess(createProcessInfo *info) {
   return pid;
 }
 
-static int nameValidation(const char *name) {
+static int name_validation(const char *name) {
   if (name == NULL) {
     print(STDERR, "Name is null\n");
     return 0;
@@ -171,18 +171,18 @@ int kill(pid pid) {  // if it had children, shell adopts them
     return -1;  // cant kill shell
   }
   ProcessS *process;
-  if (!findPID(pid, &process)) {
+  if (!find_pid(pid, &process)) {
     print(STDERR, "Validation error\n");
     return -1;
   }
   /* remove from parent list*/
-  removeChild(pid);
+  remove_child(pid);
 
   /* check if it has children and make shell adopt them*/
   if (families[pid].numberOfChildren != 0) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
       if (families[pid].childrenArr[i]) {
-        shellAdoption(i, pid);
+        shell_adoption(i, pid);
         if (!families[pid].numberOfChildren) {
           break;
         }
@@ -198,7 +198,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   free(process->memory);
 
   // Call scheduler to take it out of queue
-  processWasKilled(pid);
+  process_was_killed(pid);
 
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
@@ -216,18 +216,18 @@ int kill(pid pid) {  // if it had children, shell adopts them
   return 0;
 }
 
-int killWithChildren(pid pid) {
+int kill_with_children(pid pid) {
   if (pid == 0) {
     return -1;
   }
 
   ProcessS *process;
-  if (!findPID(pid, &process)) {
+  if (!find_pid(pid, &process)) {
     print(STDERR, "Validation error\n");
     return -1;
   }
 
-  removeChild(pid);
+  remove_child(pid);
 
   if (families[pid].numberOfChildren != 0) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
@@ -242,7 +242,7 @@ int killWithChildren(pid pid) {
   }
   free(process->memory);
 
-  processWasKilled(pid);
+  process_was_killed(pid);
 
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
@@ -255,31 +255,31 @@ int killWithChildren(pid pid) {
   return 0;
 }
 
-int sendToBackground(pid pid) {
+int send_to_background(pid pid) {
   ProcessS *p;
-  if (!findPID(pid, &p)) {
+  if (!find_pid(pid, &p)) {
     return -1;
   }
   return !(p->fg_flag = BACKGROUND);
 }
 
-int bringToForeground(pid pid) {
+int bring_to_foreground(pid pid) {
   ProcessS *p;
-  if (!findPID(pid, &p)) {
+  if (!find_pid(pid, &p)) {
     return -1;
   }
   return (p->fg_flag = FOREGROUND);
 }
 
-int isForeground(pid pid) {
+int is_foreground(pid pid) {
   ProcessS *p;
-  if (!findPID(pid, &p)) {
+  if (!find_pid(pid, &p)) {
     return -1;
   }
   return p->fg_flag;
 }
 
-int listProcessesInfo(ProcessInfo *processes, int maxProcesses) {
+int list_processes_info(ProcessInfo *processes, int maxProcesses) {
   int processCounter = 0;
   for (int i = 0; i < MAX_PROCESSES && processCounter < maxProcesses; ++i) {
     ProcessS *process = &processArr[i];
@@ -293,13 +293,13 @@ int listProcessesInfo(ProcessInfo *processes, int maxProcesses) {
       info->parent = process->parent;
       info->input = process->input;
       info->output = process->output;
-      getProcessInfo(i, info);
+      get_process_info(i, info);
     }
   }
   return processCounter;
 }
 
-static int findPID(pid pid, ProcessS **pr) {
+static int find_pid(pid pid, ProcessS **pr) {
   if (pid < 0 || pid >= MAX_PROCESSES || processArr[pid].stackEnd == NULL) {
     return 0;
   }
@@ -312,7 +312,7 @@ int get_process_input(pid pid) {
     return STDIN;
   }
   ProcessS *p;
-  if (!findPID(pid, &p)) {
+  if (!find_pid(pid, &p)) {
     return -1;
   }
   return p->input;
@@ -323,7 +323,7 @@ int get_process_output(pid pid) {
     return STDOUT;
   }
   ProcessS *p;
-  if (!findPID(pid, &p)) {
+  if (!find_pid(pid, &p)) {
     return -1;
   }
   return p->output;

@@ -9,7 +9,7 @@
 static void int_20();
 static void int_21();
 
-void irqDispatcher(uint64_t irq) {
+void irq_dispatcher(uint64_t irq) {
   switch (irq) {
   case 0:
     int_20();
@@ -21,6 +21,6 @@ void irqDispatcher(uint64_t irq) {
   return;
 }
 
-void int_20() { timerHandler(); }
+void int_20() { timer_handler(); }
 
-void int_21() { keyboardHandler(); }
+void int_21() { keyboard_handler(); }

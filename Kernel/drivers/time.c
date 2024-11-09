@@ -6,20 +6,20 @@
 #include <time.h>
 #include <videoDriver.h>
 
-extern uint64_t getMinutes();
-extern uint64_t getSeconds();
-extern uint64_t getHours();
+extern uint64_t get_minutes();
+extern uint64_t get_seconds();
+extern uint64_t get_hours();
 
 static unsigned long ticks = 0;
 
-void timerHandler() { ticks++; }
+void timer_handler() { ticks++; }
 
-int ticksElapsed() { return ticks; }
+int ticks_elapsed() { return ticks; }
 
-int millisElapsed() { return ticks * (1000 / 18); }
+int millis_elapsed() { return ticks * (1000 / 18); }
 
 // Rounding up slightly
-int secondsElapsed() { return ticks / 18; }
+int seconds_elapsed() { return ticks / 18; }
 
 void timer_wait(int delta) {
   int initialTicks = ticks;

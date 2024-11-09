@@ -5,13 +5,13 @@
 #include <scheduler.h>
 #include <videoDriver.h>
 
-extern void *createProcessStack(int argc, const char *const argv[], void *rsp, ProcessStart start);
+extern void *create_process_stack(int argc, const char *const argv[], void *rsp, ProcessStart start);
 extern void int81();
 
-int getState(pid, PCB **pcb);
-PCB *getCurrentProcess();
-int getQuantum(pid pid);
-pid getNextReady();
+int get_state(pid, PCB **pcb);
+PCB *get_current_process();
+int get_quantum(pid pid);
+pid get_next_ready();
 
 static PCB processTable[MAX_PROCESSES];
 static uint8_t currentQuantum;
@@ -26,23 +26,23 @@ void init_scheduler() {
   currentQuantum = 0;
 }
 
-int processWasCreated(pid pid, int argc, const char *const argv[], priority priority, ProcessStart entryPoint,
+int process_was_created(pid pid, int argc, const char *const argv[], priority priority, ProcessStart entryPoint,
                       void *currentRSP) {
   if (priority < MIN_PRIORITY || priority > MAX_PRIORITY) {
     priority = DEFAULT_PRIORITY;
   }
   processTable[pid].processStatus = READY;
   processTable[pid].priority = priority;
-  processTable[pid].currentRSP = createProcessStack(argc, argv, currentRSP, entryPoint);
+  processTable[pid].currentRSP = create_process_stack(argc, argv, currentRSP, entryPoint);
   if (processTable[pid].currentRSP == NULL) {
     return -1;
   }
   return 0;
 }
 
-int processWasKilled(pid pid) {
+int process_was_killed(pid pid) {
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     return 1;
   }
   if (pcb->processStatus == KILLED) {
@@ -58,15 +58,15 @@ int processWasKilled(pid pid) {
   return 0;
 }
 
-void waitForChildren() {
+void wait_for_children() {
   block(currentPID);
   yield();
 }
 
-void waitForPID(pid pid) {
+void wait_for_pid(pid pid) {
   PCB *pcb;
-  while (getState(pid, &pcb) == 0 && pcb->processStatus != KILLED) {
-    block(getpid());
+  while (get_state(pid, &pcb) == 0 && pcb->processStatus != KILLED) {
+    block(get_pid());
     yield();
   }
 }
@@ -76,7 +76,7 @@ void yield() {
   int81();
 }
 
-void *switchP(void *cRSP) {
+void *switch_process(void *cRSP) {
   // If in kernel
   if (currentPID == PID_KERNEL) {
     mainRSP = cRSP;
@@ -93,17 +93,17 @@ void *switchP(void *cRSP) {
     currentPID = nextPID;
     nextPID = NO_PROC;
     // Assign how much more time based on process priority
-    currentQuantum = getQuantum(currentPID);
+    currentQuantum = get_quantum(currentPID);
   }
 
   else if ((processTable[currentPID].currentRSP == NULL) || (processTable[currentPID].processStatus != READY) ||
            (currentQuantum == 0)) {
-    currentPID = getNextReady();
+    currentPID = get_next_ready();
     if (currentPID == PID_KERNEL) {
       currentQuantum = 0;
       return mainRSP;
     }
-    currentQuantum = getQuantum(currentPID);
+    currentQuantum = get_quantum(currentPID);
   }
 
   // Keep running the same procs
@@ -117,9 +117,9 @@ void *switchP(void *cRSP) {
 
 int block(pid pid) {
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     char buffer[10];
-    intToStr(pid, buffer, 10);
+    int_to_str(pid, buffer, 10);
     print(STDERR, "For pid: ");
     print(STDERR, buffer);
 
@@ -135,7 +135,7 @@ int block(pid pid) {
 
 int unblock(pid pid) {
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     return -1;
   }
   if (processTable[pid].processStatus == READY || processTable[pid].processStatus == RUNNING) {
@@ -151,7 +151,7 @@ int unblock(pid pid) {
 
 int nice(pid pid, priority newPrio) {
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     return -1;
   }
 
@@ -170,10 +170,10 @@ int nice(pid pid, priority newPrio) {
 }
 
 // Assigns time based on priority -> lower priority means less time
-int getQuantum(pid currentPID) { return (QUANTUM + processTable[currentPID].priority); }
+int get_quantum(pid currentPID) { return (QUANTUM + processTable[currentPID].priority); }
 
 // Order remains the same, what changes is the amount of time a process will be allowed to run
-pid getNextReady() {
+pid get_next_ready() {
   pid first = currentPID < 0 ? 0 : currentPID;
   pid next = first;
   do {
@@ -186,8 +186,8 @@ pid getNextReady() {
   return PID_KERNEL;
 }
 
-int killCurrent() {
-  PCB *pcb = getCurrentProcess();
+int kill_current() {
+  PCB *pcb = get_current_process();
   if (pcb == NULL) {
     return 1;
   }
@@ -197,16 +197,16 @@ int killCurrent() {
   return 0;
 }
 
-PCB *getCurrentProcess() {
+PCB *get_current_process() {
   if (currentPID > 0 && processTable[currentPID].processStatus == RUNNING) {
     return &processTable[currentPID];
   }
   return NULL;
 }
 
-int getProcessInfo(pid pid, ProcessInfo *processInfo) {
+int get_process_info(pid pid, ProcessInfo *processInfo) {
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     return -1;
   }
   processInfo->status = pcb->processStatus;
@@ -214,7 +214,7 @@ int getProcessInfo(pid pid, ProcessInfo *processInfo) {
   return 0;
 }
 
-int getState(pid pid, PCB **pcb) {
+int get_state(pid pid, PCB **pcb) {
   if (pid < 0 || pid >= MAX_PROCESSES || (processTable[pid].currentRSP == NULL)) {
     return -1;
   }
@@ -222,14 +222,14 @@ int getState(pid pid, PCB **pcb) {
   return 0;
 }
 
-pid getpid() { return currentPID; }
+pid get_pid() { return currentPID; }
 
-int setPriority(pid pid, priority newPrio) {
+int set_priority(pid pid, priority newPrio) {
   if (newPrio < MIN_PRIORITY || newPrio > MAX_PRIORITY) {
     return -1;
   }
   PCB *pcb;
-  if (getState(pid, &pcb)) {
+  if (get_state(pid, &pcb)) {
     return -1;
   }
   pcb->priority = newPrio;

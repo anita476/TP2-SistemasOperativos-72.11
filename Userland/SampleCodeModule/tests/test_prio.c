@@ -7,10 +7,8 @@
 #include <stdint.h>
 #include <test_prio.h>
 
-#define MINOR_WAIT 1000000  // TODO: Change this value to prevent a process from flooding the screen
-#define WAIT                                                                                                           \
-  100000000  // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
-
+#define MINOR_WAIT      1000000  // TODO: Change this value to prevent a process from flooding the screen
+#define WAIT            100000000  // TODO: Change this value to make the wait long enough to see theese processes beeing run at least twice
 #define TOTAL_PROCESSES 3
 #define LOWEST          0   // TODO: Change as required
 #define MEDIUM          5   // TODO: Change as required
@@ -23,7 +21,7 @@ void test_prio() {
   char *argv[] = {0};
   uint64_t i;
 
-  int fg_flag = isForeground(getpid());
+  int fg_flag = is_foreground(get_pid());
 
   createProcessInfo endlessInfo = {.name = "endless",
                                    .fg_flag = fg_flag,
@@ -36,14 +34,14 @@ void test_prio() {
   fprintf(STDOUT, "\n");
   fprintf(STDOUT, "CREATING PROCESSES...\n");
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    pids[i] = createProcess(&endlessInfo);
+    pids[i] = create_process(&endlessInfo);
   }
 
   bussy_wait(WAIT);
   fprintf(STDOUT, "\nCHANGING PRIORITIES...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    setPriority(pids[i], prio[i]);
+    set_priority(pids[i], prio[i]);
   }
 
   bussy_wait(WAIT);
@@ -55,7 +53,7 @@ void test_prio() {
   fprintf(STDOUT, "CHANGING PRIORITIES WHILE BLOCKED...\n");
 
   for (i = 0; i < TOTAL_PROCESSES; i++) {
-    setPriority(pids[i], MEDIUM);
+    set_priority(pids[i], MEDIUM);
   }
 
   fprintf(STDOUT, "UNBLOCKING...\n");

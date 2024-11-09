@@ -5,25 +5,25 @@
 /*
     @brief Handles the timer
 */
-void timerHandler();
+void timer_handler();
 
 /*
     @brief Gets the elapsed ticks
     @returns The elapsed ticks
 */
-int ticksElapsed();
+int ticks_elapsed();
 
 /*
     @brief Gets the elapsed seconds
     @returns The elapsed seconds
 */
-int secondsElapsed();
+int seconds_elapsed();
 
 /*
     @brief Gets the elapsed milliseconds
     @returns The elapsed milliseconds
 */
-int millisElapsed();
+int millis_elapsed();
 
 /*
     @brief Waits for the specified time in milliseconds

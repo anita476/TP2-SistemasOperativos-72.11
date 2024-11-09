@@ -28,7 +28,7 @@ void *memcpy(void *destination, const void *source, uint64_t length) {
   return destination;
 }
 
-void intToStr(int num, char *str, int base) {
+void int_to_str(int num, char *str, int base) {
   int i = 0;
   char isNegative = 0;
 

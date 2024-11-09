@@ -10,6 +10,6 @@
     @param widthImage The width of the image
     @param heightImage The height of the image
 */
-void putSaul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage);
+void put_saul(uint64_t xStart, uint64_t yStart, uint64_t widthImage, uint64_t heightImage);
 
 #endif

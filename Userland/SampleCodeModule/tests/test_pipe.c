@@ -78,9 +78,9 @@ void test_pipe() {
                                         .input = STDIN,
                                         .output = STDOUT};
 
-  createProcess(&writeProcessInfo);
-  createProcess(&readProcessInfo);
-  waitForChildren();
+  create_process(&writeProcessInfo);
+  create_process(&readProcessInfo);
+  wait_for_children();
   fprintf(STDOUT, "Finished pipe test!\n");
   close_pipe(pipe_id);
 }

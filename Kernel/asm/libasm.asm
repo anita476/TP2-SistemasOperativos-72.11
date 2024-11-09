@@ -1,14 +1,14 @@
-GLOBAL cpuVendor
-GLOBAL getKey
-GLOBAL getSeconds
-GLOBAL getMinutes
-GLOBAL getHours
+GLOBAL cpu_vendor
+GLOBAL get_key
+GLOBAL get_seconds
+GLOBAL get_minutes
+GLOBAL get_hours
 GLOBAL inb
 GLOBAL outb
 
 section .text
 	
-cpuVendor:
+cpu_vendor:
 	push rbp
 	mov rbp, rsp
 
@@ -31,7 +31,7 @@ cpuVendor:
 	pop rbp
 	ret
 
-getKey: 
+get_key: 
 	push rbp
 	mov rbp, rsp
 
@@ -41,7 +41,7 @@ getKey:
 	pop rbp
 	ret 
 
-getSeconds:   
+get_seconds:   
     cli
 
     ; config del número n binario
@@ -59,7 +59,7 @@ getSeconds:
     sti
     ret
             
-getMinutes:
+get_minutes:
     cli
 
     ; config del numero n binario
@@ -77,7 +77,7 @@ getMinutes:
     sti
     ret
 
-getHours:
+get_hours:
     cli
 
     ; config del número n binario
@@ -96,7 +96,7 @@ getHours:
     ret
 
 ; Code segment imspired from: https://wiki.osdev.org/PC_Speaker
-    inb:
+inb:
 	push rbp
 	mov rbp, rsp
 	mov rdx, rdi

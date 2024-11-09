@@ -8,7 +8,7 @@
 #define EOF_CHAR    -1
 
 // Assembly function
-extern int getKey();
+extern int get_key();
 
 static const char keyboard[256] = {
     0,   1,   '1', '2', '3', '4',  '5', '6',  '7', '8', '9', '0', '\'', '<', '\b', '\t', 'q', 'w', 'e', 'r', 't',
@@ -29,22 +29,22 @@ char enterFlag = 0;
 char shiftFlag = 0;
 char capsLockFlag = 0;
 
-char isAlpha(char c) { return (c >= 'a' && c <= 'z'); }
+char is_alpha(char c) { return (c >= 'a' && c <= 'z'); }
 
-char isKeyAvailable() { return (buffer[readIndex] != '\0'); }
+char is_key_available() { return (buffer[readIndex] != '\0'); }
 
 // Waiting queue
 pid waitingToRead[MAX_PROCESSES] = {0};
 int waitingToReadCounter = 0;
 
-void addToBlockingQueueRead(pid pid) {
+void add_to_blocking_queue_read(pid pid) {
   waitingToRead[waitingToReadCounter] = pid;
   waitingToReadCounter++;
   block(pid);
   yield();
 }
 
-void removeFromBlockingQueue() {
+void remove_from_blocking_queue() {
   if (waitingToReadCounter == 0) {
     return;
   }
@@ -56,23 +56,23 @@ void removeFromBlockingQueue() {
   unblock(toUnblock);
 }
 
-void addToBuffer(char c) {
+void add_to_buffer(char c) {
   // Resets the index if the buffer is full
   if (writeIndex >= BUFFER_SIZE)
     writeIndex = 0;
   buffer[writeIndex++] = c;
   lastIndexFlag = 1;
   // Here we check if there are processes waiting for read
-  removeFromBlockingQueue();
+  remove_from_blocking_queue();
 }
 
-void keyboardHandler() {
+void keyboard_handler() {
   if (buffer[readIndex - 1] == '\n')
-    cleanBuffer();
+    clean_buffer();
   if (buffer[readIndex - 1] == '\b')
-    removeCharFromBuffer();
+    remove_char_from_buffer();
 
-  unsigned char scancodeKey = getKey();
+  unsigned char scancodeKey = get_key();
   char ASCIIkey = keyboard[scancodeKey];
 
   // Left Ctrl pressed
@@ -90,10 +90,10 @@ void keyboardHandler() {
     // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
       print(STDOUT, "^C\n");
-      cleanBuffer();
+      clean_buffer();
       for (int i = 1; i < MAX_PROCESSES; i++) {
-        if (isForeground(i) > 0) {
-          killWithChildren(i);
+        if (is_foreground(i) > 0) {
+          kill_with_children(i);
           return;
         }
       }
@@ -102,7 +102,7 @@ void keyboardHandler() {
     }
     // Ctrl+D
     else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
-      addToBuffer(EOF_CHAR);
+      add_to_buffer(EOF_CHAR);
       print(STDOUT, "^D\n");
       return;
     }
@@ -126,22 +126,22 @@ void keyboardHandler() {
     // Key is 'enter' ot 'backspace'
     case '\n':
     case '\b':
-      addToBuffer(ASCIIkey);
+      add_to_buffer(ASCIIkey);
       break;
     // Key is valid
     default:
       // Caps
-      if (isAlpha(ASCIIkey) && ((capsLockFlag != shiftFlag)))
-        addToBuffer(ASCIIkey - 'a' + 'A');
+      if (is_alpha(ASCIIkey) && ((capsLockFlag != shiftFlag)))
+        add_to_buffer(ASCIIkey - 'a' + 'A');
       // Not caps
       else
-        addToBuffer(ASCIIkey);
+        add_to_buffer(ASCIIkey);
       break;
     }
   }
 }
 
-void removeCharFromBuffer() {
+void remove_char_from_buffer() {
   if (writeIndex > 1) {
     // Removes '\b' and the character
     buffer[--writeIndex] = '\0';
@@ -149,16 +149,16 @@ void removeCharFromBuffer() {
   }
 }
 
-void cleanBuffer() {
+void clean_buffer() {
   memset(buffer, '\0', writeIndex);
   writeIndex = 0;
   readIndex = 0;
 }
 
-void cleanRead() { readIndex = writeIndex; }
+void clean_read() { readIndex = writeIndex; }
 
-char getKeyFromBuffer() {
-  if (!isKeyAvailable())
+char get_key_from_buffer() {
+  if (!is_key_available())
     return 0;
 
   char c = buffer[readIndex];
@@ -169,16 +169,16 @@ char getKeyFromBuffer() {
   return c;
 }
 
-unsigned int getBuffer(char *dest, unsigned int size) {
+unsigned int get_buffer(char *dest, unsigned int size) {
   int i = 0;
-  while (isKeyAvailable() && i < size) {
-    char c = getKeyFromBuffer();
+  while (is_key_available() && i < size) {
+    char c = get_key_from_buffer();
     dest[i++] = c;
   }
   return i;
 }
 
-char getLastChar() {
+char get_last_char() {
   if (lastIndexFlag == 1) {
     lastIndexFlag = 0;
     return buffer[writeIndex - 1];

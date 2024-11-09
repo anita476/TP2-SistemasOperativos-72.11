@@ -29,7 +29,7 @@ typedef struct Semaphore {
 Semaphore semaphoreList[MAX_SEMAPHORES] = {{0}};
 int active = 0;
 
-static int grabSemaphore(sem sem) {
+static int grab_semaphore(sem sem) {
   acquire(&lock);
 
   if (sem < 0 || sem > MAX_SEMAPHORES) {
@@ -41,7 +41,7 @@ static int grabSemaphore(sem sem) {
   return 0;
 }
 
-static int isInterested(sem sem, pid pid) {
+static int is_interested(sem sem, pid pid) {
   for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
     if (semaphoreList[sem].interestedProcesses[i] == pid) {
       return 1;
@@ -56,7 +56,7 @@ int sem_open(sem_name semName, int initValue) {
     return INVALID_VALUE_ERROR;
   }
 
-  pid currentPid = getpid();
+  pid currentPid = get_pid();
   sem semId = sem_get(semName);
 
   if (semId == -1) {  // need to create sem
@@ -98,7 +98,7 @@ int sem_open(sem_name semName, int initValue) {
     return -1;
   }
 
-  if (grabSemaphore(semId) != 0) {
+  if (grab_semaphore(semId) != 0) {
     return -1;
   }
 
@@ -121,11 +121,11 @@ int sem_open(sem_name semName, int initValue) {
 }
 
 int sem_close(sem sem) {
-  if (grabSemaphore(sem) != 0) {
+  if (grab_semaphore(sem) != 0) {
     return INVALID_VALUE_ERROR;
   }
 
-  pid currentPid = getpid();
+  pid currentPid = get_pid();
   int found = 0;
 
   for (int i = 0; i < semaphoreList[sem].numberInterestedProcesses; i++) {
@@ -160,13 +160,13 @@ int sem_close(sem sem) {
 
 int sem_wait(sem sem) {
 
-  if (grabSemaphore(sem) != 0) {
+  if (grab_semaphore(sem) != 0) {
     print(STDERR, "COULDNT GRAB SEMAPHORE\n");
     return -1;
   }
 
-  pid currentPid = getpid();
-  int found = isInterested(sem, currentPid);
+  pid currentPid = get_pid();
+  int found = is_interested(sem, currentPid);
 
   if (!found) {
     release(&(semaphoreList[sem].lock));
@@ -180,7 +180,7 @@ int sem_wait(sem sem) {
     block(currentPid);
     yield();
 
-    if (grabSemaphore(sem) != 0)
+    if (grab_semaphore(sem) != 0)
       return -1;
   }
   semaphoreList[sem].sem_value--;
@@ -191,12 +191,12 @@ int sem_wait(sem sem) {
 
 int sem_post(sem sem) {
 
-  if (grabSemaphore(sem) != 0) {
+  if (grab_semaphore(sem) != 0) {
     return -1;
   }
 
-  pid currentPid = getpid();
-  int found = isInterested(sem, currentPid);
+  pid currentPid = get_pid();
+  int found = is_interested(sem, currentPid);
 
   if (!found) {
     release(&(semaphoreList[sem].lock));

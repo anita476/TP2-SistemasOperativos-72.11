@@ -59,7 +59,7 @@ void *memcpy(void *destination, const void *source, uint64_t length);
     @param result The result buffer
     @returns The CPU vendor
 */
-char *cpuVendor(char *result);
+char *cpu_vendor(char *result);
 
 /*
     @brief Converts an integer to a string
@@ -67,7 +67,7 @@ char *cpuVendor(char *result);
     @param str The result buffer
     @param base The base
 */
-void intToStr(int num, char *str, int base);
+void int_to_str(int num, char *str, int base);
 
 /*
     @brief Concatenates two strings

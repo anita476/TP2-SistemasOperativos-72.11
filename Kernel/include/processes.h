@@ -70,7 +70,7 @@ typedef struct { /* not good if number of processes increases, but i think its f
     @param info The process info
     @returns The PID of the process
 */
-pid createProcess(createProcessInfo *info);
+pid create_process(createProcessInfo *info);
 
 /*
     @brief Kills a process
@@ -84,28 +84,28 @@ int kill(pid pid);
     @param pid The PID of the process
     @returns 0 if successful, -1 if error
 */
-int killWithChildren(pid pid);
+int kill_with_children(pid pid);
 
 /*
     @brief Sends a process to the background
     @param pid The PID of the process
     @returns 0 if successful, -1 if error
 */
-int sendToBackground(pid pid);
+int send_to_background(pid pid);
 
 /*
     @brief Brings a process to the foreground
     @param pid The PID of the process
     @returns 0 if successful, -1 if error
 */
-int bringToForeground(pid pid);
+int bring_to_foreground(pid pid);
 
 /*
     @brief Checks if a process is in the foreground
     @param pid The PID of the process
     @returns 1 if the process is in the foreground, 0 otherwise
 */
-int isForeground(pid pid);
+int is_foreground(pid pid);
 
 /*
     @brief Lists the processes info
@@ -113,7 +113,7 @@ int isForeground(pid pid);
     @param maxProcesses The maximum number of processes
     @returns The number of processes listed
 */
-int listProcessesInfo(ProcessInfo *processes, int maxProcesses);
+int list_processes_info(ProcessInfo *processes, int maxProcesses);
 
 /*
     @brief Gets the process input

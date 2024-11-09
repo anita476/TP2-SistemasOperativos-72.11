@@ -4,14 +4,14 @@
 #include "music.h"
 #include "libSysCalls.h"
 
-void errorSound() {
+void error_sound() {
   make_sound(261, 5, 0);
   make_sound(329, 5, 0);
   make_sound(195, 5, 0);
   make_sound(130, 5, 0);
 }
 
-void playDragonMelody() {
+void play_dragon_melody() {
   make_sound(659, 5, 1);
   make_sound(659, 5, 1);
   make_sound(659, 5, 1);
@@ -20,7 +20,7 @@ void playDragonMelody() {
   make_sound(783, 5, 2);
 }
 
-void playWahWahWah() {
+void play_wah_wah_wah() {
   make_sound(195, 10, 2);
   make_sound(184, 10, 2);
   make_sound(174, 10, 2);

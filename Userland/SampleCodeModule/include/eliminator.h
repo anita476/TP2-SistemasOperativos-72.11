@@ -8,9 +8,9 @@ void eliminator();
 /*
     @brief Plays the famous dragon melody
 */
-void playDragonMelody();
+void play_dragon_melody();
 
 /*
     @brief Plays the losing theme
 */
-void playWahWahWah();
+void play_wah_wah_wah();

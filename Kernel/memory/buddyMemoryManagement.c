@@ -180,30 +180,30 @@ void memory_manager_state() {
 
     if (count > 0) {
       print(STDOUT, "Order ");
-      intToStr(i, buffer, 10);
+      int_to_str(i, buffer, 10);
       print(STDOUT, buffer);
       print(STDOUT, " (");
-      intToStr(block_size, buffer, 10);
+      int_to_str(block_size, buffer, 10);
       print(STDOUT, buffer);
       print(STDOUT, " bytes): ");
-      intToStr(count, buffer, 10);
+      int_to_str(count, buffer, 10);
       print(STDOUT, buffer);
       print(STDOUT, " free blocks\n");
     }
   }
 
   print(STDOUT, "\nTotal memory: ");
-  intToStr(buddy.total_size, buffer, 10);
+  int_to_str(buddy.total_size, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
 
   print(STDOUT, "Free memory: ");
-  intToStr(buddy.free_memory, buffer, 10);
+  int_to_str(buddy.free_memory, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
 
   print(STDOUT, "Allocated memory: ");
-  intToStr(buddy.total_size - buddy.free_memory, buffer, 10);
+  int_to_str(buddy.total_size - buddy.free_memory, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
   print(STDOUT, "========================\n");

@@ -32,7 +32,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
   while (1) {
     fprintf(STDOUT, "\n Starting loop\n");
 
-    int fg_flag = isForeground(getpid());
+    int fg_flag = is_foreground(get_pid());
 
     createProcessInfo loopInfo = {.name = "endless_loop",
                                   .fg_flag = fg_flag,
@@ -45,7 +45,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
 
     // Create max_processes processes
     for (rq = 0; rq < MAX_PROC; rq++) {
-      p_rqs[rq].pid = createProcess(&loopInfo);
+      p_rqs[rq].pid = create_process(&loopInfo);
       if (p_rqs[rq].pid == -1) {
         fprintf(STDERR, "test_processes: ERROR creating process\n");
         return -1;
@@ -59,7 +59,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
     while (alive > 0) {
 
       for (rq = 0; rq < MAX_PROC; rq++) {
-        action = GetUniform(100) % 2;
+        action = get_uniform(100) % 2;
 
         switch (action) {
         case 0:
@@ -87,7 +87,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
       }
       // Randomly unblocks processes
       for (rq = 0; rq < MAX_PROC; rq++) {
-        if (p_rqs[rq].state == BLOCKED && GetUniform(100) % 2) {
+        if (p_rqs[rq].state == BLOCKED && get_uniform(100) % 2) {
           if (unblock(p_rqs[rq].pid) != 0) {
             fprintf(STDERR, "test_processes: ERROR unblocking process\n");
             return -1;

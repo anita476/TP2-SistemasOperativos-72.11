@@ -29,10 +29,10 @@ int active_pipes = 0;
 
 // Because we use named semaphores, we need to give unique names to each one
 //  aclarar en el informe que, para este uso, sería mejor tener semáforos anónimos
-static void createSemName(unsigned int pipe_id, char *buf, char *sem) {
+static void create_sem_name(unsigned int pipe_id, char *buf, char *sem) {
   strcpy(buf, sem);
   char id[3];
-  intToStr(pipe_id, id, 10);
+  int_to_str(pipe_id, id, 10);
   strcat(buf, id);
 }
 
@@ -102,8 +102,8 @@ int open_pipe(unsigned int pipe_id) {
       free(bufW);
       return -1;
     }
-    createSemName(id, bufW, "semwrite");
-    createSemName(id, bufR, "semread");
+    create_sem_name(id, bufW, "semwrite");
+    create_sem_name(id, bufR, "semread");
     // create semaphores
     int sem_write = sem_open(bufW, PIPE_SIZE);
     int sem_read = sem_open(bufR, 0);

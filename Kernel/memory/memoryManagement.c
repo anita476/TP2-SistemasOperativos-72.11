@@ -77,17 +77,17 @@ void memory_manager_state() {
   size_t total = freeList->size + BLOCK_SIZE;  // Add back the first block header
 
   print(STDOUT, "Total memory: ");
-  intToStr(total, buffer, 10);
+  int_to_str(total, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
 
   print(STDOUT, "Free memory: ");
-  intToStr(total_free, buffer, 10);
+  int_to_str(total_free, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
 
   print(STDOUT, "Allocated memory: ");
-  intToStr(total - total_free, buffer, 10);
+  int_to_str(total - total_free, buffer, 10);
   print(STDOUT, buffer);
   print(STDOUT, " bytes\n");
 }

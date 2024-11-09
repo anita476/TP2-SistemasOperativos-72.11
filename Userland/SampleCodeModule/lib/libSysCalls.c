@@ -108,9 +108,11 @@ int close_pipe(unsigned int pipe_id) { return syscall(43, (uint64_t) pipe_id, 0,
 int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes) {
   return syscall(44, (uint64_t) pipe_id, (uint64_t) dest, (uint64_t) bytes, 0, 0);
 }
+
 int write_to_pipe(unsigned int pipe_id, char *src, unsigned int bytes) {
   return syscall(45, (uint64_t) pipe_id, (uint64_t) src, (uint64_t) bytes, 0, 0);
 }
+
 int get_pipe_info(unsigned int pipe_id, pipeInfo *info) {
   return syscall(46, (uint64_t) pipe_id, (uint64_t) info, 0, 0, 0);
 }

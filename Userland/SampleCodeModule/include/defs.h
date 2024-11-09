@@ -6,7 +6,7 @@
 #define MIN_PRIORITY     0
 #define NO_PROC          -1
 
-#define MAX_PROCESSES   10
+#define MAX_PROCESSES   15
 #define MAX_NAME_LENGTH 20
 
 typedef void (*ProcessStart)(int argc, char *argv[]);

@@ -204,7 +204,6 @@ int sem_post(sem sem) {
   semaphoreList[sem].sem_value++;
 
   if (semaphoreList[sem].numberWaitingProcesses > 0) {
-    // print(STDERR, "Posting semaphore\n");
     // Unblock first process in the list
     pid toUnblock = semaphoreList[sem].waitingProcesses[0];
 
@@ -213,17 +212,6 @@ int sem_post(sem sem) {
       semaphoreList[sem].waitingProcesses[i] = semaphoreList[sem].waitingProcesses[i + 1];
     }
     semaphoreList[sem].numberWaitingProcesses--;
-    /*
-   char buffer[20];
-   print(STDERR, "Processes waiting:");
-   for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses; i++) {
-       print(STDERR, "PID ");
-       intToStr(semaphoreList[sem].waitingProcesses[i], buffer,10);
-       print(STDERR, buffer);
-       print(STDERR, " ");
-   }
-   print(STDOUT, "\n"); */
-
     unblock(toUnblock);
   }
 

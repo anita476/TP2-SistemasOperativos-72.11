@@ -4,6 +4,7 @@
 #include <commands.h>
 #include <libSysCalls.h>
 #include <stdint.h>
+#include <utils.h>
 
 // Random
 static uint32_t m_z = 362436069;

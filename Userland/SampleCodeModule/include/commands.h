@@ -23,7 +23,7 @@ void regs();
     @param str The result buffer
     @param base The base
 */
-char* itoa(int num, char* str, int base);
+// char* itoa(int num, char* str, int base);
 
 /*
     @brief Prints the processes and their information

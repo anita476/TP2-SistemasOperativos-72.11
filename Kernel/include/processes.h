@@ -9,7 +9,7 @@
 #define FOREGROUND 1
 #define BACKGROUND 0
 
-#define MAX_PROCESSES 10
+#define MAX_PROCESSES 15
 #define MAX_NAME_LENGTH 20
 #define STACK_SIZE 4096
 

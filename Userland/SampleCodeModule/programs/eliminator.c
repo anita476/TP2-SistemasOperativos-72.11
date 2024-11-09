@@ -5,6 +5,7 @@
 #include "commands.h"
 #include "libSysCalls.h"
 #include "music.h"
+#include "utils.h"
 #define UP         0
 #define LEFT       1
 #define DOWN       2

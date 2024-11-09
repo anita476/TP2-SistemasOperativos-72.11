@@ -5,6 +5,7 @@
 #include <commands.h>
 #include <defs.h>
 #include <eliminator.h>
+#include <utils.h>
 
 #define TIME_LENGTH 9
 
@@ -28,9 +29,12 @@ void help() {
   fprintf(STDOUT, "\n * unblock: Unblock a process by its PID");
   fprintf(STDOUT, "\n * nice: Change the priority of a process by its PID");
   fprintf(STDOUT, "\n * mem: Display the current state of the memory manager");
+  fprintf(STDOUT,"\n ----------------------------IPC-----------------------------");
+  fprintf(STDOUT, "\n The following commands can be connected using pipes (|):");
   fprintf(STDOUT, "\n * cat: Print the contents of a file or echo the input");
   fprintf(STDOUT, "\n * wc: Count the number of lines, words, and bytes");
   fprintf(STDOUT, "\n * filter: Filter the input by removing vowels");
+  fprintf(STDOUT, "\n * phylo: Dining Philosophers problem");
   fprintf(STDOUT, "\n ----------------------------Tests----------------------------");
   fprintf(STDOUT, "\n * testmm: Run a memory management test in an endless loop");
   fprintf(STDOUT, "\n * testprio: Run a priority test");
@@ -56,49 +60,6 @@ void time() {
   fprintf(STDOUT, toReturn);
   fprintf(STDOUT, "\n");
   return;
-}
-
-char *itoa(int num, char *str, int base) {
-  int i = 0;
-  char isNegative = 0;
-
-  // If the number is zero...
-  if (num == 0) {
-    str[i++] = '0';
-    str[i] = '\0';
-    return str;
-  }
-
-  // If the number is negative...
-  if (num < 0 && base == 10) {
-    isNegative = 1;
-    num = -num;
-  }
-
-  while (num != 0) {
-    int rem = num % base;
-    str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
-    num = num / base;
-  }
-
-  // If the number is negative...
-  if (isNegative)
-    str[i++] = '-';
-
-  str[i] = '\0';
-
-  // Reverse the string
-  int start = 0;
-  int end = i - 1;
-  while (start < end) {
-    char temp = str[start];
-    str[start] = str[end];
-    str[end] = temp;
-    start++;
-    end--;
-  }
-
-  return str;
 }
 
 void regs() {

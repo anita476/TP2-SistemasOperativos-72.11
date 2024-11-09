@@ -101,14 +101,14 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   fprintf(STDOUT, "Available Actions:\n");
   fprintf(STDOUT, "  'a' - Invite another philosopher to dine\n");
   fprintf(STDOUT, "  'r' - Excuse a philosopher from the table\n");
-  fprintf(STDOUT, "  's' - Check on our distinguished guests\n");
-  fprintf(STDOUT, "  'c' - View the dinner table state\n");
+  fprintf(STDOUT, "  'p' - View the dinner table state (ps)\n");
   fprintf(STDOUT, "  'q' - End the philosophical feast\n\n");
 
   for (int i = 0; i < MAX_PHILOSOPHERS; i++) {
     philosophers[i].pid = -1;
     philosophers[i].state = NONE;
     philosophers[i].prev = NONE;
+    philosophers[i].sem = -1;
   }
 
   for (int i = 0; i < initial_philosophers; i++) {
@@ -130,37 +130,37 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       break;
     }
     switch (cmd) {
-    case 'a':
-      if (add_philosopher(num_philosophers) < 0)
-        fprintf(STDERR, "ERROR: Failed to add philosopher\n");
-      break;
-    case 'r':
-      if (remove_philosopher(1) < 0) {
-        fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
-      }
-      break;
-    case 's':
-      sys_sem_wait(mutex);
-      ps();
-      fprintf(STDOUT, "\n");
-      sys_sem_post(mutex);
-      break;
-    case 'c':
-      sys_sem_wait(mutex);
-      display_table();
-      sys_sem_post(mutex);
-      break;
+      case 'a':
+        if (add_philosopher(num_philosophers) < 0)
+          fprintf(STDERR, "ERROR: Failed to add philosopher\n");
+        break;
+      case 'r':
+        if (remove_philosopher(1) < 0) {
+          fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
+        }
+        break;
+      case 'p':
+        sys_sem_wait(mutex);
+        ps();
+        fprintf(STDOUT, "\n");
+        sys_sem_post(mutex);
+        break;
     }
   }
-  // running = 0;
+  running = 0;
+
+  // here we should wait for all philosophers 
+  sys_wait_for_children();
 
   // cleanup
   fprintf(STDOUT, "Cleaning up philosophers\n");
   while (num_philosophers > 0) {
-    remove_philosopher(0);
+    if (remove_philosopher(0) < 0) {
+      fprintf(STDERR, "WARNING: Failed to properly remove philosopher\n");
+    }
   }
   sys_sem_close(mutex);
-  fprintf(STDOUT, "Done\n");
+  fprintf(STDOUT, "\nDone\n");
 
   return 0;
 }
@@ -266,7 +266,7 @@ static int philosopher_action(int argc, char *argv[]) {
 
   while (running) {
 
-    sys_wait(get_uniform(THINK_TIME));
+    sys_wait(get_uniform(MAX_TIME));
 
     // get hungry --> take forks
     sys_sem_wait(mutex);

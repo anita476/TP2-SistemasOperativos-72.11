@@ -246,8 +246,7 @@ uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx,
   case 40:
     return sem_wait(rdi);
   case 41:
-    memory_manager_state();
-    break;
+    return (uint64_t) get_memory_info();
   case 42:
     return open_pipe(rdi);
   case 43:

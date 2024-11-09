@@ -1,4 +1,6 @@
 /* We'll be using Kernighans implementation of a memory manager using a simple linked list  */
+#ifndef MEMORY_MANAGEMENT_H
+#define MEMORY_MANAGEMENT_H
 
 #include <lib.h>
 #include <stdint.h>
@@ -10,6 +12,12 @@ typedef long ALIGN;
 /* Kernighan section 8.7*/
 
 #define BLOCKSIZE sizeof(UHeader)
+
+typedef struct memoryInfo {
+    size_t totalSize;
+    size_t freeSize;
+    size_t allocatedSize;
+} memoryInfo;
 
 /*
     @brief Initializes totalSize bytes, starting in startHeapAdress
@@ -33,6 +41,8 @@ void *malloc(size_t bytes);
 void free(void *ptr);
 
 /*
-    @brief Prints the current memory state: total, free, and allocated memory
+    @brief Gets the current memory state: total, free, and allocated memory
 */
-void memory_manager_state();
+memoryInfo* get_memory_info();
+
+#endif

@@ -69,7 +69,7 @@ static Command commandList[COMMANDS_SIZE] = {
     {.name = "mem",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) sys_memory_manager_state,
+     .start = (ProcessStart) print_memory_info,
      .usage = "Usage: mem"},
     {.name = "testpipe",
      .isPipeable = 0,
@@ -83,7 +83,12 @@ static Command commandList[COMMANDS_SIZE] = {
      .isPipeable = 0,
      .numberArgs = 1,
      .start = (ProcessStart) phylo,
-     .usage = "Usage: phylo [number_of_philosophers]"}};
+     .usage = "Usage: phylo [number_of_philosophers]"},
+     {.name = "testphylo",
+     .isPipeable = 0,
+     .numberArgs = 0,
+     .start = (ProcessStart) test_philosophers,
+     .usage = "Usage: testphylo"}};
 
 int find_command(char *command) {
   for (int i = 0; i < COMMANDS_SIZE; i++) {

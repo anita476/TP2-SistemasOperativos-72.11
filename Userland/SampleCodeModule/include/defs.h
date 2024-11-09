@@ -10,6 +10,8 @@
 #define MAX_NAME_LENGTH 20
 
 #include <stdint.h>
+#include <unistd.h>
+
 
 typedef void (*ProcessStart)(int argc, char *argv[]);
 typedef int pid;
@@ -41,6 +43,12 @@ typedef struct {
   unsigned int input;
   unsigned int output;
 } createProcessInfo;
+
+typedef struct memoryInfo {
+  size_t totalSize;
+  size_t freeSize;
+  size_t allocatedSize;
+} memoryInfo;
 
 /* Semaphore related defs*/
 #define MAX_SEMAPHORES 255

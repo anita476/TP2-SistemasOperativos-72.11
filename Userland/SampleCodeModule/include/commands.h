@@ -51,3 +51,8 @@ int filter();
     @brief Counts the number of lines
 */
 int wc();
+
+/*
+    @brief Prints the current state of the memory manager
+*/
+void print_memory_info();

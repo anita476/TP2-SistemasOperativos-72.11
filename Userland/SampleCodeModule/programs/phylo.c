@@ -315,10 +315,7 @@ static int add_philosopher(int id) {
     philosophers[id].state = NONE; 
     philosophers[id].prev = NONE;   
 
-    char sem_name[8];
-    sprintf(sem_name, "phy_%d", id);
-    if ((philosophers[id].sem = sem_open(sem_name, 0)) < 0) {
-        fprintf(STDERR, "ERROR: Cannot create new philosopher semaphore\n");
+    if ((philosophers[id].sem = add_semaphore(id)) < 0) {
         return -1;
     }
 

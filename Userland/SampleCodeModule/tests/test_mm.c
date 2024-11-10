@@ -19,8 +19,6 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  fprintf(STDOUT, "Starting test...\n");
-
   mm_rq mm_rqs[MAX_BLOCKS];
   uint8_t rq;
   uint32_t total;
@@ -29,6 +27,8 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
   if ((max_memory = satoi(argv[0])) <= 0) {
     return -1;
   }
+
+  fprintf(STDOUT, "Starting test...\n");
 
   while (1) {
     rq = 0;

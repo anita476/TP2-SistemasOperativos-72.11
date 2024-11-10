@@ -27,9 +27,17 @@ static void remove_child(pid child) {
   if (parent != (NO_PROC)) {
     families[parent].childrenArr[child] = 0;
     families[parent].numberOfChildren--;
-    if (families[parent].numberOfChildren == 0) {
-      unblock(parent);
+
+    int should_unblock = 1; 
+    if (families[parent].numberOfChildren > 0) {
+      for (int i = 0; i < MAX_PROCESSES && families[parent].numberOfChildren > 0; i++) {
+        if (families[parent].childrenArr[i] && is_foreground(i)) {
+          should_unblock = 0;
+          break;
+        }
+      }
     }
+    if (should_unblock) unblock(parent);
   }
 }
 

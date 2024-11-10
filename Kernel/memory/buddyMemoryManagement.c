@@ -8,7 +8,7 @@
 
 // Must be power of 2
 #define MIN_BLOCK_SIZE    64
-#define MAX_ORDER         26  // (~128MB)
+#define MAX_ORDER         28  // (~128MB)
 #define BLOCK_HEADER_SIZE sizeof(block_t)
 
 typedef struct block {

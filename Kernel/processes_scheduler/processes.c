@@ -76,6 +76,7 @@ pid create_process(createProcessInfo *info) {
 
   if ((nameCopy = malloc(strlen(info->name) + 1)) == NULL) {
     print(STDERR, "Could not allocate for name\n");
+    free(stackEnd);
     return -1;
   }
 
@@ -118,12 +119,9 @@ pid create_process(createProcessInfo *info) {
   process->argv = argvCopy;
   process->argc = info->argc;
 
-  if (pid != (PID_KERNEL)) { /* if im in kernel im creating  shell -> if its shell then the process it no ones child*/
-    add_child(parent, pid);
-    process->parent = parent;
-  } else {
-    process->parent = (NO_PROC);
-  }
+  add_child(parent, pid);
+  process->parent = parent;
+  
   int parentInput = get_process_input(process->parent);
   if (parentInput != STDIN && info->input == STDIN) {
     process->input = parentInput;
@@ -139,7 +137,7 @@ pid create_process(createProcessInfo *info) {
 
   // Call scheduler so that it adds the process to its queue and blocks parent process
   process_was_created(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
-                    process->stackStart);
+                      process->stackStart);
   lastPID++;
   return pid;
 }
@@ -166,7 +164,7 @@ int kill(pid pid) {  // if it had children, shell adopts them
   }
   ProcessS *process;
   if (!find_pid(pid, &process)) {
-    //print(STDERR, "Validation error\n");
+    // print(STDERR, "Validation error\n");
     return -1;
   }
   /* remove from parent list*/
@@ -254,7 +252,8 @@ int send_to_background(pid pid) {
   if (!find_pid(pid, &p)) {
     return -1;
   }
-  return !(p->fg_flag = BACKGROUND);
+  p->fg_flag = BACKGROUND;
+  return 0;
 }
 
 int bring_to_foreground(pid pid) {

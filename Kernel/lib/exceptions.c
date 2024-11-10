@@ -40,13 +40,14 @@ void exception_dispatcher(int exception, uint64_t registers[17]) {
     print(STDERR, "Unknown");
     print(STDERR, "\n");
   }
-  for (int i = 0; i < 18; i++) {
+  for (int i = 0; i < 17; i++) {
     print(STDERR, registerOrder[i]);
     print(STDERR, ": ");
     int_to_str(registers[i], buffer, 16);
     print(STDERR, buffer);
-    if (i != 17)
+    if (i != 16) {
       print(STDERR, ", ");
+    }
   }
   timer_wait(18 * 5);  // Time to see the registers
   print(STDERR, "\n");

@@ -32,7 +32,7 @@ int active = 0;
 static int grab_semaphore(sem sem) {
   acquire(&lock);
 
-  if (sem < 0 || sem > MAX_SEMAPHORES) {
+  if (sem < 0 || sem >= MAX_SEMAPHORES) {
     release(&lock);
     return INVALID_VALUE_ERROR;
   }
@@ -79,11 +79,7 @@ int sem_open(sem_name semName, int initValue) {
           release(&lock);
           return -1;
         }
-        if (strcpy(semaphoreList[i].name, semName) == NULL) {
-          free(semaphoreList[i].name);
-          release(&lock);
-          return -1;
-        }
+        strcpy(semaphoreList[i].name, semName);
         semaphoreList[i].sem_value = initValue;
         semaphoreList[i].interestedProcesses[0] = currentPid;
         semaphoreList[i].numberInterestedProcesses = 1;

@@ -96,7 +96,7 @@ void *malloc(size_t size) {
   int current_order = order;
   block_t *block = NULL;
 
-  while (current_order < MAX_ORDER && block == NULL) {
+  while (current_order < MAX_ORDER) {
     if (buddy.free_lists[current_order] != NULL) {
       block = buddy.free_lists[current_order];
       buddy.free_lists[current_order] = block->next;

@@ -77,9 +77,9 @@ uint64_t get_current_time() {
     hours = 23;
   else if (hours == 1)
     hours = 22;
-  else if (hours == 0)
+  else
     hours = 21;
-  return (uint64_t) ((hours * 10000) + (get_minutes() * 100) + (get_seconds()));
+  return ((uint64_t) hours * 10000) + ((uint64_t) get_minutes() * 100) + (uint64_t) get_seconds();
 }
 
 uint64_t elapsed_millis() { return millis_elapsed(); }
@@ -99,11 +99,9 @@ void clear_line(uint64_t line) {
   }
 }
 
-
 uint64_t draw_rect(uint64_t hexColor, uint64_t x, uint64_t y, uint64_t width, uint64_t height) {
   return draw_rectangle((uint64_t) hexColor, (uint64_t) x, (uint64_t) y, (int) width, (int) height);
 }
-
 
 uint64_t make_sound(uint64_t freq, uint64_t duration, uint64_t wait) {
   play_note_sound((uint64_t) freq, (uint64_t) duration, (uint64_t) wait);
@@ -116,10 +114,8 @@ uint64_t get_width_pix() { return (uint64_t) get_width_pixels(); }
 
 uint32_t get_pix(uint64_t x, uint64_t y) { return get_pixel_color((uint64_t) x, (uint64_t) y); }
 
-uint64_t get_max_lines() { return get_height_chars(); }
-
 uint64_t set_cursor_to_line(uint64_t line) {
-  if (line >= get_max_lines())
+  if (line >= get_height_chars())
     return 1;
   set_cursor_line(line);
   return 0;
@@ -147,10 +143,7 @@ uint64_t get_char(uint64_t fileDescriptor) {
   uint64_t c = get_last_char();
   return c;
 }
-uint64_t put_pixel_handler(uint64_t color, uint64_t x, uint64_t y){
-  return (uint64_t)put_pixel( color,  x,  y);
-}
-
+uint64_t put_pixel_handler(uint64_t color, uint64_t x, uint64_t y) { return (uint64_t) put_pixel(color, x, y); }
 
 uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
   switch (rax) {
@@ -189,7 +182,7 @@ uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx,
   case 15:
     return get_pix(rdi, rsi);
   case 16:
-    return get_max_lines();
+    return get_height_chars();
   case 17:
     set_cursor_to_line(rdi);
     break;

@@ -59,7 +59,6 @@ static char *GOODBYE_MESSAGES[] = {
 static philosopher_t philosophers[MAX_PHILOSOPHERS];
 static sem_t mutex;               // For protecting shared state
 static int num_philosophers = 0;  // should this int be protected as well?
-// static int running = 0;
 
 static void print_welcome(int id);
 static void print_goodbye(int id);
@@ -348,7 +347,6 @@ static int add_philosopher(int id) {
   print_welcome(id);
 
   if ((philosophers[id].pid = sys_create_process(&info)) < 0) {
-    // sem_close(philosophers[id].sem);
     fprintf(STDERR, "ERROR: Unable to create process\n");
     sys_sem_post(mutex);
     return -1;
@@ -368,16 +366,6 @@ static int remove_philosopher() {
 
   sys_sem_wait(mutex);
   int id = num_philosophers - 1;
-
-  // Add debug prints
-  // char buffer[50];
-
-  // sprintf(buffer, "Attempting to remove philosopher %d\n", id);
-  // fprintf(STDOUT, buffer);
-  // sprintf(buffer, "PID: %d\n", philosophers[id].pid);
-  // fprintf(STDOUT, buffer);
-  // sprintf(buffer, "State: %d\n", philosophers[id].state);
-  // fprintf(STDOUT, buffer);
 
   if (philosophers[id].pid <= 0) {
     sys_sem_post(mutex);
@@ -403,7 +391,7 @@ static int remove_philosopher() {
     if (sys_sem_close(philosophers[id].sem) < 0) {
       fprintf(STDERR, "WARNING: Failed to close semaphore\n");
       return -1;
-    }  // im curious whether any process will be able to sem_close a sempahore that it didnt create
+    }  
   }
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;

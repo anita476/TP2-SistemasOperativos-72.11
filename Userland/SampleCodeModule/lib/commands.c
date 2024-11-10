@@ -45,7 +45,6 @@ void help() {
   fprintf(STDOUT, "\n * testproc: Run a process management test in an endless loop");
   fprintf(STDOUT, "\n * testsync: Run synchronization test with or without semaphores");
   fprintf(STDOUT, "\n * testpipe: Run a pipe usage test");
-  fprintf(STDOUT, "\n * testphylo: Run a phylo (Dining Philosophers) test");
   fprintf(STDOUT, "\n");
 }
 
@@ -283,7 +282,7 @@ void print_memory_info() {
   memoryInfo *info = sys_get_memory_info();
   char buffer[32];
 
-  fprintf(STDOUT, "\n=== Memory Manager State ===\n");
+  fprintf(STDOUT, "=== Memory Manager State ===\n");
 
   fprintf(STDOUT, "Total memory: ");
   itoa(info->totalSize, buffer, 10);

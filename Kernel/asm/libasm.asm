@@ -44,14 +44,14 @@ get_key:
 get_seconds:   
     cli
 
-    ; config del número n binario
+    ; Binary number configuration
     mov al, 0x0B 
  	out 70h, al
     in al, 71h
     or al, 4 
     out 71h, al 
 
-    ; lectura de los segundos
+    ; Seconds read
     mov al, 0x00
     out 70h, al
     in al, 71h
@@ -62,14 +62,14 @@ get_seconds:
 get_minutes:
     cli
 
-    ; config del numero n binario
+    ; Binary number configuration
     mov al, 0x0B 
     out 70h, al
     in al, 71h
     or al, 4 
     out 71h, al 
 
-    ; lectura de los minutos 
+    ; Minutes read
     mov al, 0x02
     out 70h, al
     in al, 71h
@@ -80,14 +80,14 @@ get_minutes:
 get_hours:
     cli
 
-    ; config del número n binario
+    ; Binary number configuration
     mov al, 0x0B 
     out 70h, al
     in al, 71h
 	or al, 4 
     out 71h, al 
 
-    ; lectura de los minutos
+    ; Hours read
     mov al, 0x04
     out 70h, al
     in al, 71h
@@ -95,7 +95,7 @@ get_hours:
 	sti
     ret
 
-; Code segment imspired from: https://wiki.osdev.org/PC_Speaker
+; Code segment inspired from: https://wiki.osdev.org/PC_Speaker
 inb:
 	push rbp
 	mov rbp, rsp

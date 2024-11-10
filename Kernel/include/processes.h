@@ -19,7 +19,6 @@ typedef int pid;
 typedef int priority;
 typedef enum { READY = 0, RUNNING = 1, BLOCKED = 2, KILLED = 3 } status;
 
-/* what is saved */ /* priority is saved why scheduling queue*/
 typedef struct {
   char *name;
   void *stackStart;
@@ -34,7 +33,6 @@ typedef struct {
   unsigned int output;
 } ProcessS;
 
-/* what is shown when requested*/
 typedef struct {
   pid pid;
   char name[MAX_NAME_LENGTH + 1];
@@ -48,7 +46,6 @@ typedef struct {
   unsigned int output;
 } ProcessInfo;
 
-/*what is needed in order to create a process*/
 typedef struct {
   const char *name;
   ProcessStart start;
@@ -60,7 +57,7 @@ typedef struct {
   unsigned int output;
 } createProcessInfo;
 
-typedef struct { /* not good if number of processes increases, but i think its fine for this project*/
+typedef struct {
   pid childrenArr[MAX_PROCESSES];
   int numberOfChildren;
 } familyUnit;

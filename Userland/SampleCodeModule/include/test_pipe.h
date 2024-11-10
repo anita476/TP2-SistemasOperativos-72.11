@@ -9,5 +9,7 @@
 void test_pipe();
 
 void read_pipe();
+
 void write_pipe();
+
 #endif

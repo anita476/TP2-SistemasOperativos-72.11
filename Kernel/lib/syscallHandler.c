@@ -16,7 +16,6 @@
 #include <time.h>
 #include <videoDriver.h>
 
-// from interruptions we get the register array to read it
 extern const uint64_t show_registers_dump[17];
 extern const uint64_t has_regs;
 
@@ -37,7 +36,7 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   int pid = get_pid();
   int whereFrom = get_process_input(pid);
   if (fileDescriptor != STDIN) {
-    return 0;  // we dont support reading directly from a pipe in read !
+    return 0;  // We don't support reading directly from a pipe in read!
   }
   if (whereFrom != STDIN) {
     open_pipe(whereFrom);
@@ -47,9 +46,8 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   } else {
     clean_read();
     while (!is_key_available()) {
-      add_to_blocking_queue_read(pid);  // block and yield while adding to queue
+      add_to_blocking_queue_read(pid);
     }
-
     return get_buffer((char *) buffer, length);
   }
 }
@@ -57,7 +55,6 @@ uint64_t read(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
 uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
   int pid = get_pid();
   int whereTo = get_process_output(pid);
-  // Check if writing to pipe or to screen here !!
   if (whereTo != STDOUT) {
     open_pipe(whereTo);
     int res = write_to_pipe(whereTo, (char *) buffer, length);
@@ -71,14 +68,15 @@ uint64_t write(uint64_t fileDescriptor, uint64_t buffer, uint64_t length) {
 
 uint64_t get_current_time() {
   uint16_t hours = get_hours();
-  if (hours >= 3)
+  if (hours >= 3) {
     hours -= 3;
-  else if (hours == 2)
+  } else if (hours == 2) {
     hours = 23;
-  else if (hours == 1)
+  } else if (hours == 1) {
     hours = 22;
-  else
+  } else {
     hours = 21;
+  }
   return ((uint64_t) hours * 10000) + ((uint64_t) get_minutes() * 100) + (uint64_t) get_seconds();
 }
 
@@ -115,8 +113,9 @@ uint64_t get_width_pix() { return (uint64_t) get_width_pixels(); }
 uint32_t get_pix(uint64_t x, uint64_t y) { return get_pixel_color((uint64_t) x, (uint64_t) y); }
 
 uint64_t set_cursor_to_line(uint64_t line) {
-  if (line >= get_height_chars())
+  if (line >= get_height_chars()) {
     return 1;
+  }
   set_cursor_line(line);
   return 0;
 }
@@ -138,8 +137,9 @@ uint64_t wait(uint64_t millis) {
 }
 
 uint64_t get_char(uint64_t fileDescriptor) {
-  if (fileDescriptor != STDIN)
+  if (fileDescriptor != STDIN) {
     return 0;
+  }
   uint64_t c = get_last_char();
   return c;
 }

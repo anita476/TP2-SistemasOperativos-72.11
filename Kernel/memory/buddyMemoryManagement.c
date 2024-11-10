@@ -6,14 +6,12 @@
 
 #ifdef BUDDY
 
-// Must be power of 2
 #define MIN_BLOCK_SIZE    64
 #define MAX_ORDER         28  // (~128MB)
 #define BLOCK_HEADER_SIZE sizeof(block_t)
 
 typedef struct block {
-  size_t size;  // Total size of block including header
-  // unsigned char order;       // Level in the buddy system (0 = largest)
+  size_t size;            // Total size of block including header
   unsigned char is_free;  // 1 if allocated, 0 if free
   struct block *next;     // Next block in free list
 } block_t;
@@ -22,7 +20,6 @@ typedef struct {
   void *start;
   block_t *free_lists[MAX_ORDER];
   size_t total_size;
-  // size_t free_memory;
 } buddy_t;
 
 static buddy_t buddy;
@@ -44,14 +41,14 @@ static size_t next_power_of_2(size_t size) {
 static int get_order(size_t size) {
   int order = 0;
   size = size - 1;
-  while (size >>= 1)
+  while (size >>= 1) {
     order++;
+  }
   return order;
 }
 
 static block_t *get_buddy(block_t *block) {
   size_t offset = (char *) block - (char *) buddy.start;
-  // If offset divisible by block_size * 2, buddy is after, else before
   if ((offset & (block->size * 2 - 1)) == 0) {
     return (block_t *) ((char *) block + block->size);
   } else {
@@ -62,7 +59,6 @@ static block_t *get_buddy(block_t *block) {
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
   buddy.start = startHeapAddress;
   buddy.total_size = totalSize;
-  // buddy.free_memory = totalSize;
 
   memInfo.totalSize = totalSize;
   memInfo.freeSize = totalSize;
@@ -87,8 +83,9 @@ void init_memory_manager(void *startHeapAddress, size_t totalSize) {
 
 void *malloc(size_t size) {
   size_t required = size + BLOCK_HEADER_SIZE;
-  if (required < MIN_BLOCK_SIZE)
+  if (required < MIN_BLOCK_SIZE) {
     required = MIN_BLOCK_SIZE;
+  }
   required = next_power_of_2(required);
 
   int order = get_order(required);
@@ -110,7 +107,6 @@ void *malloc(size_t size) {
     return NULL;
   }
 
-  // split blocks until desired size
   while (current_order > order) {
     current_order--;
     size_t new_size = block->size / 2;
@@ -123,27 +119,26 @@ void *malloc(size_t size) {
     buddy.free_lists[current_order] = buddy_block;
     block->size = new_size;
   }
-  // found the best fit
+  // Found the best fit
   block->is_free = 0;
-  // buddy.free_memory -= block->size;
   memInfo.freeSize -= block->size;
   memInfo.allocatedSize += block->size - BLOCK_HEADER_SIZE;
   return (void *) (block + 1);
 }
 
 void free(void *ptr) {
-  if (!ptr)
+  if (!ptr) {
     return;
+  }
 
-  block_t *block = ((block_t *) ptr) - 1;  // start block from the beginnig of the block header
+  block_t *block = ((block_t *) ptr) - 1;
 
-  // invalid pointer
+  // Invalid pointer
   if ((void *) block < buddy.start || (void *) block >= (void *) ((char *) buddy.start + buddy.total_size)) {
     return;
   }
 
   block->is_free = 1;
-  // buddy.free_memory += block->size;
   memInfo.freeSize += block->size;
   memInfo.allocatedSize -= (block->size - BLOCK_HEADER_SIZE);
 
@@ -154,7 +149,6 @@ void free(void *ptr) {
       break;
     }
 
-    // remove buddy from list
     block_t **current = &buddy.free_lists[get_order(block->size)];
     while (*current != buddy_block) {
       current = &(*current)->next;
@@ -172,8 +166,6 @@ void free(void *ptr) {
   buddy.free_lists[order] = block;
 }
 
-memoryInfo* get_memory_info() {
-  return &memInfo;
-}
+memoryInfo *get_memory_info() { return &memInfo; }
 
 #endif

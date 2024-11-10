@@ -15,7 +15,11 @@ static Command commandList[COMMANDS_SIZE] = {
      .start = (ProcessStart) eliminator,
      .usage = "Usage: eliminator"},
     {.name = "regs", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) regs, .usage = "Usage: regs"},
-    {.name = "clear", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) sys_clear_screen, .usage = "Usage: clear"},
+    {.name = "clear",
+     .isPipeable = 0,
+     .numberArgs = 0,
+     .start = (ProcessStart) sys_clear_screen,
+     .usage = "Usage: clear"},
     {.name = "scaledown",
      .isPipeable = 0,
      .numberArgs = 0,
@@ -55,7 +59,11 @@ static Command commandList[COMMANDS_SIZE] = {
     {.name = "ps", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) ps, .usage = "Usage: ps"},
     {.name = "loop", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) loop, .usage = "Usage: loop"},
     {.name = "kill", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) sys_kill, .usage = "Usage: kill [pid]"},
-    {.name = "block", .isPipeable = 0, .numberArgs = 1, .start = (ProcessStart) sys_block, .usage = "Usage: block [pid]"},
+    {.name = "block",
+     .isPipeable = 0,
+     .numberArgs = 1,
+     .start = (ProcessStart) sys_block,
+     .usage = "Usage: block [pid]"},
     {.name = "unblock",
      .isPipeable = 0,
      .numberArgs = 1,
@@ -66,11 +74,7 @@ static Command commandList[COMMANDS_SIZE] = {
      .numberArgs = 1,
      .start = (ProcessStart) sys_nice,
      .usage = "Usage: nice [pid] [new_prio]"},
-    {.name = "mem",
-     .isPipeable = 0,
-     .numberArgs = 0,
-     .start = (ProcessStart) print_memory_info,
-     .usage = "Usage: mem"},
+    {.name = "mem", .isPipeable = 0, .numberArgs = 0, .start = (ProcessStart) print_memory_info, .usage = "Usage: mem"},
     {.name = "testpipe",
      .isPipeable = 0,
      .numberArgs = 0,
@@ -105,7 +109,7 @@ int interpret(char **args, int argc) {
       }
       auxArgc--;
     }
-    if (strcmp(args[i], "|") == 0) { /* QEMU doesnt let me put "|" */
+    if (strcmp(args[i], "|") == 0) {
       int argc1 = i;
       int argc2 = auxArgc - (i + 1);
       char *argv1[argc1];
@@ -120,8 +124,6 @@ int interpret(char **args, int argc) {
       return res;
     }
   }
-
-  // single process handler;
 
   int pos = find_command(args[0]);
   if (pos < 0) {

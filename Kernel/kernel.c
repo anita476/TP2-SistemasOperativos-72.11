@@ -65,8 +65,9 @@ void init_shell() {
 }
 
 void welcome_sequence() {
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     scale_down();
+  }
   scale_up();
   set_cursor_line(8);
   print(STDOUT, "                        Welcome to caOS!\n");

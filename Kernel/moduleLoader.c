@@ -13,8 +13,9 @@ void load_modules(void *payloadStart, void **targetModuleAddress) {
   int i;
   uint8_t *currentModule = (uint8_t *) payloadStart;
   uint32_t moduleCount = read_uint32(&currentModule);
-  for (i = 0; i < moduleCount; i++)
+  for (i = 0; i < moduleCount; i++) {
     load_module(&currentModule, targetModuleAddress[i]);
+  }
 }
 
 static void load_module(uint8_t **module, void *targetModuleAddress) {

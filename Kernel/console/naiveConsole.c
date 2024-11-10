@@ -13,8 +13,9 @@ static const uint32_t height = 25;
 
 void ncPrint(const char *string) {
   int i;
-  for (i = 0; string[i] != 0; i++)
+  for (i = 0; string[i] != 0; i++) {
     ncPrintChar(string[i]);
+  }
 }
 
 void ncPrintChar(char character) {
@@ -41,8 +42,9 @@ void ncPrintBase(uint64_t value, uint32_t base) {
 
 void ncClear() {
   int i;
-  for (i = 0; i < height * width; i++)
+  for (i = 0; i < height * width; i++) {
     video[i * 2] = ' ';
+  }
   currentVideo = video;
 }
 

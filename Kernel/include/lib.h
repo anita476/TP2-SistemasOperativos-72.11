@@ -4,7 +4,6 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-/* Defines for file descriptors */
 #define STDIN  0
 #define STDOUT 1
 #define STDERR 2

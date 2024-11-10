@@ -6,7 +6,7 @@
 #include <defs.h>
 #include <libSysCalls.h>
 
-#define MAX_PROC 7  // modify when we can pass args to shell
+#define MAX_PROC 7
 
 typedef struct P_rq {
   int32_t pid;
@@ -43,7 +43,6 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
                                   .input = STDIN,
                                   .output = STDOUT};
 
-    // Create max_processes processes
     for (rq = 0; rq < MAX_PROC; rq++) {
       p_rqs[rq].pid = sys_create_process(&loopInfo);
       if (p_rqs[rq].pid == -1) {
@@ -57,7 +56,6 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
 
     // Randomly kills, blocks or unblocks processes until every one has been killed
     while (alive > 0) {
-
       for (rq = 0; rq < MAX_PROC; rq++) {
         action = get_uniform(100) % 2;
 
@@ -85,6 +83,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
           break;
         }
       }
+      
       // Randomly unblocks processes
       for (rq = 0; rq < MAX_PROC; rq++) {
         if (p_rqs[rq].state == BLOCKED && get_uniform(100) % 2) {

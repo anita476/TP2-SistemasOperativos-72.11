@@ -4,6 +4,9 @@
 #include <libSysCalls.h>
 #include <shell.h>
 
+/*
+    @brief Tokenizes a command
+*/
 int tokenize(char *buffer, char **args);
 
 #endif

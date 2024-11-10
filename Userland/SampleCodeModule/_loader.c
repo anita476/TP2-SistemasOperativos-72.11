@@ -12,7 +12,6 @@ int main();
 void *memset(void *destiny, int32_t c, uint64_t length);
 
 int _start() {
-  // Clean BSS
   memset(&bss, 0, &endOfBinary - &bss);
   return main();
 }
@@ -20,8 +19,9 @@ int _start() {
 void *memset(void *destiation, int32_t c, uint64_t length) {
   uint8_t chr = (uint8_t) c;
   char *dst = (char *) destiation;
-  while (length--)
+  while (length--) {
     dst[length] = chr;
+  }
   return destiation;
 }
 
@@ -50,8 +50,9 @@ int strcmp(const char *s1, const char *s2) {
 
 char *strcat(char *dst, const char *src) {
   char *rdest = dst;
-  while (*dst)
+  while (*dst) {
     dst++;
+  }
   while ((*dst++ = *src++))
     ;
   return rdest;
@@ -59,8 +60,9 @@ char *strcat(char *dst, const char *src) {
 
 int strncmp(const char *s1, const char *s2, int n) {
   for (int i = 0; i < n && s1[i] != 0 && s2[i] != 0; i++) {
-    if (s1[i] != s2[i])
+    if (s1[i] != s2[i]) {
       return s1[i] - s2[i];
+    }
   }
   return 0;
 }
@@ -71,13 +73,15 @@ void *memcpy(void *destination, const void *source, uint64_t length) {
       length % sizeof(uint32_t) == 0) {
     uint32_t *d = (uint32_t *) destination;
     const uint32_t *s = (const uint32_t *) source;
-    for (i = 0; i < length / sizeof(uint32_t); i++)
+    for (i = 0; i < length / sizeof(uint32_t); i++) {
       d[i] = s[i];
+    }
   } else {
     uint8_t *d = (uint8_t *) destination;
     const uint8_t *s = (const uint8_t *) source;
-    for (i = 0; i < length; i++)
+    for (i = 0; i < length; i++) {
       d[i] = s[i];
+    }
   }
   return destination;
 }

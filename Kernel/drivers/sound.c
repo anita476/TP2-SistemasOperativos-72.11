@@ -30,13 +30,11 @@ void play_sound(uint32_t nFrequence) {
   }
 }
 
-// Makes it stop
 void no_sound() {
   uint8_t tmp = inb(0x61) & 0xFC;
   outb(0x61, tmp);
 }
 
-// Makes a beep
 void beep() {
   play_sound(1000);
   timer_wait(10);

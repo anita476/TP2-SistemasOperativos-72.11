@@ -52,7 +52,7 @@ void write_pipe() {
 
 void test_pipe() {
 
-  int id = sys_open_pipe(0);  // open a new pipe
+  int id = sys_open_pipe(0);
 
   if (id < 0) {
     fprintf(STDERR, "Error creating pipe in test!\n");

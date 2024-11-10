@@ -4,20 +4,9 @@
 #include "phylo.h"
 #include "utils.h"
 #include <commands.h>
-#include <libSysCalls.h>  // getChar
+#include <libSysCalls.h>
 #include <stdint.h>
-#include <test_util.h>  // for satoi
-
-/*
-    conditions:
-    1. no deadlocks
-    2. no starvation (using even-odd method, there is possibility of starvation
-    for philosopher 0 if num_philosophers = ODD
-    since the last philosopher would have an even index
-    therefore they would need the same fork at the same time)
-    3. no race conditions: can be avoided by using semaphores ->
-    when adding a philosopher, we have to lock/block the philosophers that are right and left of the new philosopher
-*/
+#include <test_util.h>
 
 typedef int pid;
 typedef int sem_t;
@@ -57,8 +46,8 @@ static char *GOODBYE_MESSAGES[] = {
 };
 
 static philosopher_t philosophers[MAX_PHILOSOPHERS];
-static sem_t mutex;               // For protecting shared state
-static int num_philosophers = 0;  // should this int be protected as well?
+static sem_t mutex;  // For protecting shared state
+static int num_philosophers = 0;
 
 static void print_welcome(int id);
 static void print_goodbye(int id);
@@ -112,7 +101,6 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   for (int i = 0; i < initial_philosophers; i++) {
     if (add_philosopher(i) < 0) {
       fprintf(STDERR, "ERROR: Failed to create initial philosophers\n");
-
       while (--i >= 0) {
         remove_philosopher();
       }
@@ -144,7 +132,6 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
 
   sys_wait(MAX_TIME);
 
-  // cleanup
   fprintf(STDOUT, "Cleaning up philosophers\n");
 
   sys_sem_wait(mutex);
@@ -181,7 +168,6 @@ static void display_table() {
   int state_changed = 0;
 
   for (int i = 0; i < num_philosophers; i++) {
-    // if (philosophers[i].state == NONE) return;
     if ((philosophers[i].state == EATING && philosophers[i].prev != EATING) ||
         (philosophers[i].state != EATING && philosophers[i].prev == EATING)) {
       state_changed = 1;
@@ -190,7 +176,6 @@ static void display_table() {
   }
 
   if (state_changed) {
-    // fprintf(STDOUT, "\n=== The Great Philosophical Dinner ===\n");
     char count_str[50];
     sprintf(count_str, "Philosophers: %d: ", num_philosophers);
     fprintf(STDOUT, count_str);
@@ -223,7 +208,6 @@ static void try_to_eat(int phil_id) {
       philosophers[RIGHT(phil_id)].state != EATING) {
     philosophers[phil_id].state = EATING;
     display_table();
-    // sem_post(philosophers[phil_id].sem);
     if (sys_sem_post(philosophers[phil_id].sem) < 0) {
       char buffer[50];
       sprintf(buffer, "ERROR!!! Cannot post semaphore for philosopher %d\n", phil_id);
@@ -277,20 +261,16 @@ static int philosopher_action(int argc, char *argv[]) {
   while (1) {
     sys_wait(get_uniform(MAX_TIME));
 
-    // get hungry --> take forks
     sys_sem_wait(mutex);
     philosophers[phil_id].state = HUNGRY;
     display_table();
     try_to_eat(phil_id);
     sys_sem_post(mutex);
 
-    // get permission to eat
     sys_sem_wait(philosophers[phil_id].sem);
-    // permission granted, therefore can eat yum yum :p
 
     sys_wait(get_uniform(MAX_TIME));
 
-    // done eating, back to thinking
     sys_sem_wait(mutex);
     philosophers[phil_id].state = THINKING;
     display_table();
@@ -311,10 +291,6 @@ static int add_philosopher(int id) {
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;
 
-  // if ((philosophers[id].sem = add_semaphore(id)) < 0) {
-  //     return -1;
-  // }
-
   char sem_name[8];
   sprintf(sem_name, "phy_%d", id);
   if ((philosophers[id].sem = sys_sem_open(sem_name, 0)) < 0) {
@@ -327,7 +303,6 @@ static int add_philosopher(int id) {
   char id_str[10];
   itoa(id, id_str, 10);
   char *args[] = {id_str, NULL};
-  // Create philosopher process
 
   int fg_flag = sys_is_foreground(sys_get_pid());
 

@@ -607,7 +607,6 @@ static const uint8_t IBM_VGA_8x16_glyph_bitmap[] = {
     0x00,  //.......
     0x00,  //.......
 
-    // REEMPLAZO UNA LETRA POR LA DE MINECRAFT
     /*Unicode: U+0041 (A) , Width: 7 */
 
     0x00,  //.......
@@ -626,7 +625,6 @@ static const uint8_t IBM_VGA_8x16_glyph_bitmap[] = {
     0x00,  //.......
     0x00,  //.......
     0x00,  //.......
-           // ESTA ES LA A DE MINECRAFT
     /*
       0xff,
       0xff,
@@ -644,7 +642,6 @@ static const uint8_t IBM_VGA_8x16_glyph_bitmap[] = {
       0xff,
       0xff,
       0xff,*/
-    // esta es la letra correcta (depende como vea la mask igual)
     /*
     0x00,
     0x00,

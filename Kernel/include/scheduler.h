@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#define QUANTUM    5  // In ms
+#define QUANTUM    5
 #define NO_PROC    -2
 #define PID_KERNEL -1
 
@@ -53,7 +53,7 @@ int process_was_killed(pid pid);  // Scheduler actions when process is terminate
     @param currentRSP The current RSP
 */
 int process_was_created(pid pid, int argc, const char *const argv[], priority priority, ProcessStart entryPoint,
-                      void *currentRSP);  // Scheduler actions when process is created
+                        void *currentRSP);
 
 /*
     @brief Yields the CPU usage to the next process

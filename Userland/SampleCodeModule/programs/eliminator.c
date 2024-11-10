@@ -98,13 +98,15 @@ void move() {
 int did_lose(int players) {
   int toReturn = 0;
   if (!(p1Coord[0] >= 0 && p1Coord[0] < width && p1Coord[1] >= 16 && p1Coord[1] < height &&
-        sys_get_pixel_color(p1Coord[0], p1Coord[1]) == 0x000000))
+        sys_get_pixel_color(p1Coord[0], p1Coord[1]) == 0x000000)) {
     toReturn = 1;
+  }
 
   if (!(p2Coord[0] >= 0 && p2Coord[0] < width && p2Coord[1] >= 16 && p2Coord[1] < height &&
         sys_get_pixel_color(p2Coord[0], p2Coord[1]) == 0x000000) &&
-      players == 2)
+      players == 2) {
     toReturn = (toReturn == 1) ? 3 : 2;
+  }
 
   return toReturn;
 }
@@ -159,10 +161,11 @@ void lose(int whoLost, int pts) {
       break;
     }
   }
-  if (currentDecision == 1)
+  if (currentDecision == 1) {
     eliminator();
-  else
+  } else {
     sys_clear_screen();
+  }
 }
 
 void print_pts(int pts) {
@@ -173,8 +176,7 @@ void print_pts(int pts) {
 }
 
 void play1() {
-  int counter = 0;  // This counter is going to serve as a form of time checking for in-game velocity, it is unnecesary
-                    // to make a syscall
+  int counter = 0;
   int lost = 0;
   int pts = 0;
   sys_clear_screen();
@@ -204,17 +206,17 @@ void play1() {
     if (counter >= SPEED) {
       counter = 0;
       print_pts(pts);
-      if (pts < MAX_POINTS)
+      if (pts < MAX_POINTS) {
         pts++;
+      }
     }
   }
   lose(lost, pts);
 }
 
 void play2() {
-  int counter = 0;  // This counter is going to serve as a form of time checking for in-game velocity, it is unnecesary
-                    // to make a syscall
-  int lost = 0;     // 1 if Player 1 Lost, 2 if Player 2 Lost, 3 if tie
+  int counter = 0;
+  int lost = 0;
   int pts = 0;
   sys_clear_screen();
 
@@ -246,16 +248,18 @@ void play2() {
     if (counter >= SPEED) {
       counter = 0;
       print_pts(pts);
-      if (pts < MAX_POINTS)
+      if (pts < MAX_POINTS) {
         pts++;
+      }
     }
   }
   lose(lost, pts);
 }
 
 void eliminator() {
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++) {
     sys_scale_down();
+  }
   sys_clear_screen();
   sys_set_cursor_to_line(15);
   fprintf(

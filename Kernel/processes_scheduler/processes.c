@@ -11,7 +11,7 @@ static int name_validation(const char *name);
 static int find_pid(pid pid, ProcessS **pr);
 
 static ProcessS processArr[MAX_PROCESSES];  // We store all of our proccesses info here
-static familyUnit families[MAX_PROCESSES];  // we store children here
+static familyUnit families[MAX_PROCESSES];  // We store children here
 int lastPID = 0;
 
 static void add_child(pid parent, pid child) {
@@ -27,17 +27,15 @@ static void remove_child(pid child) {
   if (parent != (NO_PROC)) {
     families[parent].childrenArr[child] = 0;
     families[parent].numberOfChildren--;
-    if (families[parent].numberOfChildren == 0) {  // if it isnt blocked it has no effect
+    if (families[parent].numberOfChildren == 0) {
       unblock(parent);
     }
   }
 }
 
 static void shell_adoption(pid child, pid lastParent) {
-  /* remove from home */
   families[lastParent].childrenArr[child] = 0;
   families[lastParent].numberOfChildren--;
-  /* go through with adoption */
   processArr[child].parent = 0;
   families[0].childrenArr[child] = 1;
   families[0].numberOfChildren++;
@@ -46,7 +44,6 @@ static void shell_adoption(pid child, pid lastParent) {
 pid create_process(createProcessInfo *info) {
   pid parent = get_pid();
   pid pid = 0;
-  // Find first empty slot
   for (; pid < MAX_PROCESSES && processArr[pid].stackEnd != NULL; pid++)
     ;
 
@@ -67,7 +64,6 @@ pid create_process(createProcessInfo *info) {
   char *nameCopy = NULL;
   char **argvCopy = NULL;
 
-  // Allocate space for each field
   stackEnd = malloc(STACK_SIZE);
   if (stackEnd == NULL) {
     print(STDERR, "Could not allocate stackEnd\n");
@@ -88,7 +84,6 @@ pid create_process(createProcessInfo *info) {
       return -1;
     }
 
-    // Copy arguments
     for (int i = 0; i < info->argc; ++i) {
       size_t length = strlen(info->argv[i]) + 1;
 
@@ -137,7 +132,6 @@ pid create_process(createProcessInfo *info) {
     process->output = info->output;
   }
 
-  // Call scheduler so that it adds the process to its queue and blocks parent process
   process_was_created(pid, process->argc, (const char *const *) process->argv, info->priority, info->start,
                       process->stackStart);
   lastPID++;
@@ -159,20 +153,16 @@ static int name_validation(const char *name) {
   return 0;
 }
 
-int kill(pid pid) {  // if it had children, shell adopts them
-                     //  if it had a parent, remove it from family
+int kill(pid pid) {
   if (pid == 0) {
-    return -1;  // cant kill shell
+    return -1;  // Can't kill shell
   }
   ProcessS *process;
   if (!find_pid(pid, &process)) {
-    // print(STDERR, "Validation error\n");
     return -1;
   }
-  /* remove from parent list*/
   remove_child(pid);
 
-  /* check if it has children and make shell adopt them*/
   if (families[pid].numberOfChildren != 0) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
       if (families[pid].childrenArr[i]) {
@@ -184,21 +174,17 @@ int kill(pid pid) {  // if it had children, shell adopts them
     }
   }
 
-  // Free all process memory
   for (int i = 0; i < process->memoryCount; i++) {
-    // This prints "pointer is null" -> its correct, process hasnt assigned memory lel
     free(process->memory[i]);
   }
   free(process->memory);
 
-  // Call scheduler to take it out of queue
   process_was_killed(pid);
 
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
   }
 
-  // send eof signal if it was a producer
   if (process->output != STDOUT && (get_process_output(process->parent) == STDOUT)) {
     signal_eof(process->output);
   }
@@ -241,7 +227,6 @@ int kill_with_children(pid pid) {
   for (int i = 0; i < process->argc; i++) {
     free(process->argv[i]);
   }
-
   free(process->stackEnd);
   free(process->name);
   memset(process, 0, sizeof(ProcessS));

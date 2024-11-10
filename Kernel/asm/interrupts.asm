@@ -163,10 +163,9 @@ _irq00_handler:
 ; Keyboard
 _irq01_handler:
 	push_state
-    in al, 0x60 ; readKey
-    cmp al, 0x1D ; check if left CTRL is pressed (used to save registers)
+    in al, 0x60 ; Read key
+    cmp al, 0x1D ; Check if left CTRL is pressed (used to save registers)
     jne .continue
-        ; mov [show_registers_dump],         rax -> dont do this, it only gets 1D from ctrl key
         mov [show_registers_dump + (1*8)], rbx 
         mov [show_registers_dump + (2*8)], rcx
         mov [show_registers_dump + (3*8)], rdx 
@@ -192,7 +191,7 @@ _irq01_handler:
         mov byte[has_regs], 1
 
 .continue:
-    mov rdi, 1 ; param for dispatcher
+    mov rdi, 1 ; Dispatcher parameter
     call irq_dispatcher
         
     ; EOI
@@ -226,7 +225,6 @@ _int80_handler:
 	push r14
 	push r15
 
-	; mov rdi, rax
     call syscall_handler
 	pop r15
 	pop r14
@@ -265,6 +263,6 @@ _schedule:
 	iretq
 
 SECTION .bss
-    has_regs resb 1 ; to check whether we have saved or not!
-    show_registers resq 18 ; reserve a qword for each register 
-    show_registers_dump resq 17 ; aditionally for dumping (isnt passed as a param but is accessed directly)
+    has_regs resb 1 ; To check whether we have saved or not!
+    show_registers resq 18 ; Reserve a qword for each register 
+    show_registers_dump resq 17 ; Additionally for dumping (isn't passed as a param but is accessed directly)

@@ -12,13 +12,11 @@
 #include <stdint.h>
 #include <unistd.h>
 
-
 typedef void (*ProcessStart)(int argc, char *argv[]);
 typedef int pid;
 typedef int priority;
 typedef enum { READY = 0, RUNNING = 1, BLOCKED = 2, KILLED = 3 } status;
 
-/* what is shown when requested*/
 typedef struct {
   pid pid;
   char name[MAX_NAME_LENGTH + 1];
@@ -32,7 +30,6 @@ typedef struct {
   unsigned int output;
 } ProcessInfo;
 
-/*what is needed in order to create a process*/
 typedef struct {
   const char *name;
   ProcessStart start;
@@ -50,17 +47,15 @@ typedef struct memoryInfo {
   size_t allocatedSize;
 } memoryInfo;
 
-/* Semaphore related defs*/
 #define MAX_SEMAPHORES 255
 #define MAX_SEM_LENGTH 16
 #define MAX_SEMS_ERROR -2
 
 #define INVALID_VALUE_ERROR -3
 
-typedef int sem; /* sem ids can be a max of 255 */
+typedef int sem;
 typedef char *sem_name;
 
-/* Defines for file descriptors */
 #define STDIN  0
 #define STDOUT 1
 #define STDERR 2
@@ -68,10 +63,9 @@ typedef char *sem_name;
 
 typedef int fd;
 
-/* Pipe related constants */
 #define INVALID_PIPE (-1)
 #define NO_SPACE     (-2)
-#define PIPE_ERROR   (-3) /* For when theres a read or write error, but i havent reached EOF ! */
+#define PIPE_ERROR   (-3)
 
 typedef struct pipeInfo {
   unsigned int id;

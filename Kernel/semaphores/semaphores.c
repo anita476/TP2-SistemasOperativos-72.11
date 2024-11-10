@@ -8,19 +8,17 @@
 #include <sys/types.h>
 #include <videoDriver.h>
 
-/* for critical region entering */
 extern void acquire(uint8_t *lock);
 extern void release(uint8_t *lock);
 
-uint8_t lock = 1;  // global lock to access semaphore resources and to guarantee no two processes try to grab resources
+uint8_t lock = 1;  // Global lock to access semaphore resources and to guarantee no two processes try to grab resources
                    // at the same time
 
 typedef struct Semaphore {
   sem_name name;
   int sem_value;
   uint8_t lock;
-  pid interestedProcesses[MAX_PROCESSES]; /* not necesary to use queues because max quantity of processes is 10, maybe
-                                             we can chaange it later tho */
+  pid interestedProcesses[MAX_PROCESSES];
   int numberInterestedProcesses;
   pid waitingProcesses[MAX_PROCESSES];
   int numberWaitingProcesses;
@@ -59,14 +57,15 @@ int sem_open(sem_name semName, int initValue) {
   pid currentPid = get_pid();
   sem semId = sem_get(semName);
 
-  if (semId == -1) {  // need to create sem
-    acquire(&lock);   // Get global lock for creation
+  if (semId == -1) {
+    acquire(&lock);
 
     if (active >= MAX_PROCESSES) {
       print(STDERR, "Error: Maximum semaphores reached\n");
       release(&lock);
       return MAX_SEMS_ERROR;
     }
+
     if (initValue < 0) {
       release(&lock);
       return INVALID_VALUE_ERROR;
@@ -155,7 +154,6 @@ int sem_close(sem sem) {
 }
 
 int sem_wait(sem sem) {
-
   if (grab_semaphore(sem) != 0) {
     print(STDERR, "COULDNT GRAB SEMAPHORE\n");
     return -1;
@@ -166,7 +164,6 @@ int sem_wait(sem sem) {
 
   if (!found) {
     release(&(semaphoreList[sem].lock));
-    //print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot wait\n");
     return INVALID_VALUE_ERROR;
   }
 
@@ -176,8 +173,9 @@ int sem_wait(sem sem) {
     block(currentPid);
     yield();
 
-    if (grab_semaphore(sem) != 0)
+    if (grab_semaphore(sem) != 0) {
       return -1;
+    }
   }
   semaphoreList[sem].sem_value--;
 
@@ -196,17 +194,14 @@ int sem_post(sem sem) {
 
   if (!found) {
     release(&(semaphoreList[sem].lock));
-    //print(STDERR, "Error: Process hasn't opened this semaphore therefore it cannot post\n");
     return INVALID_VALUE_ERROR;
   }
 
   semaphoreList[sem].sem_value++;
 
   if (semaphoreList[sem].numberWaitingProcesses > 0) {
-    // Unblock first process in the list
     pid toUnblock = semaphoreList[sem].waitingProcesses[0];
 
-    // Shift remaining processes
     for (int i = 0; i < semaphoreList[sem].numberWaitingProcesses - 1; i++) {
       semaphoreList[sem].waitingProcesses[i] = semaphoreList[sem].waitingProcesses[i + 1];
     }
@@ -228,7 +223,7 @@ int sem_value(sem sem) {
 sem sem_get(sem_name semName) {
   for (int i = 0; i < active; i++) {
     if (strcmp(semaphoreList[i].name, semName) == 0) {
-      return i;  // number in list is the "id" we use
+      return i;
     }
   }
   return -1;

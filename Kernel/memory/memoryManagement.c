@@ -18,9 +18,8 @@ static memoryInfo memInfo;
 
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
   freeList = (struct block *) startHeapAddress;
-  // Set the size of the first block
-  freeList->size = totalSize - BLOCK_SIZE;  // Subtract size of the block header
-  freeList->next = NULL;                // No other blocks yet
+  freeList->size = totalSize - BLOCK_SIZE;
+  freeList->next = NULL;
 
   memInfo.totalSize = totalSize;
   memInfo.freeSize = freeList->size;
@@ -28,17 +27,17 @@ void init_memory_manager(void *startHeapAddress, size_t totalSize) {
 }
 
 void *malloc(size_t bytes) {
-  if (bytes == 0) return NULL; 
+  if (bytes == 0) {
+    return NULL;
+  }
 
   struct block *current, *previous;
-  bytes += BLOCK_SIZE;  // Account for block header
+  bytes += BLOCK_SIZE;
 
-  // Search for block
   previous = NULL;
   for (current = freeList; current != NULL; current = current->next) {
-    if (current->size >= bytes) {  // Found a big enough block
+    if (current->size >= bytes) {
       if (current->size > bytes + BLOCK_SIZE) {
-        // Split the block
         struct block *newBlock = (struct block *) ((char *) current + bytes);
         newBlock->size = current->size - bytes;
         newBlock->next = current->next;
@@ -51,31 +50,28 @@ void *malloc(size_t bytes) {
         memInfo.freeSize -= current->size;
         memInfo.allocatedSize += bytes - BLOCK_SIZE;
       }
-      // Remove from free list
       if (previous == NULL) {
         freeList = current->next;
       } else {
         previous->next = current->next;
       }
-      return (void *) ((char *) current + BLOCK_SIZE);  // Return memory address
+      return (void *) ((char *) current + BLOCK_SIZE);
     }
     previous = current;
   }
-  return NULL;  // No suitable block found
+  return NULL;
 }
 
 static void coalesce_free_blocks() {
-    struct block *current = freeList;
-    while (current != NULL && current->next != NULL) {
-        if ((char *)current + current->size == (char *)current->next) {
-            current->size += current->next->size;
-            current->next = current->next->next;
-            // print(STDERR, "Coalesced\n");
-        } else {
-            current = current->next;
-            // print(STDOUT, "Not Coalesced\n");
-        }
+  struct block *current = freeList;
+  while (current != NULL && current->next != NULL) {
+    if ((char *) current + current->size == (char *) current->next) {
+      current->size += current->next->size;
+      current->next = current->next->next;
+    } else {
+      current = current->next;
     }
+  }
 }
 
 // Free memory
@@ -85,19 +81,19 @@ void free(void *ptr) {
   }
   struct block *blockToFree = (struct block *) ((char *) ptr - BLOCK_SIZE);
 
-  if (blockToFree->size == 0 || blockToFree->size > memInfo.totalSize) return;
+  if (blockToFree->size == 0 || blockToFree->size > memInfo.totalSize) {
+    return;
+  }
 
   memInfo.freeSize += blockToFree->size - BLOCK_SIZE;
   memInfo.allocatedSize -= (blockToFree->size - BLOCK_SIZE);
 
   blockToFree->next = freeList;
-  freeList = blockToFree;  // Add to the front of the free list
+  freeList = blockToFree;
 
-  // we should coalesce free blocks for less fragmentation 
   coalesce_free_blocks();
 }
 
-memoryInfo* get_memory_info() {
-  return &memInfo;
-}
+memoryInfo *get_memory_info() { return &memInfo; }
+
 #endif

@@ -6,11 +6,10 @@
 #include <libSysCalls.h>
 #include <utils.h>
 
-/* Constants */
 #define SEM_ID               "sem"
 #define TOTAL_PAIR_PROCESSES 2
 
-int64_t global;  // shared memory
+int64_t global;
 
 void slow_inc(int64_t *p, int64_t inc) {
   uint64_t aux = *p;
@@ -30,12 +29,15 @@ void my_process_inc(int argc, char *argv[]) {
     return;
   }
 
-  if ((n = satoi(argv[0])) <= 0)
+  if ((n = satoi(argv[0])) <= 0) {
     return;
-  if ((inc = satoi(argv[1])) == 0)
+  }
+  if ((inc = satoi(argv[1])) == 0) {
     return;
-  if ((use_sem = satoi(argv[2])) < 0)
+  }
+  if ((use_sem = satoi(argv[2])) < 0) {
     return;
+  }
 
   fprintf(STDOUT, "Process PID: ");
   itoa(sys_get_pid(), buffer, 10);
@@ -63,10 +65,6 @@ void my_process_inc(int argc, char *argv[]) {
   uint64_t i;
   for (i = 0; i < n; i++) {
     if (use_sem) {
-      // fprintf(STDOUT,"PID ");
-      // itoa(getpid(), buffer, 10);
-      // fprintf(STDOUT,buffer);
-      // fprintf(STDOUT,": Waiting on semaphore\n");
       sys_sem_wait(sem);
     }
     int64_t before = global;
@@ -84,12 +82,14 @@ void my_process_inc(int argc, char *argv[]) {
     fprintf(STDOUT, buffer);
     fprintf(STDOUT, "\n");
 
-    if (use_sem)
+    if (use_sem) {
       sys_sem_post(sem);
+    }
   }
 
-  if (use_sem)
+  if (use_sem) {
     sys_sem_close(sem);
+  }
 
   fprintf(STDOUT, "Process PID: ");
   itoa(sys_get_pid(), buffer, 10);
@@ -154,7 +154,7 @@ void test_sync(int argc, char *argv[]) {
     fprintf(STDOUT, "\n");
   }
 
-  sys_wait_for_children();  // this makes it wait until ALL children are dead
+  sys_wait_for_children();
   fprintf(STDOUT, "------------------------------------------------------------\n");
   fprintf(STDOUT, "Final value:");
   char buffer[300];

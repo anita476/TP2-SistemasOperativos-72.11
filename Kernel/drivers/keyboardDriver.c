@@ -7,7 +7,6 @@
 #define BUFFER_SIZE 1024
 #define EOF_CHAR    -1
 
-// Assembly function
 extern int get_key();
 
 static const char keyboard[256] = {
@@ -17,14 +16,12 @@ static const char keyboard[256] = {
     0,   0,   0,   0,   0,   0,    0,   0,    0,   17,  0,   0,   18,   0,   19,   0,    0,   20,  0,
 };
 
-// Buffer variables
 static char buffer[BUFFER_SIZE] = {0};
 static int writeIndex = 0;
 static int readIndex = 0;
 static int lastIndexFlag = 0;
 static char ctrlFlag = 0;
 
-// Flags
 char enterFlag = 0;
 char shiftFlag = 0;
 char capsLockFlag = 0;
@@ -33,7 +30,6 @@ char is_alpha(char c) { return (c >= 'a' && c <= 'z'); }
 
 char is_key_available() { return (buffer[readIndex] != '\0'); }
 
-// Waiting queue
 pid waitingToRead[MAX_PROCESSES] = {0};
 int waitingToReadCounter = 0;
 
@@ -57,20 +53,21 @@ void remove_from_blocking_queue() {
 }
 
 void add_to_buffer(char c) {
-  // Resets the index if the buffer is full
-  if (writeIndex >= BUFFER_SIZE)
+  if (writeIndex >= BUFFER_SIZE) {
     writeIndex = 0;
+  }
   buffer[writeIndex++] = c;
   lastIndexFlag = 1;
-  // Here we check if there are processes waiting for read
   remove_from_blocking_queue();
 }
 
 void keyboard_handler() {
-  if (buffer[readIndex - 1] == '\n')
+  if (buffer[readIndex - 1] == '\n') {
     clean_buffer();
-  if (buffer[readIndex - 1] == '\b')
+  }
+  if (buffer[readIndex - 1] == '\b') {
     remove_char_from_buffer();
+  }
 
   unsigned char scancodeKey = get_key();
   char ASCIIkey = keyboard[scancodeKey];
@@ -87,7 +84,6 @@ void keyboard_handler() {
   }
 
   if (ctrlFlag) {
-    // Ctrl+C
     if (ASCIIkey == 'c' || ASCIIkey == 'C') {
       print(STDOUT, "^C\n");
       clean_buffer();
@@ -99,9 +95,7 @@ void keyboard_handler() {
       }
       yield();
       return;
-    }
-    // Ctrl+D
-    else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
+    } else if (ASCIIkey == 'd' || ASCIIkey == 'D') {
       add_to_buffer(EOF_CHAR);
       print(STDOUT, "^D\n");
       return;
@@ -109,12 +103,13 @@ void keyboard_handler() {
   }
 
   // Alternate capslock
-  if (scancodeKey == 0x3A)
+  if (scancodeKey == 0x3A) {
     capsLockFlag = !capsLockFlag;
+  }
   // Shift released
-  else if (scancodeKey == 0xAA)
+  else if (scancodeKey == 0xAA) {
     shiftFlag = 0;
-  else {
+  } else {
     switch (ASCIIkey) {
     // Key is not valid
     case 0:
@@ -131,11 +126,13 @@ void keyboard_handler() {
     // Key is valid
     default:
       // Caps
-      if (is_alpha(ASCIIkey) && ((capsLockFlag != shiftFlag)))
+      if (is_alpha(ASCIIkey) && ((capsLockFlag != shiftFlag))) {
         add_to_buffer(ASCIIkey - 'a' + 'A');
+      }
       // Not caps
-      else
+      else {
         add_to_buffer(ASCIIkey);
+      }
       break;
     }
   }
@@ -158,8 +155,9 @@ void clean_buffer() {
 void clean_read() { readIndex = writeIndex; }
 
 char get_key_from_buffer() {
-  if (!is_key_available())
+  if (!is_key_available()) {
     return 0;
+  }
 
   char c = buffer[readIndex];
   buffer[readIndex] = 0;

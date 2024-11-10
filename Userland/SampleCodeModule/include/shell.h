@@ -29,12 +29,15 @@ extern void div_zero();
 
 typedef struct Command {
   char *name;
-  unsigned int isPipeable; /* refers to whether they can be consumers */
+  unsigned int isPipeable;
   unsigned int numberArgs;
   ProcessStart start;
   char *usage;
 } Command;
 
+/*
+    @brief Finds a command
+*/
 int find_command(char *command);
 
 /*
@@ -42,4 +45,4 @@ int find_command(char *command);
 */
 void shell();
 
-#endif  // !SHELL_H
+#endif

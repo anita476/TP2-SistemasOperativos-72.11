@@ -14,9 +14,9 @@ typedef long ALIGN;
 #define BLOCKSIZE sizeof(UHeader)
 
 typedef struct memoryInfo {
-    size_t totalSize;
-    size_t freeSize;
-    size_t allocatedSize;
+  size_t totalSize;
+  size_t freeSize;
+  size_t allocatedSize;
 } memoryInfo;
 
 /*
@@ -43,6 +43,6 @@ void free(void *ptr);
 /*
     @brief Gets the current memory state: total, free, and allocated memory
 */
-memoryInfo* get_memory_info();
+memoryInfo *get_memory_info();
 
 #endif

@@ -50,8 +50,6 @@ int process_was_killed(pid pid) {
   }
   pcb->processStatus = KILLED;
   pcb->currentRSP = NULL;
-
-  // If the process running is the one terminated
   if (currentPID == pid) {
     currentPID = NO_PROC;
   }
@@ -77,12 +75,10 @@ void yield() {
 }
 
 void *switch_process(void *cRSP) {
-  // If in kernel
   if (currentPID == PID_KERNEL) {
     mainRSP = cRSP;
   }
 
-  // If in a "normal process"
   else if (currentPID >= 0) {
     processTable[currentPID].currentRSP = cRSP;
     if (processTable[currentPID].processStatus == RUNNING) {
@@ -92,7 +88,6 @@ void *switch_process(void *cRSP) {
   if ((processTable[nextPID].currentRSP != NULL) && processTable[nextPID].processStatus == READY) {
     currentPID = nextPID;
     nextPID = NO_PROC;
-    // Assign how much more time based on process priority
     currentQuantum = get_quantum(currentPID);
   }
 
@@ -106,7 +101,6 @@ void *switch_process(void *cRSP) {
     currentQuantum = get_quantum(currentPID);
   }
 
-  // Keep running the same procs
   else {
     currentQuantum -= 1;
   }
@@ -138,7 +132,6 @@ int unblock(pid pid) {
     return 0;
   }
   processTable[pid].processStatus = READY;
-  // If its of "high priority", run it next
   if (processTable[pid].priority >= (MAX_PRIORITY / 2)) {
     nextPID = pid;
   }
@@ -157,7 +150,6 @@ int nice(pid pid, priority newPrio) {
 
   pcb->priority = newPrio;
 
-  // If it is a high priority process, make it run next
   if (newPrio >= (MAX_PRIORITY / 2) && pcb->processStatus == READY) {
     nextPID = pid;
   }
@@ -165,10 +157,8 @@ int nice(pid pid, priority newPrio) {
   return 0;
 }
 
-// Assigns time based on priority -> lower priority means less time
 int get_quantum(pid currentPID) { return (QUANTUM + processTable[currentPID].priority); }
 
-// Order remains the same, what changes is the amount of time a process will be allowed to run
 pid get_next_ready() {
   pid first = currentPID < 0 ? 0 : currentPID;
   pid next = first;

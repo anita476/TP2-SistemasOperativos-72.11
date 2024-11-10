@@ -8,7 +8,7 @@
 
 #define INVALID_VALUE_ERROR -3
 
-typedef int sem; /* sem ids can be a max of 255 */
+typedef int sem; /* Sem IDs can be a max of 255 */
 typedef char *sem_name;
 
 /*
@@ -18,16 +18,13 @@ typedef char *sem_name;
     @returns The semaphore
 */
 int sem_open(sem_name semName, int initValue);
-/* if id does not exist, create the id and return numerical id for future reference */
-/* if it exists, add calling process to participating processes id */
-/* default value for creating semaphore is 1 */
 
 /*
     @brief Closes a semaphore
     @param sem The semaphore to close
     @returns 0 if successful, -1 if error
 */
-int sem_close(sem sem); /* delete calling process from queue of participating processes*/
+int sem_close(sem sem);
 
 /*
     @brief Posts a semaphore

@@ -54,9 +54,9 @@ void time() {
 
   fprintf(STDOUT, "Current time is: ");
   for (int i = TIME_LENGTH - 2; i >= 0; i--) {
-    if (i == 2 || i == 5)
+    if (i == 2 || i == 5) {
       toReturn[i] = ':';
-    else {
+    } else {
       toReturn[i] = (time % 10) + '0';
       time = time / 10;
     }
@@ -79,8 +79,9 @@ void regs() {
     char str[8] = {0};
     fprintf(STDOUT, registerNames[i]);
     fprintf(STDOUT, ": ");
-    if (i == 8 || i == 9)
+    if (i == 8 || i == 9) {
       fprintf(STDOUT, " ");
+    }
     fprintf(STDOUT, itoa(buffer[i], str, 16));
     fprintf(STDOUT, "h");
     fprintf(STDOUT, "\n");
@@ -107,7 +108,6 @@ int ps() {
   ProcessInfo array[MAX_PROCESSES];
   int count = sys_list_processes_info(array, MAX_PROCESSES);
 
-  // Print header with fixed column widths
   fprintf(STDOUT, "PID     Name           Status     Priority     Foreground     Parent     Input     Output\n");
   fprintf(STDOUT, "---     ----           ------     --------     ----------     ------     -----     ------\n");
 
@@ -121,44 +121,50 @@ int ps() {
     char buffer[300] = {0};
     char pidStr[10], prioStr[10], fgStr[10], parentStr[10];
 
-    // Convert numbers to strings
     itoa(array[i].pid, pidStr, 10);
     itoa(array[i].priority, prioStr, 10);
     itoa(array[i].fg_flag, fgStr, 10);
 
-    if (array[i].parent == NO_PROC)
+    if (array[i].parent == NO_PROC) {
       strcpy(parentStr, "-");
-    else
+    } else {
       itoa(array[i].parent, parentStr, 10);
+    }
 
-    // Build the output string with fixed column widths
     strcpy(buffer, pidStr);
-    for (int j = strlen(pidStr); j < 8; j++)
-      strcat(buffer, " ");  // PID width: 8
+    for (int j = strlen(pidStr); j < 8; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, array[i].name);
-    for (int j = strlen(array[i].name); j < 15; j++)
-      strcat(buffer, " ");  // Name width: 15
+    for (int j = strlen(array[i].name); j < 15; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, status);
-    for (int j = strlen(status); j < 11; j++)
-      strcat(buffer, " ");  // Status width: 12
+    for (int j = strlen(status); j < 11; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, prioStr);
-    for (int j = strlen(prioStr); j < 13; j++)
-      strcat(buffer, " ");  // Priority width: 12
+    for (int j = strlen(prioStr); j < 13; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, fgStr);
-    for (int j = strlen(fgStr); j < 15; j++)
-      strcat(buffer, " ");  // Foreground width: 14
+    for (int j = strlen(fgStr); j < 15; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, parentStr);
-    for (int j = strlen(parentStr); j < 11; j++)
-      strcat(buffer, " ");  // Parent width: 11
+    for (int j = strlen(parentStr); j < 11; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, get_fd_name(array[i].input));
-    for (int j = strlen(get_fd_name(array[i].input)); j < 10; j++)
-      strcat(buffer, " ");  // Input width: 10
+    for (int j = strlen(get_fd_name(array[i].input)); j < 10; j++) {
+      strcat(buffer, " ");
+    }
 
     strcat(buffer, get_fd_name(array[i].output));
     strcat(buffer, "\n");
@@ -189,7 +195,7 @@ void cat() {
     if (res < 0) {
       return;
     }
-    if (buffer[0] == (EOF)) {  // this is wrong -> maybe fix -> should send EOF !!
+    if (buffer[0] == (EOF)) {
       return;
     }
     for (int i = res; i < BUFFER_SIZE; i++) {

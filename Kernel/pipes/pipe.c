@@ -4,14 +4,14 @@
 #include <pipe.h>
 #include <videoDriver.h>
 
-#define START_ID 4  // not the cleanest but its to simplify the code since a pipe is "another file"
+#define START_ID 4
 
 typedef struct Pipe {
-  unsigned int pipeID; /* has to be bigger than 3*/
+  unsigned int pipeID;  // Has to be bigger than 3
 
   sem read_sem;
   sem write_sem;
-  sem_name read_sem_name;  // because we only have named semaphores in our system
+  sem_name read_sem_name;
   sem_name write_sem_name;
 
   unsigned int write_pos;
@@ -28,7 +28,6 @@ static Pipe pipeList[MAX_PIPES];
 int active_pipes = 0;
 
 // Because we use named semaphores, we need to give unique names to each one
-//  aclarar en el informe que, para este uso, sería mejor tener semáforos anónimos
 static void create_sem_name(unsigned int pipe_id, char *buf, char *sem) {
   strcpy(buf, sem);
   char id[3];
@@ -36,7 +35,6 @@ static void create_sem_name(unsigned int pipe_id, char *buf, char *sem) {
   strcat(buf, id);
 }
 
-// Finds first available pipe id and returns it
 static int find_available_pipe() {
   if (active_pipes == MAX_PIPES) {
     return NO_SPACE;
@@ -51,7 +49,6 @@ static int find_available_pipe() {
   return NO_SPACE;
 }
 
-/* Returns the position of the pipe id, or -1 if it isnt found (or the id isnt in use atm) */
 static int find_pipe(unsigned int id) {
   if (id <= 3 || (pipeList[id - START_ID].pipeID != id)) {
     return INVALID_PIPE;
@@ -59,7 +56,6 @@ static int find_pipe(unsigned int id) {
   return (id - START_ID);
 }
 
-/* Maybe later add more info , i dont know if its necessary*/
 int get_pipe_info(unsigned int pipe_id, pipeInfo *info) {
   int pos = find_pipe(pipe_id);
   if (pos < 0) {
@@ -71,10 +67,6 @@ int get_pipe_info(unsigned int pipe_id, pipeInfo *info) {
   return 0;
 }
 
-/* When a process is killed or dies, it should signal before exiting if its output was a pipe,
-        to send eof so that the other processes
-   dont try to keep reading
-*/
 int signal_eof(unsigned int pipe_id) {
   int pos = find_pipe(pipe_id);
   if (pos < 0) {
@@ -86,15 +78,12 @@ int signal_eof(unsigned int pipe_id) {
 
 int open_pipe(unsigned int pipe_id) {
   int pos;
-  if (pipe_id == 0) {  // no pipe_id
-    // find pos
+  if (pipe_id == 0) {
     int id = find_available_pipe();
     pos = find_pipe(id);
     if (id < 0 || pos < 0) {
       return -1;
     }
-
-    // create semaphore names
     char *bufW;
     char *bufR;
     if ((bufW = malloc(MAX_SEM_LENGTH + 1)) == NULL || (bufR = malloc(MAX_SEM_LENGTH + 1)) == NULL) {
@@ -102,16 +91,15 @@ int open_pipe(unsigned int pipe_id) {
       free(bufW);
       return -1;
     }
+
     create_sem_name(id, bufW, "semwrite");
     create_sem_name(id, bufR, "semread");
-    // create semaphores
     int sem_write = sem_open(bufW, PIPE_SIZE);
     int sem_read = sem_open(bufR, 0);
     if (sem_write < 0 || sem_read < 0) {
       return -1;
     }
 
-    // allocate space for the pipe itself
     if ((pipeList[pos].pipe = malloc(PIPE_SIZE)) == NULL) {
       free(bufR);
       free(bufW);
@@ -119,7 +107,6 @@ int open_pipe(unsigned int pipe_id) {
       return NO_SPACE;
     }
 
-    // assign and return id
     pipeList[pos].pipeID = id;
     pipeList[pos].read_sem = sem_read;
     pipeList[pos].write_sem = sem_write;
@@ -137,11 +124,10 @@ int open_pipe(unsigned int pipe_id) {
   } else {
     pos = find_pipe(pipe_id);
     if (pos < 0) {
-      return INVALID_PIPE;  // do not create
+      return INVALID_PIPE;
     }
-    // otherwise create sems for this process
-    if (sem_open(pipeList[pos].read_sem_name, 1 /* should be ignored*/) < 0 ||
-        sem_open(pipeList[pos].write_sem_name, 1 /* should be ignored*/) < 0) {
+
+    if (sem_open(pipeList[pos].read_sem_name, 1) < 0 || sem_open(pipeList[pos].write_sem_name, 1) < 0) {
       return NO_SPACE;
     }
     pipeList[pos].interested_processes++;
@@ -154,7 +140,6 @@ int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes) {
   if (pos == INVALID_PIPE)
     return PIPE_ERROR;
 
-  // Nothing to read and pipe has finished -> send EOF
   if (pipeList[pos].eof && pipeList[pos].amount == 0) {
     return EOF;
   }
@@ -175,15 +160,16 @@ int read_from_pipe(unsigned int pipe_id, char *dest, unsigned int bytes) {
 
 int write_to_pipe(unsigned int pipe_id, const char *src, unsigned int bytes) {
   int pos = find_pipe(pipe_id);
-  if (pos == INVALID_PIPE)
-    return PIPE_ERROR;  // if didnt find pipe the id is wrong
+  if (pos == INVALID_PIPE) {
+    return PIPE_ERROR;
+  }
 
   for (int i = 0; i < bytes; i++) {
     sem_wait(pipeList[pos].write_sem);
 
     pipeList[pos].pipe[pipeList[pos].write_pos] = src[i];
     pipeList[pos].write_pos = ((pipeList[pos].write_pos) + 1) % 1024;
-    pipeList[pos].amount++;  // to read
+    pipeList[pos].amount++;
     sem_post(pipeList[pos].read_sem);
   }
 
@@ -200,7 +186,6 @@ int close_pipe(unsigned int pipe_id) {
 
   pipeList[pos].interested_processes--;
 
-  /* only if no processes have the pipe open free all resources, otherwise only free the semaphores*/
   if (pipeList[pos].interested_processes == 0) {
     free(pipeList[pos].pipe);
     free(pipeList[pos].read_sem_name);

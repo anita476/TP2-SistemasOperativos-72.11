@@ -250,7 +250,7 @@ int sys_sem_wait(sem sem);
 /*
     @brief Prints memory manager info
 */
-void sys_memory_manager_state();
+memoryInfo *sys_get_memory_info();
 
 /*
     @brief Opens a pipe

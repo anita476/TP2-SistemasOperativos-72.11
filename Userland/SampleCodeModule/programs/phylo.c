@@ -59,7 +59,6 @@ static char *GOODBYE_MESSAGES[] = {
 static philosopher_t philosophers[MAX_PHILOSOPHERS];
 static sem_t mutex;               // For protecting shared state
 static int num_philosophers = 0;  // should this int be protected as well?
-static int running = 0;
 
 static void print_welcome(int id);
 static void print_goodbye(int id);
@@ -68,7 +67,7 @@ static void try_to_eat(int phil_id);
 static int add_semaphore(int phil_id);
 static int philosopher_action(int argc, char *argv[]);
 static int add_philosopher(int id);
-static int remove_philosopher(int running_check);
+static int remove_philosopher();
 
 uint64_t phylo(uint64_t argc, char *argv[]) {
   if (argc != 1) {
@@ -76,7 +75,6 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  running = 1;
   num_philosophers = 0;
 
   int initial_philosophers = satoi(argv[0]);
@@ -101,14 +99,14 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   fprintf(STDOUT, "Available Actions:\n");
   fprintf(STDOUT, "  'a' - Invite another philosopher to dine\n");
   fprintf(STDOUT, "  'r' - Excuse a philosopher from the table\n");
-  fprintf(STDOUT, "  's' - Check on our distinguished guests\n");
-  fprintf(STDOUT, "  'c' - View the dinner table state\n");
+  fprintf(STDOUT, "  'p' - View the dinner table state (ps)\n");
   fprintf(STDOUT, "  'q' - End the philosophical feast\n\n");
 
   for (int i = 0; i < MAX_PHILOSOPHERS; i++) {
     philosophers[i].pid = -1;
     philosophers[i].state = NONE;
     philosophers[i].prev = NONE;
+    philosophers[i].sem = -1;
   }
 
   for (int i = 0; i < initial_philosophers; i++) {
@@ -124,43 +122,58 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   }
 
   char cmd = 0;
-  while (running && ((cmd = sys_get_char()) != 'q')) {
-    if (cmd == 'q') {
-      running = 0;
-      break;
-    }
+  while ((cmd = sys_get_char()) != 'q') {
+    // if (cmd == 'q') {
+    //   running = 0;
+    //   break;
+    // }
     switch (cmd) {
-    case 'a':
-      if (add_philosopher(num_philosophers) < 0)
-        fprintf(STDERR, "ERROR: Failed to add philosopher\n");
-      break;
-    case 'r':
-      if (remove_philosopher(1) < 0) {
-        fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
-      }
-      break;
-    case 's':
-      sys_sem_wait(mutex);
-      ps();
-      fprintf(STDOUT, "\n");
-      sys_sem_post(mutex);
-      break;
-    case 'c':
-      sys_sem_wait(mutex);
-      display_table();
-      sys_sem_post(mutex);
-      break;
+      case 'a':
+        if (add_philosopher(num_philosophers) < 0)
+          fprintf(STDERR, "ERROR: Failed to add philosopher\n");
+        break;
+      case 'r':
+        if (remove_philosopher() < 0) {
+          fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
+        }
+        break;
+      case 'p':
+        sys_sem_wait(mutex);
+        ps();
+        fprintf(STDOUT, "\n");
+        sys_sem_post(mutex);
+        break;
     }
   }
-  // running = 0;
+
+  sys_wait(MAX_TIME);
 
   // cleanup
   fprintf(STDOUT, "Cleaning up philosophers\n");
+
+  sys_sem_wait(mutex); 
   while (num_philosophers > 0) {
-    remove_philosopher(0);
+    int id = num_philosophers - 1;
+    
+    if (philosophers[id].pid > 0) {
+        sys_kill(philosophers[id].pid);
+    }
+    
+    if (philosophers[id].sem > 0) {
+        sys_sem_close(philosophers[id].sem);
+    }
+    
+    philosophers[id].state = NONE;
+    philosophers[id].prev = NONE;
+    philosophers[id].pid = -1;
+    philosophers[id].sem = -1;
+    
+    print_goodbye(id);
+    num_philosophers--;
   }
+  sys_sem_post(mutex);
   sys_sem_close(mutex);
-  fprintf(STDOUT, "Done\n");
+  fprintf(STDOUT, "\nDone\n");
 
   return 0;
 }
@@ -264,9 +277,9 @@ static int philosopher_action(int argc, char *argv[]) {
     add_semaphore(RIGHT_PHIL(phil_id, MAX_PHILOSOPHERS));
   }
 
-  while (running) {
+  while (1) {
 
-    sys_wait(get_uniform(THINK_TIME));
+    sys_wait(get_uniform(MAX_TIME));
 
     // get hungry --> take forks
     sys_sem_wait(mutex);
@@ -334,7 +347,6 @@ static int add_philosopher(int id) {
   print_welcome(id);
 
   if ((philosophers[id].pid = sys_create_process(&info)) < 0) {
-    // sem_close(philosophers[id].sem);
     fprintf(STDERR, "ERROR: Unable to create process\n");
     sys_sem_post(mutex);
     return -1;
@@ -346,24 +358,14 @@ static int add_philosopher(int id) {
   return 0;
 }
 
-static int remove_philosopher(int running_check) {
-  if (num_philosophers <= MIN_PHILOSOPHERS && running_check) {
+static int remove_philosopher() {
+  if (num_philosophers <= MIN_PHILOSOPHERS) {
     fprintf(STDERR, "Minimum number of philosophers reached\n");
     return -1;
   }
 
   sys_sem_wait(mutex);
   int id = num_philosophers - 1;
-
-  // Add debug prints
-  // char buffer[50];
-
-  // sprintf(buffer, "Attempting to remove philosopher %d\n", id);
-  // fprintf(STDOUT, buffer);
-  // sprintf(buffer, "PID: %d\n", philosophers[id].pid);
-  // fprintf(STDOUT, buffer);
-  // sprintf(buffer, "State: %d\n", philosophers[id].state);
-  // fprintf(STDOUT, buffer);
 
   if (philosophers[id].pid <= 0) {
     sys_sem_post(mutex);
@@ -380,15 +382,17 @@ static int remove_philosopher(int running_check) {
   }
 
   if (sys_kill(pid_to_kill) < 0) {
+    sys_sem_post(mutex);
     fprintf(STDERR, "ERROR: Failed to kill philosopher\n");
     return -1;
   }
 
-  if (sys_sem_close(philosophers[id].sem) < 0) {
-    fprintf(STDERR, "ERROR: Failed to close semaphore\n");
-    return -1;
-  }  // im curious whether any process will be able to sem_close a sempahore that it didnt create
-
+  if (philosophers[id].sem > 0) {
+    if (sys_sem_close(philosophers[id].sem) < 0) {
+      fprintf(STDERR, "WARNING: Failed to close semaphore\n");
+      return -1;
+    }  
+  }
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;
   philosophers[id].pid = -1;

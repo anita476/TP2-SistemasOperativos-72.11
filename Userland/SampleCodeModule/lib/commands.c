@@ -5,6 +5,7 @@
 #include <commands.h>
 #include <defs.h>
 #include <eliminator.h>
+#include <libSysCalls.h>
 #include <utils.h>
 
 #define TIME_LENGTH 9
@@ -171,7 +172,7 @@ int ps() {
 void loop() {
   pid_t pid = sys_get_pid();
   char buffer[10];
-
+  // PVS marks this as an infinite loop. It is correct, that's the idea
   while (1) {
     itoa(pid, buffer, 10);
     fprintf(STDOUT, "Hello from process ");
@@ -196,7 +197,6 @@ void cat() {
     }
     fprintf(STDOUT, buffer);
   }
-  fprintf(STDOUT, "\n");
 }
 
 void scale_down_command() {
@@ -260,7 +260,7 @@ int filter() {
 
     int outIndex = 0;
     for (int i = 0; i < bytesRead; i++) {
-      if (buffer[i] == EOF) {
+      if ((int) buffer[i] == EOF) {
         return 0;
       }
       if (!is_vowel(buffer[i])) {
@@ -275,4 +275,26 @@ int filter() {
   }
 
   return 0;
+}
+
+void print_memory_info() {
+  memoryInfo *info = sys_get_memory_info();
+  char buffer[32];
+
+  fprintf(STDOUT, "=== Memory Manager State ===\n");
+
+  fprintf(STDOUT, "Total memory: ");
+  itoa(info->totalSize, buffer, 10);
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, " bytes\n");
+
+  fprintf(STDOUT, "Free memory: ");
+  itoa(info->freeSize, buffer, 10);
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, " bytes\n");
+
+  fprintf(STDOUT, "Allocated memory: ");
+  itoa(info->allocatedSize, buffer, 10);
+  fprintf(STDOUT, buffer);
+  fprintf(STDOUT, " bytes\n");
 }

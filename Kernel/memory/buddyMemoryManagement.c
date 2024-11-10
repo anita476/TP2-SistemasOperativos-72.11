@@ -21,11 +21,12 @@ typedef struct block {
 typedef struct {
   void *start;
   block_t *free_lists[MAX_ORDER];
-  size_t total_size;
-  size_t free_memory;
+   total_size;
+  // size_t free_memory;
 } buddy_t;
 
 static buddy_t buddy;
+static memoryInfo memInfo;
 
 static inline bool is_power_of_2(size_t x) { return (x & (x - 1)) == 0; }
 
@@ -61,7 +62,12 @@ static block_t *get_buddy(block_t *block) {
 void init_memory_manager(void *startHeapAddress, size_t totalSize) {
   buddy.start = startHeapAddress;
   buddy.total_size = totalSize;
-  buddy.free_memory = totalSize;
+  // buddy.free_memory = totalSize;
+
+  memInfo.totalSize = totalSize;
+  memInfo.freeSize = totalSize;
+  memInfo.allocatedSize = 0;
+
   for (int i = 0; i < MAX_ORDER; i++) {
     buddy.free_lists[i] = NULL;
   }
@@ -119,7 +125,9 @@ void *malloc(size_t size) {
   }
   // found the best fit
   block->is_free = 0;
-  buddy.free_memory -= block->size;
+  // buddy.free_memory -= block->size;
+  memInfo.freeSize -= block->size;
+  memInfo.allocatedSize += block->size - BLOCK_HEADER_SIZE;
   return (void *) (block + 1);
 }
 
@@ -135,7 +143,9 @@ void free(void *ptr) {
   }
 
   block->is_free = 1;
-  buddy.free_memory += block->size;
+  // buddy.free_memory += block->size;
+  memInfo.freeSize += block->size;
+  memInfo.allocatedSize -= (block->size - BLOCK_HEADER_SIZE);
 
   while (1) {
     block_t *buddy_block = get_buddy(block);
@@ -162,51 +172,8 @@ void free(void *ptr) {
   buddy.free_lists[order] = block;
 }
 
-void memory_manager_state() {
-  char buffer[32];
-  print(STDOUT, "\n=== Memory Manager State ===\n");
-
-  size_t total_free = 0;
-  for (int i = 0; i < MAX_ORDER; i++) {
-    size_t block_size = (size_t) 1 << (i + 6);
-    int count = 0;
-    block_t *current = buddy.free_lists[i];
-
-    while (current != NULL) {
-      count++;
-      total_free += current->size;
-      current = current->next;
-    }
-
-    if (count > 0) {
-      print(STDOUT, "Order ");
-      int_to_str(i, buffer, 10);
-      print(STDOUT, buffer);
-      print(STDOUT, " (");
-      int_to_str(block_size, buffer, 10);
-      print(STDOUT, buffer);
-      print(STDOUT, " bytes): ");
-      int_to_str(count, buffer, 10);
-      print(STDOUT, buffer);
-      print(STDOUT, " free blocks\n");
-    }
-  }
-
-  print(STDOUT, "\nTotal memory: ");
-  int_to_str(buddy.total_size, buffer, 10);
-  print(STDOUT, buffer);
-  print(STDOUT, " bytes\n");
-
-  print(STDOUT, "Free memory: ");
-  int_to_str(buddy.free_memory, buffer, 10);
-  print(STDOUT, buffer);
-  print(STDOUT, " bytes\n");
-
-  print(STDOUT, "Allocated memory: ");
-  int_to_str(buddy.total_size - buddy.free_memory, buffer, 10);
-  print(STDOUT, buffer);
-  print(STDOUT, " bytes\n");
-  print(STDOUT, "========================\n");
+memoryInfo* get_memory_info() {
+  return &memInfo;
 }
 
 #endif

@@ -69,7 +69,7 @@ static Command commandList[COMMANDS_SIZE] = {
     {.name = "mem",
      .isPipeable = 0,
      .numberArgs = 0,
-     .start = (ProcessStart) sys_memory_manager_state,
+     .start = (ProcessStart) print_memory_info,
      .usage = "Usage: mem"},
     {.name = "testpipe",
      .isPipeable = 0,
@@ -207,7 +207,7 @@ int handle_piped_process(int producerArgc, char **producerArgv, int consumerArgc
   for (l = 0; l < consumerArgc - 1; l++) {
     consumerArgv[l] = consumerArgv[l + 1];
   }
-  producerArgv[l] = NULL;
+  consumerArgv[l] = NULL;
 
   if (!commandList[pos2].isPipeable) {
     fprintf(STDERR, "Command is not pipeable\n");

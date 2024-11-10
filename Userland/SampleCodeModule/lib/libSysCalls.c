@@ -100,7 +100,7 @@ int sys_sem_post(sem sem) { return syscall(39, (uint64_t) sem, 0, 0, 0, 0); }
 
 int sys_sem_wait(sem sem) { return syscall(40, (uint64_t) sem, 0, 0, 0, 0); }
 
-void sys_memory_manager_state() { syscall(41, 0, 0, 0, 0, 0); }
+memoryInfo* sys_get_memory_info() { return (memoryInfo*) syscall(41, 0, 0, 0, 0, 0); }
 
 int sys_open_pipe(unsigned int pipe_id) { return syscall(42, (uint64_t) pipe_id, 0, 0, 0, 0); }
 

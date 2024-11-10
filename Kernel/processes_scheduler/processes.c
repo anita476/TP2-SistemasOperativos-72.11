@@ -80,30 +80,32 @@ pid create_process(createProcessInfo *info) {
     return -1;
   }
 
-  if (info->argc != 0 && ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL)) {
-    print(STDERR, "Could not malloc for argv\n");
-    free(stackEnd);
-    free(nameCopy);
-    return -1;
-  }
-
-  // Copy arguments
-  for (int i = 0; i < info->argc; ++i) {
-    size_t length = strlen(info->argv[i]) + 1;
-
-    if ((argvCopy[i] = malloc(length)) == NULL) {
+  if (info->argc != 0) {
+    if ((argvCopy = malloc(sizeof(char *) * info->argc)) == NULL) {
+      print(STDERR, "Could not malloc for argv\n");
       free(stackEnd);
       free(nameCopy);
-      while (i > 0) {
-        i--;
-        free(argvCopy[i]);
-      }
-      free(argvCopy);
-      print(STDERR, "Argv could not malloc");
       return -1;
     }
 
-    memcpy(argvCopy[i], info->argv[i], length);
+    // Copy arguments
+    for (int i = 0; i < info->argc; ++i) {
+      size_t length = strlen(info->argv[i]) + 1;
+
+      if ((argvCopy[i] = malloc(length)) == NULL) {
+        free(stackEnd);
+        free(nameCopy);
+        while (i > 0) {
+          i--;
+          free(argvCopy[i]);
+        }
+        free(argvCopy);
+        print(STDERR, "Argv could not malloc");
+        return -1;
+      }
+
+      memcpy(argvCopy[i], info->argv[i], length);
+    }
   }
 
   strcpy(nameCopy, info->name);
@@ -121,7 +123,7 @@ pid create_process(createProcessInfo *info) {
 
   add_child(parent, pid);
   process->parent = parent;
-  
+
   int parentInput = get_process_input(process->parent);
   if (parentInput != STDIN && info->input == STDIN) {
     process->input = parentInput;

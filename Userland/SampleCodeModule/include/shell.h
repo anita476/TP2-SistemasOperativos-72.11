@@ -13,7 +13,6 @@
 #include "test_util.h"
 #include <_loader.h>
 #include <test_pipe.h>
-#include "test_phylo.h"
 
 #define COMMANDS_SIZE 25
 #define BUFFER_SIZE   1024

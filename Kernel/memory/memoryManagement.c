@@ -70,8 +70,10 @@ static void coalesce_free_blocks() {
         if ((char *)current + current->size == (char *)current->next) {
             current->size += current->next->size;
             current->next = current->next->next;
+            // print(STDERR, "Coalesced\n");
         } else {
             current = current->next;
+            // print(STDOUT, "Not Coalesced\n");
         }
     }
 }
@@ -92,7 +94,7 @@ void free(void *ptr) {
   freeList = blockToFree;  // Add to the front of the free list
 
   // we should coalesce free blocks for less fragmentation 
-  // coalesce_free_blocks();
+  coalesce_free_blocks();
 }
 
 memoryInfo* get_memory_info() {

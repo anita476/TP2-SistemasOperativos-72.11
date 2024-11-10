@@ -24,15 +24,15 @@ typedef int sem_t;
 
 #define MAX_PHILOSOPHERS 10
 #define MIN_PHILOSOPHERS 3
-#define MAX_TIME       1000
+#define MAX_TIME         1000
 
 #define MUTEX "phylo_mutex"
 
 #define LEFT(id)  (((id) + num_philosophers - 1) % num_philosophers)
 #define RIGHT(id) (((id) + 1) % num_philosophers)
 
-#define LEFT_PHIL(id, num)  (((id) + num - 1) % num)
-#define RIGHT_PHIL(id, num) (((id) + 1) % num)
+#define LEFT_PHIL(id, num)  ((((id) + (num) - 1) % (num)))
+#define RIGHT_PHIL(id, num) ((((id) + 1) % (num)))
 
 typedef enum { NONE = 0, THINKING, HUNGRY, EATING } State;
 
@@ -114,7 +114,7 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       fprintf(STDERR, "ERROR: Failed to create initial philosophers\n");
 
       while (--i >= 0) {
-        remove_philosopher(0);
+        remove_philosopher();
       }
       sys_sem_close(mutex);
       return -1;
@@ -123,26 +123,22 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
 
   char cmd = 0;
   while ((cmd = sys_get_char()) != 'q') {
-    // if (cmd == 'q') {
-    //   running = 0;
-    //   break;
-    // }
     switch (cmd) {
-      case 'a':
-        if (add_philosopher(num_philosophers) < 0)
-          fprintf(STDERR, "ERROR: Failed to add philosopher\n");
-        break;
-      case 'r':
-        if (remove_philosopher() < 0) {
-          fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
-        }
-        break;
-      case 'p':
-        sys_sem_wait(mutex);
-        ps();
-        fprintf(STDOUT, "\n");
-        sys_sem_post(mutex);
-        break;
+    case 'a':
+      if (add_philosopher(num_philosophers) < 0)
+        fprintf(STDERR, "ERROR: Failed to add philosopher\n");
+      break;
+    case 'r':
+      if (remove_philosopher() < 0) {
+        fprintf(STDERR, "ERROR: Failed to remove philosopher\n");
+      }
+      break;
+    case 'p':
+      sys_sem_wait(mutex);
+      ps();
+      fprintf(STDOUT, "\n");
+      sys_sem_post(mutex);
+      break;
     }
   }
 
@@ -151,23 +147,23 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   // cleanup
   fprintf(STDOUT, "Cleaning up philosophers\n");
 
-  sys_sem_wait(mutex); 
+  sys_sem_wait(mutex);
   while (num_philosophers > 0) {
     int id = num_philosophers - 1;
-    
+
     if (philosophers[id].pid > 0) {
-        sys_kill(philosophers[id].pid);
+      sys_kill(philosophers[id].pid);
     }
-    
+
     if (philosophers[id].sem > 0) {
-        sys_sem_close(philosophers[id].sem);
+      sys_sem_close(philosophers[id].sem);
     }
-    
+
     philosophers[id].state = NONE;
     philosophers[id].prev = NONE;
     philosophers[id].pid = -1;
     philosophers[id].sem = -1;
-    
+
     print_goodbye(id);
     num_philosophers--;
   }
@@ -184,7 +180,7 @@ static void display_table() {
 
   int state_changed = 0;
 
-  for (int i = 0; i < num_philosophers && !state_changed; i++) {
+  for (int i = 0; i < num_philosophers; i++) {
     // if (philosophers[i].state == NONE) return;
     if ((philosophers[i].state == EATING && philosophers[i].prev != EATING) ||
         (philosophers[i].state != EATING && philosophers[i].prev == EATING)) {
@@ -277,8 +273,8 @@ static int philosopher_action(int argc, char *argv[]) {
     add_semaphore(RIGHT_PHIL(phil_id, MAX_PHILOSOPHERS));
   }
 
+  // It is an infinite loop, but a welcome one
   while (1) {
-
     sys_wait(get_uniform(MAX_TIME));
 
     // get hungry --> take forks
@@ -391,7 +387,7 @@ static int remove_philosopher() {
     if (sys_sem_close(philosophers[id].sem) < 0) {
       fprintf(STDERR, "WARNING: Failed to close semaphore\n");
       return -1;
-    }  
+    }
   }
   philosophers[id].state = NONE;
   philosophers[id].prev = NONE;

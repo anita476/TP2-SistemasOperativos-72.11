@@ -164,15 +164,21 @@ void insert_command() {
   int bufferIndex = 0;
   char c = 0;
 
-  while ((c = sys_get_char()) != '\n' && bufferIndex < BUFFER_SIZE) {
-    if (c != '\0') {
-      if (c == '\b' && bufferIndex > 0) {
-        buffer[--bufferIndex] = '\0';
-        sys_put_char(c);
-      } else if (c != '\b') {
-        buffer[bufferIndex++] = c;
-        sys_put_char(c);
-      }
+  while (bufferIndex < BUFFER_SIZE) {
+    if (sys_read(STDIN, &c, 1) <= 0) {
+      continue;
+    }
+
+    if (c == '\n') {
+      break;
+    }
+
+    if (c == '\b' && bufferIndex > 0) {
+      buffer[--bufferIndex] = '\0';
+      sys_put_char(c);
+    } else if (c != '\b' && c != '\0') {
+      buffer[bufferIndex++] = c;
+      sys_put_char(c);
     }
   }
   fprintf(STDOUT, "\n");

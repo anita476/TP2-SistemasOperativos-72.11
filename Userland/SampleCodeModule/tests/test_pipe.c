@@ -21,7 +21,7 @@ void read_pipe() {
   for (int i = 0; i < STRING_LENGTH;) {
     sys_read_from_pipe(pipe_id, buffer, AMOUNT);
 
-    if (strncmp(buffer, string + i, AMOUNT)) {
+    if (strncmp(buffer, string + i, AMOUNT) != 0) {
       fprintf(STDERR, "Error in pipe: text doesnt match source\n");
     }
     i += AMOUNT;

@@ -5,8 +5,8 @@
 #include <commands.h>
 #include <defs.h>
 #include <eliminator.h>
-#include <utils.h>
 #include <libSysCalls.h>
+#include <utils.h>
 
 #define TIME_LENGTH 9
 
@@ -172,7 +172,7 @@ int ps() {
 void loop() {
   pid_t pid = sys_get_pid();
   char buffer[10];
-
+  // PVS marks this as an infinite loop. It is correct, that's the idea
   while (1) {
     itoa(pid, buffer, 10);
     fprintf(STDOUT, "Hello from process ");
@@ -197,7 +197,6 @@ void cat() {
     }
     fprintf(STDOUT, buffer);
   }
-  fprintf(STDOUT, "\n");
 }
 
 void scale_down_command() {
@@ -261,7 +260,7 @@ int filter() {
 
     int outIndex = 0;
     for (int i = 0; i < bytesRead; i++) {
-      if (buffer[i] == EOF) {
+      if ((int) buffer[i] == EOF) {
         return 0;
       }
       if (!is_vowel(buffer[i])) {

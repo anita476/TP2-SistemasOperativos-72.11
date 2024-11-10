@@ -99,33 +99,5 @@ void free(void *ptr) {
 
 memoryInfo* get_memory_info() {
   return &memInfo;
-  // char buffer[32];
-  // print(STDOUT, "\n=== Memory Manager State ===\n");
-
-  // // Calculate total allocated by traversing the free list
-  // size_t total_free = 0;
-  // struct block *current = freeList;
-  // while (current != NULL) {
-  //   total_free += current->size;
-  //   current = current->next;
-  // }
-
-  // // The total is what we got in init
-  // size_t total = freeList->size + BLOCK_SIZE;  // Add back the first block header
-
-  // print(STDOUT, "Total memory: ");
-  // int_to_str(total, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
-
-  // print(STDOUT, "Free memory: ");
-  // int_to_str(total_free, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
-
-  // print(STDOUT, "Allocated memory: ");
-  // int_to_str(total - total_free, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
 }
 #endif

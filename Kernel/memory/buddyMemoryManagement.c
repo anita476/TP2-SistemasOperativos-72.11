@@ -174,50 +174,6 @@ void free(void *ptr) {
 
 memoryInfo* get_memory_info() {
   return &memInfo;
-  // char buffer[32];
-  // print(STDOUT, "\n=== Memory Manager State ===\n");
-
-  // size_t total_free = 0;
-  // for (int i = 0; i < MAX_ORDER; i++) {
-  //   size_t block_size = (size_t) 1 << (i + 6);
-  //   int count = 0;
-  //   block_t *current = buddy.free_lists[i];
-
-  //   while (current != NULL) {
-  //     count++;
-  //     total_free += current->size;
-  //     current = current->next;
-  //   }
-
-  //   if (count > 0) {
-  //     print(STDOUT, "Order ");
-  //     int_to_str(i, buffer, 10);
-  //     print(STDOUT, buffer);
-  //     print(STDOUT, " (");
-  //     int_to_str(block_size, buffer, 10);
-  //     print(STDOUT, buffer);
-  //     print(STDOUT, " bytes): ");
-  //     int_to_str(count, buffer, 10);
-  //     print(STDOUT, buffer);
-  //     print(STDOUT, " free blocks\n");
-  //   }
-  // }
-
-  // print(STDOUT, "\nTotal memory: ");
-  // int_to_str(buddy.total_size, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
-
-  // print(STDOUT, "Free memory: ");
-  // int_to_str(buddy.free_memory, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
-
-  // print(STDOUT, "Allocated memory: ");
-  // int_to_str(buddy.total_size - buddy.free_memory, buffer, 10);
-  // print(STDOUT, buffer);
-  // print(STDOUT, " bytes\n");
-  // print(STDOUT, "========================\n");
 }
 
 #endif

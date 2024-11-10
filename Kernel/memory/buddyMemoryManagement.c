@@ -21,7 +21,7 @@ typedef struct block {
 typedef struct {
   void *start;
   block_t *free_lists[MAX_ORDER];
-   total_size;
+  size_t total_size;
   // size_t free_memory;
 } buddy_t;
 

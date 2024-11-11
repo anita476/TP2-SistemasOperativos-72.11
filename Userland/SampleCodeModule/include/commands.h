@@ -60,4 +60,4 @@ void print_memory_info();
 /*
     @brief Wrapper for nice syscall
 */
-int nice_command( char* pidStr , char* newPrioStr );
+int nice_command( uint64_t argc, char *argv[] );

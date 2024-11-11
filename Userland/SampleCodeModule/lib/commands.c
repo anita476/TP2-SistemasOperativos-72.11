@@ -306,6 +306,8 @@ void print_memory_info() {
   fprintf(STDOUT, " bytes\n");
 }
 
-int nice_command( char* pidStr , char* newPrioStr ){
-  return sys_nice(satoi(pidStr), satoi(newPrioStr));
+int nice_command( uint64_t argc, char *argv[] ){
+  int pid = satoi(argv[0]);
+  int prio = satoi(argv[1]);
+  return sys_nice(pid, prio);
 }

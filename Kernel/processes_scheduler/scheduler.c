@@ -140,7 +140,7 @@ int unblock(pid pid) {
 
 int nice(pid pid, priority newPrio) {
   PCB *pcb;
-  if (get_state(pid, &pcb)) {
+  if (get_state(pid, &pcb) < 0) {
     return -1;
   }
 

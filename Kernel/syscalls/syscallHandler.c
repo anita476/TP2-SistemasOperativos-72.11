@@ -145,116 +145,59 @@ uint64_t get_char(uint64_t fileDescriptor) {
 }
 uint64_t put_pixel_handler(uint64_t color, uint64_t x, uint64_t y) { return (uint64_t) put_pixel(color, x, y); }
 
+typedef uint64_t (*SyscallFunction)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
+
+static SyscallFunction sysCallTable[] = {
+  (SyscallFunction) read, 
+  (SyscallFunction) write,
+  (SyscallFunction) get_current_time,
+  (SyscallFunction) elapsed_millis,
+  (SyscallFunction) get_height_ch,
+  (SyscallFunction) get_width_ch,
+  (SyscallFunction) clear_line,
+  (SyscallFunction) clear_screen,
+  (SyscallFunction) put_pixel_handler,
+  (SyscallFunction) draw_rect,
+  (SyscallFunction) scale_up,
+  (SyscallFunction) scale_down,
+  (SyscallFunction) make_sound,
+  (SyscallFunction) get_height_pix,
+  (SyscallFunction) get_width_pix,
+  (SyscallFunction) get_pix,
+  (SyscallFunction) get_height_chars,
+  (SyscallFunction) set_cursor_to_line,
+  (SyscallFunction) get_registers,
+  (SyscallFunction) get_char,
+  (SyscallFunction) malloc,
+  (SyscallFunction) free,
+  (SyscallFunction) create_process,
+  (SyscallFunction) get_pid,
+  (SyscallFunction) kill,
+  (SyscallFunction) block,
+  (SyscallFunction) unblock,
+  (SyscallFunction) yield,
+  (SyscallFunction) set_priority,
+  (SyscallFunction) list_processes_info,
+  (SyscallFunction) exit_process,
+  (SyscallFunction) wait_for_children,
+  (SyscallFunction) get_process_info,
+  (SyscallFunction) is_foreground,
+  (SyscallFunction) nice,
+  (SyscallFunction) wait,
+  (SyscallFunction) set_cursor,
+  (SyscallFunction) sem_open,
+  (SyscallFunction) sem_close,
+  (SyscallFunction) sem_post,
+  (SyscallFunction) sem_wait,
+  (SyscallFunction) get_memory_info,
+  (SyscallFunction) open_pipe,
+  (SyscallFunction) close_pipe,
+  (SyscallFunction) read_from_pipe,
+  (SyscallFunction) write_to_pipe,
+  (SyscallFunction) get_pipe_info,
+  (SyscallFunction) wait_for_pid,
+};
+
 uint64_t syscall_handler(uint64_t rax, uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8) {
-  switch (rax) {
-  case 0:
-    return read(rdi, rsi, rdx);
-  case 1:
-    return write(rdi, rsi, rdx);
-  case 2:
-    return get_current_time();
-  case 3:
-    return elapsed_millis();
-  case 4:
-    return get_height_ch();
-  case 5:
-    return get_width_ch();
-  case 6:
-    clear_line(rdi);
-    break;
-  case 7:
-    clear_screen();
-    break;
-  case 8:
-    return put_pixel_handler(rdi, rdi, rdx);
-  case 9:
-    return draw_rect(rdi, rsi, rdx, r10, r8);
-  case 10:
-    return scale_up();
-  case 11:
-    return scale_down();
-  case 12:
-    return make_sound(rdi, rsi, rdx);
-  case 13:
-    return get_height_pix();
-  case 14:
-    return get_width_pix();
-  case 15:
-    return get_pix(rdi, rsi);
-  case 16:
-    return get_height_chars();
-  case 17:
-    set_cursor_to_line(rdi);
-    break;
-  case 18:
-    return get_registers(rdi);
-  case 19:
-    return get_char(rdi);
-  case 20:
-    return (uint64_t) malloc(rdi);
-  case 21:
-    free((void *) rdi);
-    break;
-  case 22:
-    return (uint64_t) create_process((void *) rdi);
-  case 23:
-    return (uint64_t) get_pid();
-  case 24:
-    return (uint64_t) kill(rdi);
-  case 25:
-    return (uint64_t) block(rdi);
-  case 26:
-    return (uint64_t) unblock(rdi);
-  case 27:
-    yield();
-    break;
-  case 28:
-    return set_priority(rdi, rsi);
-  case 29:
-    return list_processes_info((void *) rdi, rsi);
-  case 30:
-    exit_process();
-    break;
-  case 31:
-    wait_for_children();
-    break;
-  case 32:
-    return get_process_info(rdi, (void *) rsi);
-  case 33:
-    return is_foreground(rdi);
-  case 34:
-    return nice(rdi, rsi);
-  case 35:
-    wait(rdi);
-    break;
-  case 36:
-    set_cursor(rdi, rsi);
-    break;
-  case 37:
-    return sem_open((void *) rdi, rsi);
-  case 38:
-    return sem_close(rdi);
-  case 39:
-    return sem_post(rdi);
-  case 40:
-    return sem_wait(rdi);
-  case 41:
-    return (uint64_t) get_memory_info();
-  case 42:
-    return open_pipe(rdi);
-  case 43:
-    return close_pipe(rdi);
-  case 44:
-    return read_from_pipe(rdi, (char *) rsi, rdx);
-  case 45:
-    return write_to_pipe(rdi, (char *) rsi, rdx);
-  case 46:
-    return get_pipe_info(rdi, (void *) rsi);
-  case 47:
-    wait_for_pid(rdi);
-    break;
-  default:
-    return 1;
-  }
-  return 0;
+  return sysCallTable[rax](rdi, rsi, rdx, r10, r8);
 }

@@ -7,6 +7,7 @@
 #include <eliminator.h>
 #include <libSysCalls.h>
 #include <utils.h>
+#include <test_util.h>
 
 #define TIME_LENGTH 9
 
@@ -303,4 +304,8 @@ void print_memory_info() {
   itoa(info->allocatedSize, buffer, 10);
   fprintf(STDOUT, buffer);
   fprintf(STDOUT, " bytes\n");
+}
+
+int nice_command( char* pidStr , char* newPrioStr ){
+  return sys_nice(satoi(pidStr), satoi(newPrioStr));
 }

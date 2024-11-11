@@ -56,3 +56,8 @@ int wc();
     @brief Prints the current state of the memory manager
 */
 void print_memory_info();
+
+/*
+    @brief Wrapper for nice syscall
+*/
+int nice_command( char* pidStr , char* newPrioStr );

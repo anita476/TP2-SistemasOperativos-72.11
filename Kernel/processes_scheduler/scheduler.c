@@ -144,7 +144,7 @@ int nice(pid pid, priority newPrio) {
     return -1;
   }
 
-  if (newPrio < MIN_PRIORITY || newPrio > MAX_PRIORITY) {
+  if (pid == 0 || newPrio < MIN_PRIORITY || newPrio > MAX_PRIORITY) {
     return -1;
   }
 

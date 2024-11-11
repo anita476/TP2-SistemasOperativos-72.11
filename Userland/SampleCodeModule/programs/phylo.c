@@ -23,6 +23,17 @@ typedef int sem_t;
 #define LEFT_PHIL(id, num)  ((((id) + (num) - 1) % (num)))
 #define RIGHT_PHIL(id, num) ((((id) + 1) % (num)))
 
+#define WELCOME_BANNER "\n*****************************************\n\
+* Welcome to the Great Philosophical Feast! *\n\
+*     Where great minds eat and think     *\n\
+*****************************************\n"
+
+#define HELP_MENU "\nAvailable Actions:\n\
+  'a' - Invite another philosopher to dine\n\
+  'r' - Excuse a philosopher from the table\n\
+  'p' - View the dinner table state (ps)\n\
+  'q' - End the philosophical feast\n"
+
 typedef enum { NONE = 0, THINKING, HUNGRY, EATING } State;
 
 typedef struct philosopher {
@@ -64,32 +75,25 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  num_philosophers = 0;
-
   int initial_philosophers = satoi(argv[0]);
   if (initial_philosophers < MIN_PHILOSOPHERS || initial_philosophers > MAX_PHILOSOPHERS) {
     fprintf(STDERR, "ERROR: Invalid number of philosophers (must be between 3 and 10 inclusive)\n");
     return -1;
   }
 
-  if ((mutex = sys_sem_open(MUTEX, 1)) < 0) {
-    fprintf(STDERR, "ERROR: ERROR: Failed to create mutex\n");
-    return -1;
-  }
+  sys_clear_screen();
 
+  fprintf(STDOUT, WELCOME_BANNER);
   fprintf(STDOUT, "Initial number of philosophers: ");
   fprintf(STDOUT, argv[0]);
   fprintf(STDOUT, "\n");
 
-  fprintf(STDOUT, "\n*****************************************\n");
-  fprintf(STDOUT, "* Welcome to the Great Philosophical Feast! *\n");
-  fprintf(STDOUT, "*     Where great minds eat and think     *\n");
-  fprintf(STDOUT, "*****************************************\n\n");
-  fprintf(STDOUT, "Available Actions:\n");
-  fprintf(STDOUT, "  'a' - Invite another philosopher to dine\n");
-  fprintf(STDOUT, "  'r' - Excuse a philosopher from the table\n");
-  fprintf(STDOUT, "  'p' - View the dinner table state (ps)\n");
-  fprintf(STDOUT, "  'q' - End the philosophical feast\n\n");
+  fprintf(STDOUT, "\nInitializing dinner table...\n");
+
+  if ((mutex = sys_sem_open(MUTEX, 1)) < 0) {
+    fprintf(STDERR, "ERROR: ERROR: Failed to create mutex\n");
+    return -1;
+  }
 
   for (int i = 0; i < MAX_PHILOSOPHERS; i++) {
     philosophers[i].pid = -1;
@@ -97,6 +101,9 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
     philosophers[i].prev = NONE;
     philosophers[i].sem = -1;
   }
+
+  fprintf(STDOUT, "\nPhilosophers arriving at the table:\n");
+  fprintf(STDOUT, "--------------------------------\n");
 
   for (int i = 0; i < initial_philosophers; i++) {
     if (add_philosopher(i) < 0) {
@@ -108,7 +115,8 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       return -1;
     }
   }
-
+  fprintf(STDOUT, "\nAll philosophers have arrived!\n");
+  fprintf(STDOUT, "\nEnter command ('h' for help): \n");
   char cmd = 0;
   while ((cmd = sys_get_char()) != 'q') {
     switch (cmd) {
@@ -127,12 +135,16 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
       fprintf(STDOUT, "\n");
       sys_sem_post(mutex);
       break;
+    case 'h':
+      fprintf(STDOUT, HELP_MENU);
+      break;
     }
   }
 
   sys_wait(MAX_TIME);
 
-  fprintf(STDOUT, "Cleaning up philosophers\n");
+  fprintf(STDOUT, "\nEnding the philosophical feast...\n");
+  fprintf(STDOUT, "--------------------------------\n");
 
   sys_sem_wait(mutex);
   while (num_philosophers > 0) {
@@ -156,7 +168,8 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
   }
   sys_sem_post(mutex);
   sys_sem_close(mutex);
-  fprintf(STDOUT, "\nDone\n");
+
+  fprintf(STDOUT, "\nThe feast has ended. All philosophers have departed.\n");
 
   return 0;
 }

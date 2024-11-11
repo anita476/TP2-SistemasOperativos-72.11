@@ -6,8 +6,8 @@
 #include <defs.h>
 #include <eliminator.h>
 #include <libSysCalls.h>
-#include <utils.h>
 #include <test_util.h>
+#include <utils.h>
 
 #define TIME_LENGTH 9
 
@@ -109,8 +109,10 @@ int ps() {
   ProcessInfo array[MAX_PROCESSES];
   int count = sys_list_processes_info(array, MAX_PROCESSES);
 
-  fprintf(STDOUT, "PID     Name           Status     Priority     Foreground     Parent     Input     Output\n");
-  fprintf(STDOUT, "---     ----           ------     --------     ----------     ------     -----     ------\n");
+  fprintf(STDOUT,
+          "PID     Name           Status     Priority     Foreground     Parent     Input     Output     Stack\n");
+  fprintf(STDOUT,
+          "---     ----           ------     --------     ----------     ------     -----     ------     -----\n");
 
   for (int i = 0; i < count; i++) {
     const char *status = array[i].status == READY     ? "READY   "
@@ -120,11 +122,12 @@ int ps() {
                                                       : "UNKNOWN ";
 
     char buffer[300] = {0};
-    char pidStr[10], prioStr[10], fgStr[10], parentStr[10];
+    char pidStr[10], prioStr[10], fgStr[10], parentStr[10], stackStr[20];
 
     itoa(array[i].pid, pidStr, 10);
     itoa(array[i].priority, prioStr, 10);
     itoa(array[i].fg_flag, fgStr, 10);
+    itoa((uint64_t) array[i].stackStart, stackStr, 16);
 
     if (array[i].parent == NO_PROC) {
       strcpy(parentStr, "-");
@@ -168,6 +171,12 @@ int ps() {
     }
 
     strcat(buffer, get_fd_name(array[i].output));
+    for (int j = strlen(get_fd_name(array[i].output)); j < 11; j++) {
+      strcat(buffer, " ");
+    }
+
+    strcat(buffer, "0x");
+    strcat(buffer, stackStr);
     strcat(buffer, "\n");
 
     fprintf(STDOUT, buffer);
@@ -306,7 +315,7 @@ void print_memory_info() {
   fprintf(STDOUT, " bytes\n");
 }
 
-int nice_command( uint64_t argc, char *argv[] ){
+int nice_command(uint64_t argc, char *argv[]) {
   int pid = satoi(argv[0]);
   int prio = satoi(argv[1]);
   return sys_nice(pid, prio);

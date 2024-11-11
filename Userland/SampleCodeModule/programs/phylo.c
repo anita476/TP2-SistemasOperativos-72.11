@@ -68,7 +68,7 @@ uint64_t phylo(uint64_t argc, char *argv[]) {
 
   int initial_philosophers = satoi(argv[0]);
   if (initial_philosophers < MIN_PHILOSOPHERS || initial_philosophers > MAX_PHILOSOPHERS) {
-    fprintf(STDERR, "ERROR: Invalid number of philosophers (must be between 3 and 20 inclusive)\n");
+    fprintf(STDERR, "ERROR: Invalid number of philosophers (must be between 3 and 10 inclusive)\n");
     return -1;
   }
 

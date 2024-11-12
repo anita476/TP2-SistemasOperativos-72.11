@@ -26,9 +26,3 @@ Para correr la Free List MMU correr:
 Correr el script: 
 
     ./run.sh
-
-### Nota para usuarios de Windows 
-Si está utilizando Windows, ejecute los siguientes comandos para asegurar el formato correcto de los scripts:
-
-    dos2unix compile.sh
-    dos2unix run.sh

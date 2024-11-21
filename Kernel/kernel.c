@@ -89,7 +89,6 @@ int main() {
   init_shell();
   _sti();
   while (1) {
-    yield();
     _hlt();
   }
 

@@ -8,7 +8,6 @@
 * Ana Negre
 
 
-
 ### Instrucciones de compilación 
 En tiempo de compilación, el usuario puede elegir el tipo de administrador de memoria física. 
 * Free List (default).
@@ -26,3 +25,5 @@ Para correr la Free List MMU correr:
 Correr el script: 
 
     ./run.sh
+
+#### Nota final 10

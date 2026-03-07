@@ -17,3 +17,4 @@ report.tasks
 PVS-Studio.log
 log.txt
 .gdb_history
+.bash_history
